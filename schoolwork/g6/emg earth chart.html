@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+        :root {
+      --bg: #0a0a0f;
+      --surface: #13131c;
+      --border: #222235;
+      --accent: #7cffd4;
+      --accent2: #ff6b6b;
+      --accent3: #ffd97c;
+      --text: #e8e8f0;
+      --muted: #6b6b8a;
+      --glow: 0 0 30px rgba(124, 255, 212, 0.15);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 20px;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124, 255, 212, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124, 255, 212, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+      .progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 10px;
+        width: 0%;
+        background: linear-gradient(90deg, #0090f7, #ba62fc, #f2416b, #f55600);
+        z-index: 999;
+        transition: width 0.05s linear;
+      }
+
+      @keyframes barFlow {
+        0% {
+          background-position: 0% 50%;
+        }
+
+        100% {
+          background-position: 200% 50%;
+        }
+      }
+          .scroll-hint {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 1;
+      transition: opacity 0.6s;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .scroll-hint span {
+      font-size: 11px;
+      color: #48484a;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(7px);
+      }
+    }
+
+    .scroll-arrow {
+      width: 1px;
+      height: 28px;
+      background: linear-gradient(to bottom, #48484a, transparent);
+      animation: bounce 1.6s ease-in-out infinite;
+    }
+        .spectrum-bar {
+      height: 6px;
+      width: 100%;
+      background: linear-gradient(90deg,
+          #1d1d1f 0%, #1d1d1f 5%,
+          #696a35 12.88%, #a5a847 16.25%, #c4c951 18.5%, #dce158 21.88%, #dde258 23%,
+          #dec565 27.5%, #dfa075 29.75%, #e1718a 32%, #e2429e 34.25%, #e31dae 36.5%,
+          #e400bb 41%, #ce0dc5 46.63%, #ae21d3 50%, #8539e4 54.5%, #7742ea 59%,
+          #492ed5 68%, #3626cc 70.25%, #1b1ac0 77%, #1b1b9f 82.63%, #1c1c70 86%,
+          #1d1d34 90.5%, #1d1d1f 95%, #1d1d1f 100%,
+          #1d1d1f 0%, #1d1d1f 5%,
+          #696a35 12.88%, #a5a847 16.25%, #c4c951 18.5%, #dce158 21.88%, #dde258 23%,
+          #dec565 27.5%, #dfa075 29.75%, #e1718a 32%, #e2429e 34.25%, #e31dae 36.5%,
+          #e400bb 41%, #ce0dc5 46.63%, #ae21d3 50%, #8539e4 54.5%, #7742ea 59%,
+          #492ed5 68%, #3626cc 70.25%, #1b1ac0 77%, #1b1b9f 82.63%, #1c1c70 86%,
+          #1d1d34 90.5%, #1d1d1f 95%, #1d1d1f 100%);
+      background-size: 200% 100%;
+      animation: barFlow 4s linear infinite;
+    }
+    </style>
+  </head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
+  <body>
+      
+  <div class="progress-bar" id="progress"></div>
+    <canvas id="pltcare" style="width:100%;max-width:600px"></canvas>'
+          <div class="scroll-hint" id="scrollHint">
+        <span>Scroll</span>
+        <div class="scroll-arrow"></div>
+      </div>
+    <script>
+      const xValues = ["Maybe", "No", "Yes"];
+      const yValues = [52.9, 35.3, 11.8];
+      const barColors = ["#b91d47", "#00aba9", "#2b5797"];
+      const ctx = document.getElementById('pltcare');
+      new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: xValues,
+          datasets: [{
+            backgroundColor: barColors,
+            data: yValues
+          }]
+        },
+        options: {
+          plugins: {
+            legend: {
+              display: true
+            },
+            title: {
+              display: true,
+              text: "Do you think people today care enough about the planet?",
+              font: {
+                size: 16
+              }
+            }
+          }
+        }
+      });
+    </script>
+          <script>
+        // Progress bar
+        const progressBar = document.getElementById('progress');
+        const scrollHint = document.getElementById('scrollHint');
+
+        function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+        function onScroll() {
+          const scrollTop = window.scrollY;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          progressBar.style.width = clamp(scrollTop / docHeight * 100, 0, 100) + '%';
+          scrollHint.style.opacity = scrollTop > 40 ? '0' : '1';
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      </script>
+  </body>
+</html>
