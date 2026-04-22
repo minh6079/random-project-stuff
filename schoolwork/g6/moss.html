@@ -1,0 +1,268 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nhóm bất ổn: rêu</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131c;
+      --border: #222235;
+      --accent: #7cffd4;
+      --accent2: #ff6b6b;
+      --accent3: #ffd97c;
+      --text: #e8e8f0;
+      --muted: #6b6b8a;
+      --glow: 0 0 30px rgba(124, 255, 212, 0.15);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 20px;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124, 255, 212, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124, 255, 212, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    iframe {
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      top: 0;
+      left: 10%;
+      border: none;
+      padding: 0;
+      margin: 0;
+      border-radius: 15px;
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 10px;
+      width: 0%;
+      background: linear-gradient(90deg, #0090f7, #ba62fc, #f2416b, #f55600);
+      z-index: 999;
+      transition: width 0.05s linear;
+    }
+
+    @keyframes barFlow {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      100% {
+        background-position: 200% 50%;
+      }
+    }
+
+    .scene-bar {
+      padding: 0;
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .spectrum-bar {
+      height: 6px;
+      width: 100%;
+      background: linear-gradient(90deg,
+          #1d1d1f 0%, #1d1d1f 5%,
+          #696a35 12.88%, #a5a847 16.25%, #c4c951 18.5%, #dce158 21.88%, #dde258 23%,
+          #dec565 27.5%, #dfa075 29.75%, #e1718a 32%, #e2429e 34.25%, #e31dae 36.5%,
+          #e400bb 41%, #ce0dc5 46.63%, #ae21d3 50%, #8539e4 54.5%, #7742ea 59%,
+          #492ed5 68%, #3626cc 70.25%, #1b1ac0 77%, #1b1b9f 82.63%, #1c1c70 86%,
+          #1d1d34 90.5%, #1d1d1f 95%, #1d1d1f 100%,
+          #1d1d1f 0%, #1d1d1f 5%,
+          #696a35 12.88%, #a5a847 16.25%, #c4c951 18.5%, #dce158 21.88%, #dde258 23%,
+          #dec565 27.5%, #dfa075 29.75%, #e1718a 32%, #e2429e 34.25%, #e31dae 36.5%,
+          #e400bb 41%, #ce0dc5 46.63%, #ae21d3 50%, #8539e4 54.5%, #7742ea 59%,
+          #492ed5 68%, #3626cc 70.25%, #1b1ac0 77%, #1b1b9f 82.63%, #1c1c70 86%,
+          #1d1d34 90.5%, #1d1d1f 95%, #1d1d1f 100%);
+      background-size: 200% 100%;
+      animation: barFlow 4s linear infinite;
+    }
+
+    @keyframes flowH {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      100% {
+        background-position: 200% 50%;
+      }
+    }
+
+    .headline-ai {
+      font-size: clamp(36px, 6vw, 68px);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.0;
+      background: linear-gradient(90deg,
+          #0090f7, #ba62fc, #f2416b, #f55600,
+          #0090f7, #ba62fc, #f2416b, #f55600, #f2416b, #ba62fc, #0090f7);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: flowH 4s linear infinite;
+    }
+
+
+    .headline-m5 {
+      font-size: clamp(36px, 6vw, 68px);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.0;
+      background: linear-gradient(90deg,
+          #e4f6f0, #9dcfca 31%, #6b95ac 68%, #45657d,
+          #e4f6f0, #9dcfca 31%, #6b95ac 68%, #45657d, #6b95ac, #9dcfca, #e4f6f0);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: flowH 4s linear infinite;
+    }
+
+    .scroll-hint {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 1;
+      transition: opacity 0.6s;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .scroll-hint span {
+      font-size: 11px;
+      color: #48484a;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(7px);
+      }
+    }
+
+    .scroll-arrow {
+      width: 1px;
+      height: 28px;
+      background: linear-gradient(to bottom, #48484a, transparent);
+      animation: bounce 1.6s ease-in-out infinite;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="progress-bar" id="progress"></div>
+
+
+  <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+  <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+  <br> <br>
+
+  <h1>
+    <div class="headline-ai">Nhóm bất ổn</div>Thuyết trình về rêu
+  </h1>
+
+  <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+  <br>
+
+  <h2>Sự thật thú vị về rêu trước khi bắt đầu<h2>
+
+      <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+      <br>
+
+      <h2>Rêu có khả năng hấp thụ nước gấp 20 lần trọng lượng cơ thể, có thể phát triển trên <div class="headline-m5">
+          sao Hoả</div>
+      </h2>
+
+      <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+      <br>
+
+      <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+      <br>
+
+      <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
+ padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+ border-radius: 8px; will-change: transform;">
+        <iframe loading="lazy"
+          style="position: absolute; width: 90%; height: 90%; top: 0; left: 5%; border: none; padding: 0;margin: 0;"
+          src="https://www.canva.com/design/DAHEqtgwGHM/j7KTFro_ddmwRwUJ-VSqkg/view?embed"
+          allowfullscreen="allowfullscreen" allow="fullscreen">
+        </iframe>
+      </div>
+      <a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAHEqtgwGHM&#x2F;j7KTFro_ddmwRwUJ-VSqkg&#x2F;view?utm_content=DAHEqtgwGHM&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link"
+        target="_blank" rel="noopener">Nhóm Bất Ổn - Rêu</a> by Cannghialinhpham
+
+      <div class="scroll-hint" id="scrollHint">
+        <span>Scroll</span>
+        <div class="scroll-arrow"></div>
+      </div>
+      <div class="scene-bar">
+        <div class="spectrum-bar"></div>
+      </div>
+
+      <script>
+        // Progress bar
+        const progressBar = document.getElementById('progress');
+        const scrollHint = document.getElementById('scrollHint');
+
+        function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+        function onScroll() {
+          const scrollTop = window.scrollY;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          progressBar.style.width = clamp(scrollTop / docHeight * 100, 0, 100) + '%';
+          scrollHint.style.opacity = scrollTop > 40 ? '0' : '1';
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      </script>
+</body>
+
+</html>
