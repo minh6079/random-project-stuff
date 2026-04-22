@@ -1,0 +1,52 @@
+100% people think protecting the environment is important
+97% people think key purpose of Earth Day is to raise awareness and take action for the environment
+97% people know the "3Rs" stand for Reduce, Reuse, Recycle
+97% people think small daily actions can make a big difference
+94% people identify Solar power as a renewable energy source
+85% people know Earth Day is celebrated on April 22nd
+85% people identify Carbon Dioxide as a major contributor to global warming
+90% people understand the goal of recycling is to turn waste into usable materials
+90% people suggest reusing and recycling plastic items to reduce plastic waste
+80% people think communities should have stricter environmental rules
+85% people believe schools should teach students to help protect the Earth
+97% people are unsure or think people do not care enough about the planet
+
+**1. Do you think people today care enough about the planet?**
+*   **Maybe:** 52.9% (18 respondents)
+*   **No:** 35.3% (12 respondents)
+*   **Yes:** 11.8% (4 respondents)
+
+**2. Have you noticed any environmental changes in your area?**
+*   **Yes:** 67.6% (23 respondents)
+*   **Maybe:** 17.6% (6 respondents)
+*   **No:** 14.7% (5 respondents)
+
+**3. Do you think communities should have stricter environmental rules?**
+*   **Yes:** 70.6% (24 respondents)
+*   **Maybe:** 20.6% (7 respondents)
+*   **No:** 8.8% (3 respondents)
+
+**4. Which of the following is a renewable energy source? (Accuracy)**
+*   **Correct (Solar Power only):** 82.4% (28 respondents)
+*   **Incorrect/Mixed (Included Natural Gas/Coal):** 17.6% (6 respondents)
+
+**5. When is Earth Day celebrated? (Accuracy)**
+*   **Correct (April 22nd):** 88.2% (30 respondents)
+*   **Incorrect/Empty:** 11.8% (4 respondents)
+
+**6. What does the "3Rs" stand for? (Accuracy)**
+*   **Correct (Reduce, Reuse, Recycle):** 97.1% (33 respondents)
+*   **Incorrect:** 2.9% (1 respondent)
+
+**7. Which gas is a major contributor to global warming? (Accuracy)**
+*   **Correct (Carbon Dioxide/CO2):** 85.3% (29 respondents)
+*   **Incorrect/Empty:** 14.7% (5 respondents)
+
+**8. Do you think small daily actions can make a big difference?**
+*   **Yes:** 91.2% (31 respondents)
+*   **No/Empty:** 8.8% (3 respondents)
+
+**9. What is a key purpose of Earth Day? (Accuracy)**
+*   **Correct (Raise Awareness/Action):** 97.1% (33 respondents)
+*   **Incorrect:** 2.9% (1 respondent)
+
