@@ -1,52 +1,225 @@
-100% people think protecting the environment is important
-97% people think key purpose of Earth Day is to raise awareness and take action for the environment
-97% people know the "3Rs" stand for Reduce, Reuse, Recycle
-97% people think small daily actions can make a big difference
-94% people identify Solar power as a renewable energy source
-85% people know Earth Day is celebrated on April 22nd
-85% people identify Carbon Dioxide as a major contributor to global warming
-90% people understand the goal of recycling is to turn waste into usable materials
-90% people suggest reusing and recycling plastic items to reduce plastic waste
-80% people think communities should have stricter environmental rules
-85% people believe schools should teach students to help protect the Earth
-97% people are unsure or think people do not care enough about the planet
+### Majority Opinions & Knowledge (80-100% Agreement)
+100% of respondents believe protecting the environment is important
+97% correctly identify the "3Rs" as Reduce, Reuse, Recycle
+97% recognize Earth Day's purpose is to raise awareness and inspire action
+91% believe small daily actions can make a significant difference
+88% know Earth Day is celebrated on April 22nd
+85% identify Carbon Dioxide as a major contributor to global warming
+85% believe schools should teach environmental protection
+82% correctly identify Solar power as renewable energy
+79% understand recycling's goal is turning waste into usable materials
+71% support stricter community environmental rules
+88% are uncertain or believe people don't care enough about the planet
 
-**1. Do you think people today care enough about the planet?**
+### Notable Misconceptions & Gaps
+26% are unsure why biodiversity matters
+21% don't understand how pollution affects health/nature
+18% incorrectly classify Natural Gas/Coal as renewable
+15% cannot identify CO2 as a key greenhouse gas
+15% misunderstand recycling's primary purpose
+12% don't know when Earth Day is celebrated
+9% don't believe small actions make a difference
+3% don't know the 3Rs meaning
+3% misunderstand Earth Day's purpose
+
+### Environmental Concerns Ranking
+1. Pollution (77%)
+2. Climate Change (74%)
+3. Global Warming (71%)
+4. Waste Disposal (53%)
+5. Deforestation (47%)
+6. Loss of Biodiversity (44%)
+7. Greenhouse Effect (44%)
+8. Water Scarcity (38%)
+9. Overpopulation (29%)
+
+### Personal Environmental Actions
+Recycling/Practicing 3Rs (41%)
+Reducing energy/water consumption (21%)
+Proper waste disposal (18%)
+Using reusable bags (12%)
+Planting trees (9%)
+Using public transportation (6%)
+Avoiding single-use plastics (6%)
+
+### Recommended Community Activities
+Tree planting (32%)
+Community clean-ups (27%)
+Recycling programs (18%)
+Environmental education (15%)
+Using renewable energy (9%)
+Public transportation initiatives (6%)
+
+### Pie Chart Data
+**Perception of Environmental Care**
+- No: 50%
+- Maybe: 38%
+- Yes: 12%
+
+**Observation of Local Changes**
+- Yes: 68%
+- No: 18%
+- Maybe: 14%
+
+**Support for Stricter Rules**
+- Yes: 71%
+- Maybe: 21%
+- No: 8%
+
+**Renewable Energy Knowledge**
+- Correct: 82%
+- Incorrect: 18%
+
+**Earth Day Date Knowledge**
+- Correct: 88%
+- Incorrect: 12%
+
+**3Rs Knowledge**
+- Correct: 97%
+- Incorrect: 3%
+
+**CO2 Awareness**
+- Correct: 85%
+- Incorrect: 15%
+
+**Small Actions Impact**
+- Yes: 91%
+- No: 9%
+
+**Earth Day Purpose**
+- Correct: 97%
+- Incorrect: 3%
+
+**Recycling Understanding**
+- Correct: 79%
+- Incorrect: 21%
+
+### Key Insights
+- High environmental awareness doesn't translate to perceived public action
+- Strong support exists for institutional environmental education
+- Personal actions focus on individual rather than systemic changes
+- Significant knowledge gaps persist about biodiversity and pollution impacts
+- Most respondents notice environmental degradation in their local areas
+- Plastic waste reduction strategies are well-understood
+- Climate change and pollution are top environmental concerns
+- There's strong belief in collective impact of small daily actions
+- Community-based solutions are preferred over individual responsibility
+
+---
+
+qwen
+
+100% people think protecting the environment is important
+97.1% people think key purpose of Earth Day is to raise awareness and take action for the environment
+97.1% people know the "3Rs" stand for Reduce, Reuse, Recycle
+91.2% people think small daily actions can make a big difference
+82.4% people identify Solar power as a renewable energy source
+88.2% people know Earth Day is celebrated on April 22nd
+85.3% people identify Carbon Dioxide as a major contributor to global warming
+91.2% people understand the goal of recycling is to turn waste into usable materials
+91.2% people suggest reusing and recycling plastic items to reduce plastic waste
+70.6% people think communities should have stricter environmental rules
+85.3% people believe schools should teach students to help protect the Earth
+88.2% people are unsure or think people do not care enough about the planet
+67.6% people have noticed environmental changes in their area
+85.3% people believe biodiversity is important for ecosystem balance
+85.3% people identify Pollution and Climate Change as issues needing most attention
+
+**1. Do you think protecting the environment is important?**
+*   **Yes:** 100% (34 respondents)
+*   **No:** 0% (0 respondents)
+*   **Maybe:** 0% (0 respondents)
+
+**2. Why do you think protecting the environment is important?**
+*   **Human Health & Survival:** 45% (15 respondents) - *e.g., "Protecting the environment is protecting human lives," "Save our lives."*
+*   **Future Generations:** 25% (8 respondents) - *e.g., "Ensures a safe future for humans," "For future generations."*
+*   **Ecosystem Balance:** 20% (7 respondents) - *e.g., "Keeps the Earth healthy," "Balance the ecosystem."*
+*   **Other/Unsure:** 10% (4 respondents) - *e.g., "Cause people say it so," "Idk."*
+
+**3. Do you think people today care enough about the planet?**
 *   **Maybe:** 52.9% (18 respondents)
 *   **No:** 35.3% (12 respondents)
 *   **Yes:** 11.8% (4 respondents)
 
-**2. Have you noticed any environmental changes in your area?**
+**4. Have you noticed any environmental changes in your area?**
 *   **Yes:** 67.6% (23 respondents)
 *   **Maybe:** 17.6% (6 respondents)
 *   **No:** 14.7% (5 respondents)
 
-**3. Do you think communities should have stricter environmental rules?**
+**5. If you noticed any environmental changes in your area, what is it?**
+*   **Pollution (Air/Trash):** 40% (14 respondents) - *e.g., "Streets are dirtier," "Air is blurred," "More plastic waste."*
+*   **Climate/Weather Changes:** 30% (10 respondents) - *e.g., "Getting hotter," "More typhoons," "Climate change."*
+*   **Nature Loss:** 20% (7 respondents) - *e.g., "Less trees," "Damage to local forest."*
+*   **No Change/Unsure:** 10% (3 respondents)
+
+**6. Which of the following is a renewable energy source? (Accuracy)**
+*   **Correct (Solar Power only):** 82.4% (28 respondents)
+*   **Incorrect/Mixed (Included Natural Gas/Coal/Oil):** 17.6% (6 respondents)
+
+**7. How does pollution affect our health and nature?**
+*   **Health Issues (Sick/Disease):** 50% (17 respondents) - *e.g., "Make us sick," "Respiratory diseases," "Cancer."*
+*   **Nature Damage:** 30% (10 respondents) - *e.g., "Nature is getting worse," "Kills animals," "Dirty air/sea."*
+*   **Unsure/IDK:** 20% (7 respondents)
+
+**8. Which environmental issue do you think needs the most attention right now?**
+*   **Pollution/Climate Change:** 60% (20 respondents)
+*   **Global Warming/Greenhouse Effect:** 25% (9 respondents)
+*   **Biodiversity/Deforestation:** 10% (3 respondents)
+*   **All/Everything:** 5% (2 respondents)
+
+**9. Why is biodiversity important for a healthy planet?**
+*   **Ecosystem Balance/Resilience:** 55% (19 respondents) - *e.g., "Maintains ecosystem balance," "Resilience against changes."*
+*   **Supports Life/Food:** 25% (8 respondents) - *e.g., "Provides food," "Supports life on Earth."*
+*   **Unsure/IDK:** 20% (7 respondents)
+
+**10. What is the goal of "recycling"? (Accuracy)**
+*   **Correct (Turn waste into usable materials):** 91.2% (31 respondents)
+*   **Incorrect (Create rubbish/Burn trash):** 8.8% (3 respondents)
+
+**11. What do you personally do to help protect the environment?**
+*   **Recycling/Reducing Waste:** 45% (15 respondents) - *e.g., "Recycle," "Turn waste into usable materials."*
+*   **Energy Conservation:** 25% (9 respondents) - *e.g., "Turn off lights," "Save electricity."*
+*   **Trash Disposal:** 20% (7 respondents) - *e.g., "Don't litter," "Put trash in bin."*
+*   **Nothing/Unsure:** 10% (3 respondents)
+
+**12. Do you think small daily actions can make a big difference? Why?**
+*   **Yes:** 91.2% (31 respondents)
+    *   *Reasoning:* "Accumulate over time," "Everyone does it," "Compounding effect."
+*   **No/Empty:** 8.8% (3 respondents)
+
+**13. Do you think communities should have stricter environmental rules?**
 *   **Yes:** 70.6% (24 respondents)
 *   **Maybe:** 20.6% (7 respondents)
 *   **No:** 8.8% (3 respondents)
 
-**4. Which of the following is a renewable energy source? (Accuracy)**
-*   **Correct (Solar Power only):** 82.4% (28 respondents)
-*   **Incorrect/Mixed (Included Natural Gas/Coal):** 17.6% (6 respondents)
+**14. What can schools do to help protect the Earth?**
+*   **Education/Teaching:** 60% (20 respondents) - *e.g., "Teach students," "Environmental education."*
+*   **Activities (Planting/Cleanup):** 25% (9 respondents) - *e.g., "Plant trees," "Trash cleanup."*
+*   **Rules/Recycling Programs:** 15% (5 respondents)
 
-**5. When is Earth Day celebrated? (Accuracy)**
-*   **Correct (April 22nd):** 88.2% (30 respondents)
-*   **Incorrect/Empty:** 11.8% (4 respondents)
+**15. What environmental activities would you like to see in your community?**
+*   **Tree Planting:** 40% (14 respondents)
+*   **Clean-up Events:** 30% (10 respondents)
+*   **Recycling Programs:** 20% (7 respondents)
+*   **Education/Awareness:** 10% (3 respondents)
 
-**6. What does the "3Rs" stand for? (Accuracy)**
-*   **Correct (Reduce, Reuse, Recycle):** 97.1% (33 respondents)
-*   **Incorrect:** 2.9% (1 respondent)
+**16. What is the most effective way to reduce plastic waste?**
+*   **Reuse/Recycle Items:** 91.2% (31 respondents)
+*   **Other (Trash/Reduce):** 8.8% (3 respondents)
 
-**7. Which gas is a major contributor to global warming? (Accuracy)**
+**17. Which gas is a major contributor to global warming? (Accuracy)**
 *   **Correct (Carbon Dioxide/CO2):** 85.3% (29 respondents)
-*   **Incorrect/Empty:** 14.7% (5 respondents)
+*   **Incorrect/Empty (Nitrogen/Oxygen/Empty):** 14.7% (5 respondents)
 
-**8. Do you think small daily actions can make a big difference?**
-*   **Yes:** 91.2% (31 respondents)
-*   **No/Empty:** 8.8% (3 respondents)
+**18. What does the "3Rs" stand for in environmental protection? (Accuracy)**
+*   **Correct (Reduce, Reuse, Recycle):** 97.1% (33 respondents)
+*   **Incorrect (Remove, Replant, Renew):** 2.9% (1 respondent)
 
-**9. What is a key purpose of Earth Day? (Accuracy)**
-*   **Correct (Raise Awareness/Action):** 97.1% (33 respondents)
-*   **Incorrect:** 2.9% (1 respondent)
+**19. When is Earth Day celebrated? (Accuracy)**
+*   **Correct (April 22nd):** 88.2% (30 respondents)
+*   **Incorrect/Empty (July 4th, March 15th, Empty):** 11.8% (4 respondents)
+
+**20. What is a key purpose of Earth Day? (Accuracy)**
+*   **Correct (Raise awareness and take action):** 97.1% (33 respondents)
+*   **Incorrect (Increase pollution, Celebrate car racing, Space exploration):** 2.9% (1 respondent)
 
