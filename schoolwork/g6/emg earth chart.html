@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <style>
-        :root {
+
+<head>
+  <style>
+    :root {
       --bg: #0a0a0f;
       --surface: #13131c;
       --border: #222235;
@@ -38,27 +39,29 @@
       pointer-events: none;
       z-index: 0;
     }
-      .progress-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 10px;
-        width: 0%;
-        background: linear-gradient(90deg, #0090f7, #ba62fc, #f2416b, #f55600);
-        z-index: 999;
-        transition: width 0.05s linear;
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 10px;
+      width: 0%;
+      background: linear-gradient(90deg, #0090f7, #ba62fc, #f2416b, #f55600);
+      z-index: 999;
+      transition: width 0.05s linear;
+    }
+
+    @keyframes barFlow {
+      0% {
+        background-position: 0% 50%;
       }
 
-      @keyframes barFlow {
-        0% {
-          background-position: 0% 50%;
-        }
-
-        100% {
-          background-position: 200% 50%;
-        }
+      100% {
+        background-position: 200% 50%;
       }
-          .scroll-hint {
+    }
+
+    .scroll-hint {
       position: fixed;
       bottom: 32px;
       left: 50%;
@@ -98,7 +101,8 @@
       background: linear-gradient(to bottom, #48484a, transparent);
       animation: bounce 1.6s ease-in-out infinite;
     }
-        .spectrum-bar {
+
+    .spectrum-bar {
       height: 6px;
       width: 100%;
       background: linear-gradient(90deg,
@@ -117,63 +121,69 @@
       background-size: 200% 100%;
       animation: barFlow 4s linear infinite;
     }
-    </style>
-  </head>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
-  <body>
-      
-  <div class="progress-bar" id="progress"></div>
+  </style>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
 
-          <div class="scroll-hint" id="scrollHint">
-        <span>Scroll</span>
-        <div class="scroll-arrow"></div>
-      </div>
-    <script>
-      const xValues = ["Maybe", "No", "Yes"];
-      const yValues = [52.9, 35.3, 11.8];
-      const barColors = ["#b91d47", "#00aba9", "#2b5797"];
-      const ctx = document.getElementById('pltcare');
-      new Chart(ctx, {
-        type: "doughnut",
-        data: {
-          labels: xValues,
-          datasets: [{
-            backgroundColor: barColors,
-            data: yValues
-          }]
-        },
-        options: {
-          plugins: {
-            legend: {
-              display: true
-            },
-            title: {
-              display: true,
-              text: "Do you think people today care enough about the planet?",
-              font: {
-                size: 16
-              }
-            }
+<body>
+
+  <div class="progress-bar" id="progress"></div>
+  <canvas id="why-important-environment-protect" style="width:100%;max-width:600px;max-height: fit-content;"></canvas>
+  <div class="scroll-hint" id="scrollHint">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+
+  <script>
+    const xValues = ["Human Health & Survival", "Future Generations", "Ecosystem Balance", "Other"];
+    const yValues = [45, 25, 20, 10];
+    const barColors = [
+      "#b91d47",
+      "#00aba9",
+      "#2b5797",
+      "#e8e8f0"
+    ];
+
+    const ctx = document.getElementById('why-important-environment-protect');
+
+    new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: xValues,
+        datasets: [{
+          backgroundColor: barColors,
+          data: yValues
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { display: true },
+          title: {
+            display: true,
+            text: "Why do you think protecting the environment is important?",
+            font: { size: 20 }
           }
         }
-      });
-    </script>
-          <script>
-        // Progress bar
-        const progressBar = document.getElementById('progress');
-        const scrollHint = document.getElementById('scrollHint');
+      }
+    });
+  </script>
+  <script>
+    // Progress bar
+    const progressBar = document.getElementById('progress');
+    const scrollHint = document.getElementById('scrollHint');
 
-        function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
-        function onScroll() {
-          const scrollTop = window.scrollY;
-          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-          progressBar.style.width = clamp(scrollTop / docHeight * 100, 0, 100) + '%';
-          scrollHint.style.opacity = scrollTop > 40 ? '0' : '1';
-        }
+    function onScroll() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      progressBar.style.width = clamp(scrollTop / docHeight * 100, 0, 100) + '%';
+      scrollHint.style.opacity = scrollTop > 40 ? '0' : '1';
+    }
 
-        window.addEventListener('scroll', onScroll, { passive: true });
-        onScroll();
-      </script>
-  </body>
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  </script>
+</body>
+
 </html>
