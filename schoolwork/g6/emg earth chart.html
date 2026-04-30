@@ -121,6 +121,141 @@
       background-size: 200% 100%;
       animation: barFlow 4s linear infinite;
     }
+
+    .chart-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      margin: 70px auto;
+      max-width: 1100px;
+      flex-wrap: wrap;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--glow);
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.8s ease;
+      will-change: transform, opacity;
+      transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+
+    .chart-box {
+      flex: 1 1 400px;
+      max-width: 500px;
+    }
+
+    .text-box {
+      flex: 1 1 350px;
+      color: var(--text);
+    }
+
+    .text-box h3 {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .text-box p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .chart-section.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* hover effect */
+    .chart-section:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 0 40px rgba(124, 255, 212, 0.15);
+      border-color: rgba(124, 255, 212, 0.35);
+    }
+
+    /* chart container glow on hover */
+    .chart-section:hover .chart-box {
+      filter: drop-shadow(0 0 18px rgba(124, 255, 212, 0.2));
+      transition: 0.3s ease;
+    }
+
+    /* text highlight on hover */
+    .chart-section:hover .text-box h3 {
+      color: var(--accent);
+      transition: 0.3s ease;
+    }
+
+    .chart-section:hover .text-box p {
+      color: #cfd0da;
+    }
+
+    /* optional: make it feel more “premium” */
+    .chart-section {
+      transition-delay: 0.05s;
+    }
+
+    .insights {
+      max-width: 900px;
+      width: 100%;
+      margin-bottom: 40px;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--glow);
+    }
+
+    .insights h2 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: var(--accent);
+    }
+
+    /* insight cards */
+    .insight-item {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+      padding: 10px 12px;
+      margin: 8px 0;
+      border-left: 3px solid var(--accent);
+      background: rgba(124, 255, 212, 0.05);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text);
+      display: flex;
+      gap: 6px;
+      align-items: baseline;
+    }
+
+    .insight-item.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .insight-item:hover {
+      transform: translateX(6px);
+      background: rgba(124, 255, 212, 0.1);
+      border-left-color: var(--accent3);
+    }
+
+    /* animated number */
+    .count {
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    /* hover on chart sections */
+    .chart-section {
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    .chart-section:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 0 40px rgba(124, 255, 212, 0.15);
+    }
   </style>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
@@ -128,44 +263,192 @@
 <body>
 
   <div class="progress-bar" id="progress"></div>
-  <canvas id="why-important-environment-protect" style="width:100%;max-width:600px;max-height: fit-content;"></canvas>
+  <div class="insights">
+    <h2>Key Insights</h2>
+    <div id="insightList"></div>
+  </div>
+  <div id="charts"></div>
   <div class="scroll-hint" id="scrollHint">
     <span>Scroll</span>
     <div class="scroll-arrow"></div>
   </div>
 
   <script>
-    const xValues = ["Human Health & Survival", "Future Generations", "Ecosystem Balance", "Other"];
-    const yValues = [45, 25, 20, 10];
-    const barColors = [
-      "#b91d47",
-      "#00aba9",
-      "#2b5797",
-      "#e8e8f0"
+    const questions = [
+      {
+        title: "1. Do you think protecting the environment is important?",
+        labels: ["Yes", "No", "Maybe"],
+        data: [100, 0, 0],
+        text: "Everyone agrees it is important."
+      },
+      {
+        title: "2. Why is it important?",
+        labels: ["Health", "Future", "Ecosystem", "Other"],
+        data: [45, 25, 20, 10],
+        text: "Main reason is human survival and future generations."
+      },
+      {
+        title: "3. Do people today care enough for the planet?",
+        labels: ["Maybe", "No", "Yes"],
+        data: [52.9, 35.3, 11.8],
+        text: "Most people are unsure or think not enough care exists."
+      },
+      {
+        title: "4. Noticed any enviromental changes?",
+        labels: ["Yes", "Maybe", "No"],
+        data: [67.6, 17.6, 14.7],
+        text: "Most respondents noticed changes in their environment."
+      },
+      {
+        title: "5. Type of environmental changes that you notice",
+        labels: ["Pollution", "Climate", "Nature Loss", "None"],
+        data: [40, 30, 20, 10],
+        text: "Pollution is the most commonly noticed issue."
+      },
+      {
+        title: "6. Renewable energy knowledge",
+        labels: ["Correct", "Incorrect"],
+        data: [82.4, 17.6],
+        text: "Most people correctly identified solar power as renewable energy."
+      },
+      {
+        title: "7. Pollution effects",
+        labels: ["Health", "Nature", "Unsure"],
+        data: [50, 30, 20],
+        text: "Health issues are the most common concern."
+      },
+      {
+        title: "8. Biggest environmental issue",
+        labels: ["Pollution", "Global Warming", "Biodiversity", "All"],
+        data: [60, 25, 10, 5],
+        text: "Pollution is the biggest environmental issue among respondents."
+      },
+      {
+        title: "9. Biodiversity importance",
+        labels: ["Balance", "Food", "Unsure"],
+        data: [55, 25, 20],
+        text: "Most people think biodiversity is important for ecosystem stability."
+      },
+      {
+        title: "10. Recycling goals",
+        labels: ["Turn waste into usable materials", "Burn trash"],
+        data: [91.2, 8.8],
+        text: "Most people understand recycling correctly."
+      },
+      {
+        title: "11. Personal actions",
+        labels: ["Recycle", "Energy Conservation", "Trash Disposal", "Noting"],
+        data: [45, 25, 20, 10],
+        text: "Recycling is the most common action."
+      },
+      {
+        title: "12. Do small daily actions matter?",
+        labels: ["Yes", "No"],
+        data: [91.2, 8.8],
+        text: "Almost everyone believes small daily actions matter."
+      },
+      {
+        title: "13. Do you think communities should have stricter environmental rules??",
+        labels: ["Yes", "Maybe", "No"],
+        data: [70.6, 20.6, 8.8],
+        text: "Majority support stricter environmental rules."
+      },
+      {
+        title: "14. What can schools do to help protect the Earth?",
+        labels: ["Education", "Activities", "Rules"],
+        data: [60, 25, 15],
+        text: "Education is seen as most important."
+      },
+      {
+        title: "15. Community activities",
+        labels: ["Tree Planting", "Clean Up Events", "Recycling Programs", "Education and Awareness"],
+        data: [40, 30, 20, 10],
+        text: "Tree planting is most popular."
+      },
+      {
+        title: "16. Effective ways to reduce plastic waste",
+        labels: ["Reuse/Recycle", "Other"],
+        data: [91.2, 8.8],
+        text: "Reuse and recycling are key solutions."
+      },
+      {
+        title: "17. Global warming gas",
+        labels: ["CO2", "Other"],
+        data: [85.3, 14.7],
+        text: "CO2 is widely recognized correctly."
+      },
+      {
+        title: "18. What does the 3Rs stand for in environmental protection?",
+        labels: ["Correct", "Incorrect"],
+        data: [97.1, 2.9],
+        text: "Almost everyone knows Reduce, Reuse, Recycle."
+      },
+      {
+        title: "19. Earth Day date",
+        labels: ["Correct", "Incorrect"],
+        data: [88.2, 11.8],
+        text: "Most know it is April 22nd."
+      },
+      {
+        title: "20. Earth Day purpose",
+        labels: ["Correct", "Incorrect"],
+        data: [97.1, 2.9],
+        text: "It is mainly for awareness and action."
+      }
     ];
 
-    const ctx = document.getElementById('why-important-environment-protect');
+    const container = document.getElementById("charts");
 
-    new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        labels: xValues,
-        datasets: [{
-          backgroundColor: barColors,
-          data: yValues
-        }]
-      },
-      options: {
-        plugins: {
-          legend: { display: true },
-          title: {
-            display: true,
-            text: "Why do you think protecting the environment is important?",
-            font: { size: 20 }
+    questions.forEach((q, i) => {
+      const section = document.createElement("div");
+      section.className = "chart-section";
+
+      if (i % 2 === 1) {
+        section.style.flexDirection = "row-reverse";
+      }
+
+      const chartBox = document.createElement("div");
+      chartBox.className = "chart-box";
+
+      const canvas = document.createElement("canvas");
+      chartBox.appendChild(canvas);
+
+      const textBox = document.createElement("div");
+      textBox.className = "text-box";
+
+      textBox.innerHTML = `
+    <h3>${q.title}</h3>
+    <p>${q.text}</p>
+  `;
+
+      section.appendChild(chartBox);
+      section.appendChild(textBox);
+      container.appendChild(section);
+
+      new Chart(canvas, {
+        type: "doughnut",
+        data: {
+          labels: q.labels,
+          datasets: [{
+            data: q.data,
+            backgroundColor: ["#7cffd4", "#ff6b6b", "#ffd97c", "#6b8cff"]
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { labels: { color: "#e8e8f0" } },
+            title: {
+              display: true,
+              text: q.title,
+              color: "#e8e8f0",
+              font: { size: 16 }
+            }
           }
         }
-      }
+      });
     });
+
+
   </script>
   <script>
     // Progress bar
@@ -183,6 +466,106 @@
 
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
+  </script>
+  <script>
+    const sections = document.querySelectorAll(".chart-section");
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("show");
+        }
+      });
+    }, {
+      threshold: 0.15
+    });
+
+    sections.forEach((el) => observer.observe(el));
+  </script>
+  <script>
+    const insights = [
+      "100% people think protecting the environment is important",
+      "97.1% people think key purpose of Earth Day is awareness and action",
+      "97.1% people know the 3Rs stand for Reduce, Reuse, Recycle",
+      "91.2% people think small daily actions matter",
+      "82.4% people identify Solar power as renewable energy",
+      "88.2% people know Earth Day is April 22nd",
+      "85.3% people identify CO2 as major global warming gas",
+      "91.2% people understand recycling purpose",
+      "91.2% people support reusing and recycling plastic",
+      "70.6% people think stricter environmental rules are needed",
+      "85.3% people think schools should teach environmental protection",
+      "67.6% people noticed environmental changes",
+      "85.3% people say biodiversity is important",
+      "85.3% people identify pollution & climate change as top issues"
+    ];
+
+    const insightBox = document.getElementById("insightList");
+
+    // animate number 0 → target
+    function animateCount(el, target) {
+      let current = 0;
+      const duration = 1200;
+      const step = target / (duration / 16);
+
+      function update() {
+        current += step;
+        if (current >= target) current = target;
+
+        el.textContent = current.toFixed(1);
+
+        if (current < target) {
+          requestAnimationFrame(update);
+        }
+      }
+
+      update();
+    }
+
+    // build UI
+    insights.forEach((text, index) => {
+      const match = text.match(/^([\d.]+)% (.+)$/);
+
+      const div = document.createElement("div");
+      div.className = "insight-item";
+      div.style.transitionDelay = `${index * 40}ms`;
+
+      if (match) {
+        const percent = parseFloat(match[1]);
+        const rest = match[2];
+
+        div.innerHTML = `
+      <span class="count" data-target="${percent}">0</span>% ${rest}
+    `;
+      } else {
+        div.textContent = text;
+      }
+
+      insightBox.appendChild(div);
+    });
+
+    // scroll trigger
+    const insightObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+
+        const el = entry.target;
+        el.classList.add("show");
+
+        const counter = el.querySelector(".count");
+        if (counter && !counter.dataset.done) {
+          counter.dataset.done = "true";
+          animateCount(counter, parseFloat(counter.dataset.target));
+        }
+      });
+    }, { threshold: 0.2 });
+
+    // observe items
+    setTimeout(() => {
+      document.querySelectorAll(".insight-item").forEach(el => {
+        insightObserver.observe(el);
+      });
+    }, 100);
   </script>
 </body>
 
