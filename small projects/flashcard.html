@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Flashcards</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Dark Theme (Default) */
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-indigo: #6366f1;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --modal-bg: #1e293b;
+            --border: rgba(255, 255, 255, 0.1);
+            --input-bg: #334155;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --accent-indigo: #4f46e5;
+            --accent-emerald: #059669;
+            --accent-amber: #d97706;
+            --modal-bg: #ffffff;
+            --border: rgba(0, 0, 0, 0.1);
+            --input-bg: #f8fafc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.3s;
+            user-select: none; /* Prevent text selection during swiping */
+            -webkit-user-select: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            position: absolute;
+            top: -60px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover {
+            color: var(--text-primary);
+            background: rgba(128, 128, 128, 0.1);
+        }
+
+        /* Progress Header */
+        .header { margin-bottom: 40px; }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--input-bg);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-indigo);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Flashcard Component */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            height: 320px;
+            margin-bottom: 40px;
+            cursor: pointer;
+            touch-action: none;
+        }
+
+        .flashcard {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.is-flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            border-radius: 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-front { font-size: 1.5rem; font-weight: 700; }
+        .card-back { transform: rotateY(180deg); font-size: 1.25rem; color: var(--text-secondary); line-height: 1.6; }
+
+        /* Controls */
+        .controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        .btn {
+            border: none;
+            border-radius: 16px;
+            padding: 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            color: white;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-later { background: var(--accent-amber); }
+        .btn-flip { background: var(--accent-indigo); }
+        .btn-ok { background: var(--accent-emerald); }
+
+        /* Modal System */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal {
+            background: var(--modal-bg);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            border-radius: 24px;
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .close-btn { font-size: 24px; cursor: pointer; color: var(--text-secondary); }
+
+        /* Settings Forms */
+        .section { margin-bottom: 30px; text-align: left; }
+        .section h3 { margin-bottom: 12px; font-size: 1.1rem; }
+        
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        textarea, input, select {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 8px;
+            font-family: inherit;
+        }
+
+        .card-list-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: var(--input-bg);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes swipeLeft { 100% { transform: translateX(-150%) rotate(-20deg); opacity: 0; } }
+        @keyframes swipeRight { 100% { transform: translateX(150%) rotate(20deg); opacity: 0; } }
+        @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+        .swipe-left { animation: swipeLeft 0.5s forwards; }
+        .swipe-right { animation: swipeRight 0.5s forwards; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        .is-dragging { transition: none !important; }
+
+        /* Custom Scrollbar Override */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Firefox Support */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        .swipe-hint {
+            position: fixed; top: 50%; transform: translateY(-50%);
+            font-size: 5rem; font-weight: 900; opacity: 0; pointer-events: none;
+            transition: opacity 0.2s; z-index: 100;
+        }
+        .swipe-hint-left { left: 20px; color: var(--accent-amber); }
+        .swipe-hint-right { right: 20px; color: var(--accent-emerald); }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div class="container">
+        <div class="top-bar">
+            <button class="icon-btn" id="theme-toggle" title="Toggle Theme">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
+            <button class="icon-btn" id="settings-toggle" title="Settings">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+        </div>
+
+        <div class="swipe-hint swipe-hint-left" id="hint-left">✕</div>
+        <div class="swipe-hint swipe-hint-right" id="hint-right">✓</div>
+
+        <div class="header">
+            <h1 id="deck-title">Flashcards</h1>
+            <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+            <p id="stats" style="margin-top: 10px; color: var(--text-secondary); font-size: 0.85rem;">Card 1 of 1</p>
+        </div>
+
+        <div class="flashcard-container" id="card-trigger">
+            <div class="flashcard" id="card">
+                <div class="card-face card-front"><p id="question">Loading...</p></div>
+                <div class="card-face card-back"><p id="answer">Loading...</p></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-later" id="btn-later">Later</button>
+            <button class="btn btn-flip" id="btn-flip">Flip</button>
+            <button class="btn btn-ok" id="btn-ok">Knew It</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <span class="close-btn" id="close-modal">&times;</span>
+            </div>
+
+            <div class="section">
+                <h3>General</h3>
+                <div class="setting-row">
+                    <span>Storage Engine</span>
+                    <select id="storage-select" style="width: auto;">
+                        <option value="indexedDB">IndexedDB (Browser Database)</option>
+                        <option value="json">JSON (Local Session)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Bulk Phraser (Add Multiple)</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">Format: Front | Back (One per line)</p>
+                <textarea id="phraser-input" rows="4" placeholder="France | Paris&#10;Mars | Red Planet"></textarea>
+                <button class="btn btn-flip" style="width: 100%; margin-top: 10px; height: auto; padding: 10px;" id="btn-phrase">Add Cards</button>
+            </div>
+
+            <div class="section">
+                <h3>Current Deck</h3>
+                <div id="card-list" style="max-height: 200px; overflow-y: auto;">
+                    <!-- Card list items here -->
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-ok" style="flex: 1;" id="btn-export">Export JSON</button>
+                    <label class="btn btn-flip" style="flex: 1; display: flex; align-items: center; justify-content: center;">
+                        Import JSON <input type="file" id="import-file" style="display: none;">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Storage Layer ---
+        const DB_NAME = 'FlashcardDB';
+        const STORE_NAME = 'cards';
+        
+        let db;
+        let deck = [{ q: "Double tap Settings to add cards!", a: "You can also bulk import using the Phraser." }];
+        let storageMode = localStorage.getItem('storageMode') || 'indexedDB';
+        let theme = localStorage.getItem('theme') || 'dark';
+
+        async function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+                request.onupgradeneeded = e => e.target.result.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                request.onsuccess = e => { db = e.target.result; resolve(); };
+                request.onerror = e => reject(e);
+            });
+        }
+
+        async function loadCards() {
+            if (storageMode === 'indexedDB') {
+                const transaction = db.transaction(STORE_NAME, 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const allCards = await new Promise(res => {
+                    const req = store.getAll();
+                    req.onsuccess = () => res(req.result);
+                });
+                if (allCards.length > 0) deck = allCards;
+            } else {
+                const saved = localStorage.getItem('json_deck');
+                if (saved) deck = JSON.parse(saved);
+            }
+            updateUI();
+            renderCardList();
+        }
+
+        async function saveDeck() {
+            if (storageMode === 'indexedDB') {
+                const transaction = db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                store.clear();
+                deck.forEach(c => store.add({ q: c.q, a: c.a }));
+            } else {
+                localStorage.setItem('json_deck', JSON.stringify(deck));
+            }
+        }
+
+        // --- Core Logic ---
+        let currentIndex = 0;
+        let isFlipped = false;
+
+        const cardElement = document.getElementById('card');
+        const questionElement = document.getElementById('question');
+        const answerElement = document.getElementById('answer');
+        const progressElement = document.getElementById('progress');
+        const statsElement = document.getElementById('stats');
+        const hintLeft = document.getElementById('hint-left');
+        const hintRight = document.getElementById('hint-right');
+
+        function updateUI() {
+            if (deck.length === 0) {
+                questionElement.textContent = "No cards left!";
+                answerElement.textContent = "Add some in settings.";
+                return;
+            }
+            const card = deck[currentIndex];
+            questionElement.textContent = card.q;
+            answerElement.textContent = card.a;
+            
+            isFlipped = false;
+            cardElement.classList.remove('is-flipped', 'swipe-left', 'swipe-right');
+            cardElement.classList.add('fade-in');
+            setTimeout(() => cardElement.classList.remove('fade-in'), 400);
+            
+            const progress = ((currentIndex + 1) / deck.length) * 100;
+            progressElement.style.width = `${progress}%`;
+            statsElement.textContent = `Card ${currentIndex + 1} of ${deck.length}`;
+        }
+
+        function toggleFlip() {
+            isFlipped = !isFlipped;
+            cardElement.classList.toggle('is-flipped');
+        }
+
+        function triggerAction(action) {
+            if (deck.length === 0) return;
+            const animationClass = action === 'later' ? 'swipe-left' : 'swipe-right';
+            cardElement.classList.add(animationClass);
+
+            setTimeout(() => {
+                if (action === 'later') {
+                    const current = deck.splice(currentIndex, 1)[0];
+                    deck.push(current);
+                } else {
+                    currentIndex = (currentIndex + 1) % deck.length;
+                }
+                updateUI();
+            }, 500);
+        }
+
+        // --- UI Interactions ---
+        document.getElementById('settings-toggle').onclick = () => document.getElementById('modal').style.display = 'flex';
+        document.getElementById('close-modal').onclick = () => document.getElementById('modal').style.display = 'none';
+        document.getElementById('theme-toggle').onclick = () => {
+            theme = theme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        };
+
+        document.getElementById('btn-later').onclick = () => triggerAction('later');
+        document.getElementById('btn-ok').onclick = () => triggerAction('ok');
+        document.getElementById('btn-flip').onclick = () => toggleFlip();
+
+        // Pointer/Touch Logic
+        let startX = 0, currentX = 0, isDragging = false;
+        const trigger = document.getElementById('card-trigger');
+
+        trigger.addEventListener('pointerdown', (e) => {
+            startX = e.clientX;
+            currentX = e.clientX;
+            isDragging = true;
+            cardElement.classList.add('is-dragging');
+            trigger.setPointerCapture(e.pointerId);
+        });
+
+        trigger.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            currentX = e.clientX;
+            const deltaX = currentX - startX;
+            const visualX = isFlipped ? -deltaX : deltaX;
+            cardElement.style.transform = `translateX(${visualX}px) rotateY(${isFlipped ? 180 : 0}deg) rotateZ(${deltaX * 0.1}deg)`;
+            
+            const op = Math.min(Math.abs(deltaX) / 150, 0.5);
+            hintRight.style.opacity = deltaX > 20 ? op : 0;
+            hintLeft.style.opacity = deltaX < -20 ? op : 0;
+        });
+
+        trigger.addEventListener('pointerup', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            cardElement.classList.remove('is-dragging');
+            trigger.releasePointerCapture(e.pointerId);
+            hintLeft.style.opacity = 0;
+            hintRight.style.opacity = 0;
+            cardElement.style.transform = '';
+
+            const deltaX = currentX - startX;
+            if (deltaX > 100) {
+                triggerAction('ok');
+            } else if (deltaX < -100) {
+                triggerAction('later');
+            } else if (Math.abs(deltaX) < 5) {
+                // Reduced threshold for tap to flip
+                toggleFlip();
+            }
+        });
+
+        trigger.addEventListener('pointercancel', () => {
+            isDragging = false;
+            cardElement.classList.remove('is-dragging');
+            cardElement.style.transform = '';
+            hintLeft.style.opacity = 0;
+            hintRight.style.opacity = 0;
+        });
+
+        // --- Features Logic ---
+        document.getElementById('btn-phrase').onclick = () => {
+            const input = document.getElementById('phraser-input').value;
+            const newCards = input.split('\n')
+                .filter(l => l.includes('|'))
+                .map(l => {
+                    const [q, a] = l.split('|').map(s => s.trim());
+                    return { q, a };
+                });
+            deck = [...deck, ...newCards];
+            document.getElementById('phraser-input').value = '';
+            saveDeck();
+            updateUI();
+            renderCardList();
+        };
+
+        function renderCardList() {
+            const list = document.getElementById('card-list');
+            list.innerHTML = deck.map((c, i) => `
+                <div class="card-list-item">
+                    <span>${c.q.substring(0, 20)}...</span>
+                    <span style="color: #ef4444; cursor: pointer;" onclick="deleteCard(${i})">Delete</span>
+                </div>
+            `).join('');
+        }
+
+        window.deleteCard = (i) => {
+            deck.splice(i, 1);
+            saveDeck();
+            updateUI();
+            renderCardList();
+        };
+
+        document.getElementById('btn-export').onclick = () => {
+            const blob = new Blob([JSON.stringify(deck)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'deck.json'; a.click();
+        };
+
+        document.getElementById('import-file').onchange = (e) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                deck = JSON.parse(reader.result);
+                saveDeck();
+                updateUI();
+                renderCardList();
+            };
+            reader.readAsText(e.target.files[0]);
+        };
+
+        document.getElementById('storage-select').onchange = (e) => {
+            storageMode = e.target.value;
+            localStorage.setItem('storageMode', storageMode);
+            loadCards();
+        };
+
+        // Init
+        document.body.setAttribute('data-theme', theme);
+        document.getElementById('storage-select').value = storageMode;
+        initDB().then(loadCards);
+    </script>
+</body>
+</html>
