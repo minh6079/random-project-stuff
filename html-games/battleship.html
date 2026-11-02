@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Battleship</title>
+<style>
+:root{--bg:#f2f5f8;--card:#fff;--tx:#14202b;--mut:#5b6b79;--water:#d3e6f5;--ship:#5f7487;--hit:#e5484d;--sunk:#8c1d22;--acc:#1f6feb;--bd:#c3d0db;--ok:#2a9d5c;--prev:#7fb069;--bad:#e5484d;--s0:#4c6ef5;--s1:#9c4fe0;--s2:#12a57f;--s3:#f0a000;--s4:#e8590c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d151c;--card:#16212b;--tx:#e6edf3;--mut:#8fa1b0;--water:#1e3a52;--ship:#8aa0b3;--bd:#2c3c4a;--sunk:#a82a30;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d151c;--card:#16212b;--tx:#e6edf3;--mut:#8fa1b0;--water:#1e3a52;--ship:#8aa0b3;--bd:#2c3c4a;--sunk:#a82a30;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:980px;margin:0 auto;padding:16px}
+h1{margin:0 0 4px;font-size:1.6rem}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+button,select{font:inherit;padding:8px 14px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}
+button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+button:disabled{opacity:.45;cursor:not-allowed}
+#status{padding:10px 14px;border-radius:10px;background:var(--card);border:1px solid var(--bd);font-weight:600;min-height:44px}
+.boards{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-top:14px}
+.panel{flex:1 1 300px;max-width:440px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}
+.panel h2{margin:0 0 8px;font-size:1.05rem}
+.grid{display:grid;grid-template-columns:repeat(11,1fr);gap:2px;user-select:none}
+.lbl{font-size:.7rem;color:var(--mut);display:flex;align-items:center;justify-content:center;aspect-ratio:1}
+.c{aspect-ratio:1;background:var(--water);border-radius:3px;position:relative}
+.c.prev{background:var(--prev)!important}.c.prev.bad{background:var(--bad)!important}
+.enemy.live .c:not(.hit):not(.miss):hover{outline:2px solid var(--acc);cursor:crosshair}
+.c.miss::after{content:"";position:absolute;inset:36%;border-radius:50%;background:var(--tx);opacity:.45}
+.c.hit{background:var(--hit)}
+.c.hit::after{content:"✕";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.9em}
+.c.s0{background:var(--s0)}.c.s1{background:var(--s1)}.c.s2{background:var(--s2)}.c.s3{background:var(--s3)}.c.s4{background:var(--s4)}
+.c.sunk{filter:brightness(.7)}
+.c.last{box-shadow:inset 0 0 0 2px #ffd166}
+.fleet{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;font-size:.8rem}
+.fleet span{padding:3px 8px;border-radius:99px;border:1px solid var(--bd);color:var(--mut)}
+.fleet span.dead{text-decoration:line-through;background:var(--sunk);color:#fff;border-color:var(--sunk)}
+.hint{color:var(--mut);font-size:.85rem}
+.grid.placing{touch-action:none}
+</style></head>
+<body><main>
+<h1>Battleship</h1>
+<div class="hint">You vs. the robot. Sink all five enemy ships first.</div>
+<div class="bar">
+ <label>Robot level <select id="lvl"><option value="easy">Easy</option><option value="mid">Medium</option><option value="hard">Hard</option></select></label>
+ <button id="rot">Rotate (R)</button>
+ <button id="rnd">Randomize</button>
+ <button id="clr">Clear</button>
+ <button id="go" class="pri" disabled>Start battle</button>
+ <button id="new">New game</button>
+ <button id="theme" title="Switch between auto, light and dark">Theme: Auto</button>
+</div>
+<div id="status"></div>
+<div class="boards">
+ <div class="panel"><h2>Your fleet</h2><div id="pg" class="grid"></div><div id="pf" class="fleet"></div></div>
+ <div class="panel"><h2>Enemy waters</h2><div id="eg" class="grid enemy"></div><div id="ef" class="fleet"></div></div>
+</div>
+<p class="hint">Easy: fires at random. Medium: hunts on a checkerboard, then chases hits along a line. Hard: calculates a probability map of every place the remaining ships could fit.</p>
+</main>
+<script>
+const N=10,SHIPS=[["Carrier",5],["Battleship",4],["Cruiser",3],["Submarine",3],["Destroyer",2]];
+const $=id=>document.getElementById(id);
+let me,bot,phase,turn,horiz,placed,prev,lastP,lastE,hunt;
+const rnd=n=>Math.floor(Math.random()*n);
+const pick=a=>a[rnd(a.length)];
+const side=()=>({ships:[],occ:Array(100).fill(-1),shots:Array(100).fill(0)});
+function cellsOf(r,c,len,h){const a=[];for(let k=0;k<len;k++){const rr=r+(h?0:k),cc=c+(h?k:0);if(rr>=N||cc>=N)return null;a.push(rr*N+cc)}return a}
+function canPlace(s,r,c,len,h){const a=cellsOf(r,c,len,h);return a&&a.every(i=>s.occ[i]<0)?a:null}
+function put(s,idx,cells){if(cells.some(i=>s.occ[i]>=0))return false;s.ships[idx]={name:SHIPS[idx][0],len:SHIPS[idx][1],cells,hits:0,sunk:false};cells.forEach(i=>s.occ[i]=idx);return true}
+function randomFleet(s){s.ships=[];s.occ.fill(-1);SHIPS.forEach((sh,idx)=>{let a;do{a=canPlace(s,rnd(N),rnd(N),sh[1],Math.random()<.5)}while(!a);put(s,idx,a)})}
+function shoot(s,i){
+  if(s.shots[i])return null;const id=s.occ[i];
+  if(id<0){s.shots[i]=1;return{r:"miss"}}
+  s.shots[i]=2;const sh=s.ships[id];sh.hits++;
+  if(sh.hits===sh.len){sh.sunk=true;return{r:"sunk",sh}}
+  return{r:"hit",sh}}
+const allSunk=s=>s.ships.length===5&&s.ships.every(x=>x.sunk);
+
+/* ---------- Robot algorithms ---------- */
+function unshot(s){const a=[];for(let i=0;i<100;i++)if(!s.shots[i])a.push(i);return a}
+function aiEasy(s){return pick(unshot(s))}
+function knowledge(s){
+  const sunkCell=new Set();s.ships.forEach(x=>x.sunk&&x.cells.forEach(i=>sunkCell.add(i)));
+  const hits=[];for(let i=0;i<100;i++)if(s.shots[i]===2&&!sunkCell.has(i))hits.push(i);
+  return{sunkCell,hits}}
+function aiMid(s){
+  const{hits}=knowledge(s),hs=new Set(hits);
+  if(hits.length){
+    const line=[],near=[];
+    for(const h of hits){
+      const r=Math.floor(h/N),c=h%N;
+      for(const[dr,dc]of[[0,1],[1,0],[0,-1],[-1,0]]){
+        const nr=r+dr,nc=c+dc;if(nr<0||nc<0||nr>=N||nc>=N)continue;
+        const n=nr*N+nc;
+        if(!s.shots[n])near.push(n);
+        else if(hs.has(n)){ // two in a row: walk to the end of the line
+          let rr=nr,cc=nc;
+          while(rr>=0&&cc>=0&&rr<N&&cc<N&&hs.has(rr*N+cc)){rr+=dr;cc+=dc}
+          if(rr>=0&&cc>=0&&rr<N&&cc<N&&!s.shots[rr*N+cc])line.push(rr*N+cc)}}}
+    if(line.length)return pick(line);
+    if(near.length)return pick(near)}
+  const u=unshot(s),par=u.filter(i=>(Math.floor(i/N)+i%N)%2===0);
+  return pick(par.length?par:u)}
+function aiHard(s){
+  const{sunkCell,hits}=knowledge(s),hs=new Set(hits),score=Array(100).fill(0);
+  s.ships.filter(x=>!x.sunk).forEach(x=>{
+    for(const h of[true,false])for(let r=0;r<N;r++)for(let c=0;c<N;c++){
+      const a=cellsOf(r,c,x.len,h);if(!a)continue;
+      if(a.some(i=>s.shots[i]===1||sunkCell.has(i)))continue;
+      const k=a.filter(i=>hs.has(i)).length,w=k?Math.pow(50,k):1;
+      a.forEach(i=>{if(!s.shots[i])score[i]+=w})}});
+  let best=-1,list=[];
+  for(let i=0;i<100;i++){if(s.shots[i])continue;if(score[i]>best){best=score[i];list=[i]}else if(score[i]===best)list.push(i)}
+  return pick(list)}
+const AI={easy:aiEasy,mid:aiMid,hard:aiHard};
+
+/* ---------- Rendering ---------- */
+const COLS="ABCDEFGHIJ";
+function drawGrid(el,s,mine){
+  if(el.children.length!==121){ // build once, then only update classes (keeps clicks reliable)
+    let h='<div class="lbl"></div>';
+    for(let c=0;c<N;c++)h+=`<div class="lbl">${COLS[c]}</div>`;
+    for(let r=0;r<N;r++){h+=`<div class="lbl">${r+1}</div>`;for(let c=0;c<N;c++)h+=`<div class="c" data-i="${r*N+c}"></div>`}
+    el.innerHTML=h}
+  const pv=mine&&phase==="place"&&prev?prev:null;
+  el.querySelectorAll(".c").forEach((d,i)=>{
+    const id=s.occ[i],sh=s.shots[i];
+    let cl="c";
+    if(id>=0&&(mine||s.ships[id].sunk))cl+=" s"+id;
+    if(sh===1)cl+=" miss";
+    if(sh===2)cl+=" hit"+(s.ships[id].sunk?" sunk":"");
+    if(pv&&pv.cells.includes(i))cl+=" prev"+(pv.ok?"":" bad");
+    if(i===(mine?lastE:lastP))cl+=" last";
+    d.className=cl})}
+function fleet(el,s){el.innerHTML=SHIPS.map((sh,i)=>`<span class="${s.ships[i]&&s.ships[i].sunk?"dead":""}" style="border-left:8px solid var(--s${i})">${sh[0]} (${sh[1]})</span>`).join("")}
+function msg(t){$("status").textContent=t}
+function render(){
+  drawGrid($("pg"),me,true);drawGrid($("eg"),bot,false);
+  fleet($("pf"),me);fleet($("ef"),bot);
+  $("eg").classList.toggle("live",phase==="play"&&turn==="p");
+  const pl=phase==="place";
+  $("pg").classList.toggle("placing",pl&&placed<5);
+  $("rot").disabled=!pl||placed>=5;$("rnd").disabled=!pl;$("clr").disabled=!pl;$("go").disabled=!pl||placed<5;$("lvl").disabled=phase==="play"}
+
+/* ---------- Game flow ---------- */
+function reset(){
+  me=side();bot=side();randomFleet(bot);phase="place";turn="p";horiz=true;placed=0;prev=null;lastP=lastE=-1;
+  msg("Place your "+SHIPS[0][0]+" ("+SHIPS[0][1]+" cells). Hover (desktop) or drag (mobile) over your grid to preview, then click or let go to place. Ships can’t overlap. On mobile, drag off the grid to cancel. Rotate with R or the button, or hit Randomize.");render()}
+function previewAt(i){
+  if(phase!=="place"||placed>=5)return;
+  const r=Math.floor(i/N),c=i%N,len=SHIPS[placed][1];
+  let a=cellsOf(r,c,len,horiz),ok=!!a&&a.every(x=>me.occ[x]<0);
+  if(!a){a=[];for(let k=0;k<len;k++){const rr=r+(horiz?0:k),cc=c+(horiz?k:0);if(rr<N&&cc<N)a.push(rr*N+cc)}}
+  prev={cells:a,ok,r,c}}
+function playerShot(i){
+  if(phase!=="play"||turn!=="p")return;
+  const res=shoot(bot,i);if(!res)return;lastP=i;
+  const who=COLS[i%N]+(Math.floor(i/N)+1);
+  if(allSunk(bot)){phase="over";msg("🎉 You win! You sank the whole enemy fleet.");render();return}
+  turn="r";
+  msg(res.r==="miss"?`${who}: miss. Robot is aiming…`:res.r==="hit"?`${who}: hit! Robot is aiming…`:`${who}: you sank the ${res.sh.name}! Robot is aiming…`);
+  render();setTimeout(robotShot,750)}
+function robotShot(){
+  if(phase!=="play")return;
+  const i=AI[$("lvl").value](me),res=shoot(me,i);lastE=i;
+  const who=COLS[i%N]+(Math.floor(i/N)+1);
+  if(allSunk(me)){phase="over";msg("💥 Robot wins! Your fleet is gone.");render();return}
+  turn="p";
+  msg(res.r==="miss"?`Robot fired at ${who}: miss. Your turn.`:res.r==="hit"?`Robot fired at ${who}: it hit your ${res.sh.name}! Your turn.`:`Robot sank your ${res.sh.name}! Your turn.`);
+  render()}
+
+let lastTouch=0;
+const cellAt=(x,y)=>{const t=document.elementFromPoint(x,y);return t&&t.closest("#pg")&&t.dataset.i!==undefined?+t.dataset.i:-1};
+function showPrev(i,touch){
+  if(i<0||phase!=="place"||placed>=5)return;
+  previewAt(i);drawGrid($("pg"),me,true)}
+function tryPlace(){
+  if(!prev||phase!=="place"||placed>=5)return;
+  const len=SHIPS[placed][1],cells=canPlace(me,prev.r,prev.c,len,horiz); // re-check against the board right now
+  if(!prev.ok||!cells){msg("That doesn’t fit there. Ships can’t overlap or leave the grid. Try another spot or rotate (R).");prev=null;render();return}
+  put(me,placed,cells);placed++;prev=null;
+  msg(placed<5?`Place your ${SHIPS[placed][0]} (${SHIPS[placed][1]} cells).`:"Fleet ready. Press Start battle!");render()}
+const pg=$("pg");
+/* desktop: hover to preview, click to place */
+pg.addEventListener("mouseover",e=>{if(Date.now()-lastTouch<700)return;const i=e.target.dataset.i;if(i!==undefined)showPrev(+i,false)});
+pg.addEventListener("mouseleave",()=>{if(Date.now()-lastTouch<700)return;prev=null;if(phase==="place")drawGrid(pg,me,true)});
+pg.addEventListener("click",e=>{
+  if(e.pointerType==="touch"||Date.now()-lastTouch<700)return;
+  const i=e.target.dataset.i;if(i===undefined)return;
+  showPrev(+i,false);tryPlace()});
+/* mobile: drag to preview, release to place */
+let cancelled=false;
+function cancelDrag(){prev=null;cancelled=true;drawGrid(pg,me,true);if(placed<5)msg("Placement cancelled. Drag back onto your grid to place your "+SHIPS[placed][0]+".")}
+pg.addEventListener("pointerdown",e=>{if(e.pointerType!=="touch")return;lastTouch=Date.now();cancelled=false;showPrev(cellAt(e.clientX,e.clientY),true)});
+pg.addEventListener("pointermove",e=>{
+  if(e.pointerType!=="touch"||phase!=="place"||placed>=5)return;lastTouch=Date.now();
+  const i=cellAt(e.clientX,e.clientY);
+  if(i<0){if(!cancelled)cancelDrag();return} // finger left the grid: cancel
+  cancelled=false;showPrev(i,true)});
+pg.addEventListener("pointerup",e=>{
+  if(e.pointerType!=="touch")return;lastTouch=Date.now();
+  if(cellAt(e.clientX,e.clientY)<0||cancelled){if(prev||!cancelled)cancelDrag();return} // released outside: nothing placed
+  tryPlace()});
+pg.addEventListener("pointercancel",e=>{if(e.pointerType!=="touch")return;prev=null;drawGrid(pg,me,true)});
+$("eg").addEventListener("click",e=>{const i=e.target.dataset.i;if(i!==undefined)playerShot(+i)});
+function rotateShip(){
+  if(phase!=="place"||placed>=5)return;
+  horiz=!horiz;
+  if(prev){previewAt(prev.r*N+prev.c);drawGrid($("pg"),me,true)} // update the preview instantly
+  msg("Orientation: "+(horiz?"horizontal":"vertical")+". Placing your "+SHIPS[placed][0]+" ("+SHIPS[placed][1]+" cells).")}
+$("rot").onclick=rotateShip;
+document.addEventListener("keydown",e=>{if((e.key==="r"||e.key==="R")&&!e.repeat&&!e.ctrlKey&&!e.metaKey){e.preventDefault();rotateShip()}});
+$("rnd").onclick=()=>{randomFleet(me);placed=5;prev=null;msg("Fleet ready. Press Start battle!");render()};
+$("clr").onclick=()=>{me=side();placed=0;prev=null;msg("Place your Carrier (5 cells).");render()};
+$("go").onclick=()=>{phase="play";turn="p";msg("Battle started! Click enemy waters to fire.");render()};
+$("new").onclick=reset;
+const MODES=["auto","light","dark"],ICON={auto:"🖥️ Auto",light:"☀️ Light",dark:"🌙 Dark"};
+let mode="auto";
+try{const m=localStorage.getItem("bs-theme");if(MODES.includes(m))mode=m}catch(e){}
+function applyTheme(){
+  const r=document.documentElement;
+  if(mode==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",mode);
+  $("theme").textContent="Theme: "+ICON[mode]}
+$("theme").onclick=()=>{
+  mode=MODES[(MODES.indexOf(mode)+1)%3];applyTheme();
+  try{localStorage.setItem("bs-theme",mode)}catch(e){}};
+applyTheme();
+reset();
+</script></body></html>

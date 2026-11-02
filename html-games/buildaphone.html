@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Build Your Dream Phone</title>
+<style>
+:root{--bg:#f2f5f8;--card:#fff;--tx:#14202b;--mut:#5b6b79;--bd:#c3d0db;--acc:#1f6feb;--ok:#2a9d5c;--case:#1d1f24;--part:#eef3f8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d151c;--card:#16212b;--tx:#e6edf3;--mut:#8fa1b0;--bd:#2c3c4a;--part:#1f2f3d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d151c;--card:#16212b;--tx:#e6edf3;--mut:#8fa1b0;--bd:#2c3c4a;--part:#1f2f3d;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}
+h1{margin:0 0 4px;font-size:1.6rem}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+button,select,input[type=text]{font:inherit;padding:7px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}
+input[type=text]{cursor:text;width:170px}
+button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+button:disabled{opacity:.4;cursor:not-allowed}
+#status{padding:10px 14px;border-radius:10px;background:var(--card);border:1px solid var(--bd);font-weight:600;min-height:44px}
+#stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:10px 0}
+#stats div{text-align:center;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:6px}
+#stats b{display:block;font-size:1.05rem}
+.game{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+#sw{flex:1 1 320px;max-width:460px;margin:0 auto}
+#stage{position:relative;aspect-ratio:3/4;background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden;touch-action:pan-y;background-image:radial-gradient(var(--bd) 1px,transparent 1px);background-size:20px 20px}
+#body{position:absolute;left:27%;top:7%;width:46%;height:86%;border-radius:12%/7%;background:var(--case);box-shadow:0 8px 24px rgba(0,0,0,.3);display:flex;align-items:flex-start;justify-content:center;transition:background .4s}
+#body.on{background:linear-gradient(160deg,#2563eb,#9333ea)}
+#bname{display:none;color:#fff;font-weight:800;text-align:center;margin-top:46%;padding:0 6px;font-size:clamp(.8rem,3vw,1.1rem)}
+#body.on #bname{display:block}
+.pp{position:absolute;aspect-ratio:1;cursor:grab;touch-action:none;user-select:none}
+.pp svg{width:100%;height:100%;display:block;pointer-events:none}
+svg *{vector-effect:non-scaling-stroke}
+.pp svg,.pv svg{stroke-width:2}
+.pp.sel{outline:2px dashed var(--acc);outline-offset:3px;border-radius:6px}
+.pp.out{opacity:.3}
+.tool{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+#bw{flex:1 1 300px;min-width:280px}
+#tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+#tabs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+#bin{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;max-height:380px;overflow-y:auto;padding:2px}
+.bp{touch-action:pan-y;user-select:none;cursor:grab;background:var(--part);border:1px solid var(--bd);border-radius:10px;padding:6px 4px;text-align:center;font-size:.72rem;line-height:1.15}
+.bp svg{width:38px;height:38px;display:block;margin:0 auto 3px}
+.bp small{display:block;color:var(--mut)}
+.ghost{position:fixed;z-index:99;pointer-events:none;width:56px;height:56px;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
+.ghost svg{width:100%;height:100%}
+#result{display:none;margin-top:14px;padding:14px;border-radius:12px;background:var(--card);border:2px solid var(--ok)}
+#result h2{margin:0 0 6px;font-size:1.2rem}
+#result ul{margin:6px 0 0;padding-left:20px}
+.hint{color:var(--mut);font-size:.85rem}
+
+#sidelbl{position:absolute;top:8px;left:10px;font-size:.7rem;font-weight:700;color:var(--mut);letter-spacing:.1em;z-index:1}
+#body.back{background:repeating-linear-gradient(45deg,var(--case),var(--case) 10px,rgba(255,255,255,.07) 10px,rgba(255,255,255,.07) 20px)}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+#sim{display:none;margin-top:18px;text-align:center}
+#sim h2{margin:0}
+#ph{position:relative;width:min(100%,270px);aspect-ratio:.42;margin:12px auto;border-radius:34px;background:var(--case);padding:4%;box-shadow:0 10px 28px rgba(0,0,0,.35)}
+.pv{position:absolute;inset:0}
+#scr{position:relative;height:100%;border-radius:24px;overflow:hidden;background:#0b1020;color:#e6edf3;display:flex;flex-direction:column;text-align:left;font-size:.82rem}
+#scr.cracked::after{content:"";position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200' preserveAspectRatio='none'><path d='M60 0L50 40 70 70 40 110 60 150 45 200M50 40L20 60M70 70L95 85M40 110L10 130' stroke='white' fill='none' stroke-width='.8' opacity='.7'/></svg>") center/100% 100%}
+#sb{display:flex;justify-content:space-between;gap:6px;padding:5px 12px;font-size:.68rem;background:rgba(0,0,0,.4)}
+#vw{flex:1;overflow:auto;position:relative}
+#nv{display:flex;justify-content:center;padding:7px}
+#nv button{width:70px;height:6px;padding:0;border-radius:3px;background:#cbd5df;border:0}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 2px;padding:14px 6px}
+.app{text-align:center;font-size:.6rem;cursor:pointer;background:none;border:0;color:inherit;padding:0}
+.app i{display:flex;width:42px;height:42px;margin:0 auto 3px;border-radius:12px;align-items:center;justify-content:center;color:#fff}
+.app svg{width:24px;height:24px;stroke-width:2}
+.ap{padding:10px}
+#scr button,#scr input,#scr select,#scr textarea{background:#1e2a44;color:#e6edf3;border:1px solid #334a73;border-radius:8px;padding:6px 10px;font:inherit}
+#scr .app{background:none;border:0;padding:0}
+#scr #nv button{background:#cbd5df;border:0;padding:0}
+.big{font-size:1.5rem;font-weight:700;margin:6px 0}.big2{font-size:2.6rem;font-weight:300}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.keys.c{grid-template-columns:repeat(4,1fr)}
+.b{margin:4px 0;padding:6px 10px;border-radius:10px;max-width:82%}.b.me{background:#2563eb;margin-left:auto}.b.them{background:#334155}
+.vf{aspect-ratio:1;overflow:hidden;background:#000}.vf svg{width:100%;height:100%;display:block;transition:transform .12s;transform-origin:50% 50%}.vf.fe{border-radius:50%;margin:8px;width:calc(100% - 16px)}
+.fs{width:100%;display:block}
+.pbar{height:8px;background:#334155;border-radius:4px;overflow:hidden;margin:8px 0}.pbar i{display:block;height:100%;background:#22c55e;width:0}
+.boot{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:100%;padding:16px;text-align:center}
+.boot .logo svg{width:64px;height:64px}.boot .pbar{width:80%}
+.crawl svg{width:34px;height:34px;animation:crawl var(--t,2600ms) linear forwards}
+@keyframes crawl{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
+.torch{height:150px;background:#fff;opacity:0}
+.la{position:relative;height:150px;background:#14532d;border-radius:10px;overflow:hidden;touch-action:none;margin:6px 0}
+#ld{position:absolute;width:10px;height:10px;margin:-5px;border-radius:50%;background:#f00;box-shadow:0 0 10px 4px #f00}
+#ct{position:absolute;width:22px;height:22px;margin:-11px;background:#f59e0b;border-radius:50%}
+.gb{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin:8px 0}.gb i{aspect-ratio:1;background:#1e2a44;border-radius:4px}.gb i.pl{background:#22c55e}.gb i.st{background:#eab308}
+.kv{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #1e2a44;padding:4px 0}.kv span{text-align:right;color:#9fb0c4}
+.eq{display:flex;gap:3px;align-items:flex-end;height:50px;margin-top:8px}.eq i{flex:1;background:#ec4899}
+.disco{height:220px;display:flex;align-items:center;justify-content:center;color:#fff;text-align:center}.disco svg{width:80px;height:80px}
+.term{font-family:monospace;font-size:.72rem}.tv{background:#000;border:2px solid #475569;padding:16px;text-align:center;margin-top:8px}
+.pj{width:100%;display:block}
+.toast{position:absolute;left:10px;right:10px;bottom:34px;background:#fff;color:#111;padding:8px 10px;border-radius:10px;font-weight:600;z-index:9}
+
+#scr.k-eink{filter:grayscale(1) contrast(1.15) brightness(1.2)}
+#scr.k-mono{filter:grayscale(1) sepia(1) hue-rotate(55deg) saturate(2.5) contrast(1.1)}
+#scr.k-crt{filter:saturate(1.2) contrast(1.1);border-radius:36px/28px}
+#scr.k-crt::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px);pointer-events:none;z-index:8}
+#scr.k-lcd{filter:saturate(.75) brightness(1.1)}
+#scr.k-amoled{filter:saturate(1.35) contrast(1.1)}
+#scr.k-tiny{font-size:.65rem}#scr.k-tiny .app i{width:30px;height:30px}
+#scr .menu .app{display:block;width:100%;text-align:left;padding:8px 4px;border-bottom:1px solid #334a73;border-radius:0;font-size:.85rem}
+.app.lk{opacity:.4}
+
+#body{background:var(--case);background:linear-gradient(145deg,var(--case),color-mix(in srgb,var(--case) 55%,#000));box-shadow:inset 0 0 0 3px rgba(255,255,255,.16),inset 0 0 0 7px rgba(0,0,0,.3),0 12px 28px rgba(0,0,0,.35)}
+#body::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,rgba(255,255,255,.24),rgba(255,255,255,0) 40%);pointer-events:none}
+#body::before{content:"";position:absolute;right:-3px;top:24%;width:3px;height:9%;background:#aab4c2;border-radius:0 2px 2px 0}
+#body.back{background:var(--case);background:linear-gradient(215deg,var(--case),color-mix(in srgb,var(--case) 50%,#000))}
+.sb{position:absolute;left:-3px;width:3px;background:#aab4c2;border-radius:2px 0 0 2px}.sb1{top:18%;height:6%}.sb2{top:26%;height:6%}
+.pp svg,.pv svg,.bp svg{filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+#ph{background:var(--case);background:linear-gradient(145deg,var(--case),color-mix(in srgb,var(--case) 55%,#000));box-shadow:inset 0 0 0 3px rgba(255,255,255,.2),inset 0 0 0 7px rgba(0,0,0,.35),0 14px 32px rgba(0,0,0,.4)}
+#ph::after{content:"";position:absolute;inset:4%;border-radius:24px;background:linear-gradient(115deg,rgba(255,255,255,.13),rgba(255,255,255,0) 38%);pointer-events:none;z-index:6}
+#ph::before{content:"";position:absolute;right:-3px;top:24%;width:3px;height:8%;background:#aab4c2;border-radius:0 2px 2px 0}
+.hole{position:absolute;top:6px;left:50%;width:9px;height:9px;margin-left:-4px;border-radius:50%;background:#000;box-shadow:0 0 0 2px #1e293b,inset 1px 1px 2px #334;z-index:5}
+.app i{box-shadow:inset 0 -6px 10px rgba(0,0,0,.25),inset 0 2px 3px rgba(255,255,255,.35),0 2px 4px rgba(0,0,0,.4)}
+.disc{width:90px;height:90px;border-radius:50%;background:radial-gradient(#e11 0 12%,#111 13%);margin:6px auto}.disc.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toyarea{position:relative;height:90px}.toyarea i{position:absolute;width:8px;height:8px;border-radius:50%}
+
+#scr.k-screen,#scr.k-pled{filter:contrast(1.08) saturate(1.1)}
+#scr.k-pled::before{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 16px rgba(255,255,255,.1);pointer-events:none;z-index:7}
+#scr.k-lcd{filter:saturate(.8) brightness(1.12) contrast(.95)}
+#scr.k-lcd::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:8;background:repeating-linear-gradient(0deg,rgba(0,0,0,.1) 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,rgba(255,0,0,.06) 0 1px,rgba(0,255,0,.06) 1px 2px,rgba(0,0,255,.06) 2px 3px),linear-gradient(180deg,rgba(255,255,255,.1),transparent 30%,rgba(255,255,255,.08))}
+#scr.k-crt{filter:saturate(1.25) contrast(1.15) brightness(1.05);border-radius:34px/26px;box-shadow:inset 0 0 50px rgba(0,0,0,.75);animation:flick 3.2s infinite}
+#scr.k-crt::before{content:"";position:absolute;inset:0;z-index:8;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.34) 0 1px,rgba(0,0,0,0) 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55))}
+@keyframes flick{0%,100%{opacity:1}47%{opacity:.97}50%{opacity:.93}53%{opacity:.98}}
+#scr.k-amoled{filter:saturate(1.45) contrast(1.15)}
+#scr.k-qled{filter:saturate(1.6) contrast(1.1) brightness(1.1)}
+#scr.k-mono{background:#0b1020;filter:invert(1) sepia(1) hue-rotate(40deg) saturate(2.2) contrast(.95)}
+#scr.k-mono::before{content:"";position:absolute;inset:0;z-index:8;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.45) 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,rgba(0,0,0,.45) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+#scr.k-eink{background:#cfcbbb;filter:grayscale(1) contrast(1.12) brightness(1.1)}
+#vw.ef{animation:eflash .45s}
+@keyframes eflash{0%{filter:invert(1)}50%{filter:invert(.5)}100%{filter:none}}
+#scr.k-fold::before{content:"";position:absolute;left:0;right:0;top:50%;height:6px;margin-top:-3px;background:linear-gradient(180deg,rgba(0,0,0,.45),rgba(255,255,255,.12),rgba(0,0,0,.35));z-index:8;pointer-events:none}
+#scr.k-transp{background:rgba(11,16,32,.4)}
+#vw.wp{background:linear-gradient(160deg,#0b1020,#1b2a55)}
+#vw.wp>*{position:relative;z-index:1}
+#scr.k-screen #vw.wp,#scr.k-pled #vw.wp{background:linear-gradient(160deg,#050b1a,#1d3466 60%,#2a1f5c)}
+#scr.k-lcd #vw.wp{background:linear-gradient(180deg,#4f8ff7,#2457c6)}
+#scr.k-crt #vw.wp{background:radial-gradient(ellipse at center,#14301b,#050a07 85%)}
+#scr.k-eink #vw.wp,#scr.k-mono #vw.wp{background:#0b1020}
+#scr.k-amoled #vw.wp,#scr.k-qled #vw.wp{background:#000}
+#scr.k-amoled #vw.wp::before,#scr.k-qled #vw.wp::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 15%,#ff2d9a 0,transparent 45%),radial-gradient(circle at 85% 30%,#00e5ff 0,transparent 45%),radial-gradient(circle at 50% 100%,#7c4dff 0,transparent 55%);opacity:.85;animation:aurora 16s linear infinite}
+@keyframes aurora{to{filter:hue-rotate(360deg)}}
+#ph.k-crt{border-radius:18px;padding:9%}
+#ph.k-tiny{border-radius:16px;padding:5%}#ph.k-tiny #scr{border-radius:9px}
+#ph.k-mono{border-radius:20px;padding:6%}#ph.k-mono #scr{border-radius:6px}
+#scr.k-tiny{font-size:.5rem}#scr.k-tiny .app i{width:22px;height:22px;border-radius:7px}#scr.k-tiny .app svg{width:13px;height:13px}#scr.k-tiny .app{font-size:.4rem}#scr.k-tiny .grid4{gap:6px 1px;padding:6px 3px}#scr.k-tiny .big,#scr.k-tiny .big2{font-size:.9rem}#scr.k-tiny #sb{padding:3px 5px;font-size:.45rem}#scr.k-tiny #scr button{padding:3px 6px}
+</style></head>
+<body><main>
+<h1>Build Your Dream Phone</h1>
+<div class="hint">Pick parts from the bin and put them on your phone: screens, ports, lenses, rotors, rockets, toasters. A phone needs a screen, a battery and a CPU (any chip, even a snail) to power on. Its OS depends on your CPU, RAM and storage, so a trash CPU with 1 MB of RAM runs a very different phone than a super chip with 16 GB.</div>
+<div class="bar">
+ <input type="text" id="pname" value="My Dream Phone" maxlength="24" aria-label="Phone name">
+ <label>Case <select id="col"><option value="#1d1f24">Black</option><option value="#c9ced6">Silver</option><option value="#2563eb">Blue</option><option value="#ec6aa5">Pink</option><option value="#16a34a">Green</option><option value="#d6b25e">Gold</option><option value="#7c3aed">Purple</option><option value="#f3f4f6">White</option><option value="#dc2626">Red</option><option value="#0f172a">Midnight</option></select></label>
+ <button id="pow" class="pri">Power on</button>
+ <button id="clr">Clear all</button>
+ <button id="theme">Theme: Auto</button>
+</div>
+<div id="status"></div>
+<div id="stats"></div>
+<div class="game">
+ <div id="sw">
+  <div id="stage"><div id="sidelbl">FRONT</div><div id="body"><i class="sb sb1"></i><i class="sb sb2"></i><div id="bname"></div></div></div>
+  <div class="tool"><button id="flip">Flip phone: front</button><button id="rot" disabled>Rotate</button><button id="big" disabled>Bigger</button><button id="sml" disabled>Smaller</button><button id="cpy" disabled>Copy</button><button id="del" disabled>Remove</button></div>
+ </div>
+ <div id="bw"><div id="tabs"></div><div id="bin"></div></div>
+</div>
+<div id="result"></div>
+<section id="sim"><h2>Your phone</h2><div id="ph"></div><div id="scap" class="hint"></div><div class="row" style="justify-content:center"><button id="fl">Flip phone: front</button><button id="chg">Plug in charger</button><button id="pwr">Power off</button></div></section>
+<p class="hint">Desktop: drag a part onto the phone, drag placed parts to move them, and drag one off the stage to remove it. Mobile: tap a part to add it, then drag it into place. Select a placed part to rotate, resize, copy or remove it (keys: R, + , −, Delete). Use Flip phone to build the back too (for example a telescope on the front and another on the back). Then press Power on and use your phone: the apps depend on the parts you built.</p>
+</main>
+<script>
+const $=id=>document.getElementById(id),F='fill="currentColor" fill-opacity=".45"';
+const IC={
+screen:`<rect x="1" y="1" width="40" height="98" rx="7" ${F}/><path d="M15 7h12M15 93h12"/><circle cx="32" cy="7" r="1.2"/>`,
+battery:`<rect x="1" y="1" width="32" height="20" rx="3" ${F}/><path d="M35 8v6M19 5l-4 7h5l-4 6"/>`,
+chip:`<rect x="6" y="6" width="12" height="12" rx="1.5" ${F}/><rect x="9.5" y="9.5" width="5" height="5"/><path d="M9 3v3M12 3v3M15 3v3M9 18v3M12 18v3M15 18v3M3 9h3M3 12h3M3 15h3M18 9h3M18 12h3M18 15h3"/>`,
+ram:`<rect x="1" y="1" width="46" height="13" rx="1" ${F}/><path d="M7 5h6v5H7zM18 5h6v5h-6zM29 5h6v5h-6zM38 5h6v5h-6zM5 14v3M11 14v3M17 14v3M23 14v3M29 14v3M35 14v3M41 14v3"/>`,
+storage:`<rect x="1" y="1" width="34" height="20" rx="3" ${F}/><circle cx="29" cy="11" r="2"/><path d="M6 8h14M6 14h9"/>`,
+usbc:`<rect x="1" y="1" width="38" height="12" rx="6" ${F}/><path d="M10 7h20"/>`,
+usba:`<rect x="1" y="1" width="34" height="16" rx="1.5" ${F}/><path d="M6 7h24M6 12h24"/>`,
+lightning:`<rect x="1" y="1" width="38" height="12" rx="6" ${F}/><path d="M22 3l-5 4h6l-5 4"/>`,
+hdmi:`<path d="M1 1h38v10l-5 6H6l-5-6z" ${F}/><path d="M8 7h24"/>`,
+vga:`<path d="M1 1h42l-5 20H6z" ${F}/><path d="M10 7h.01M17 7h.01M24 7h.01M31 7h.01M13 14h.01M20.5 14h.01M28 14h.01" stroke-width="3"/>`,
+ethernet:`<path d="M5 6h14v10h-3v3H8v-3H5z" ${F}/><path d="M8 9v3M10.5 9v3M13 9v3M15.5 9v3"/>`,
+jack:`<rect x="1" y="3" width="22" height="6" rx="2" ${F}/><path d="M23 1v10M29 2v8M35 4v4M41 6h6"/>`,
+sd:`<path d="M1 1h14l8 8v20H1z" ${F}/><path d="M6 5v6M10 5v6M14 5v6"/>`,
+serial:`<path d="M1 1h38l-4 22H5z" ${F}/><path d="M10 7h.01M16 7h.01M22 7h.01M28 7h.01M13 15h.01M19 15h.01M25 15h.01" stroke-width="3"/>`,
+camera:`<rect x="3" y="6" width="18" height="13" rx="2.5" ${F}/><circle cx="12" cy="12.5" r="4"/><circle cx="12" cy="12.5" r="1.4"/><path d="M8 6l1-2h6l1 2"/>`,
+telescope:`<path d="M2.5 10.5l13-4.5 2.5 7-13 4.5z" ${F}/><path d="M16 6.5l3 7M8 20l2-4M13 18l-3-2"/><circle cx="20" cy="9" r="1.2"/>`,
+fisheye:`<circle cx="12" cy="12" r="9" ${F}/><ellipse cx="12" cy="12" rx="4" ry="9"/><ellipse cx="12" cy="12" rx="9" ry="4"/>`,
+flash:`<circle cx="12" cy="12" r="4" ${F}/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>`,
+laser:`<rect x="2.5" y="10" width="13" height="4" rx="2" ${F}/><path d="M15.5 12H22M19 9l2 1.5M19 15l2-1.5" stroke="#ff2a2a"/>`,
+projector:`<rect x="1" y="5" width="30" height="22" rx="3" ${F}/><circle cx="16" cy="16" r="6"/><path d="M31 13l12-5v16l-12-5"/>`,
+nightvision:`<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" ${F}/><circle cx="12" cy="12" r="3"/>`,
+binoculars:`<circle cx="7" cy="15" r="4" ${F}/><circle cx="17" cy="15" r="4" ${F}/><path d="M7 11V5h3v6M17 11V5h-3v6M11 14h2"/>`,
+speaker:`<rect x="1" y="1" width="26" height="38" rx="5" ${F}/><circle cx="14" cy="27" r="7"/><circle cx="14" cy="10" r="2.5"/>`,
+mic:`<rect x="9" y="3" width="6" height="11" rx="3" ${F}/><path d="M6 11a6 6 0 0012 0M12 17v4M9 21h6"/>`,
+subwoofer:`<rect x="3" y="3" width="18" height="18" rx="3" ${F}/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2.5"/>`,
+antenna:`<path d="M12 21V10M8 21h8M7 5a7 7 0 000 8M17 5a7 7 0 010 8M9.5 7.5a3.5 3.5 0 000 3.5M14.5 7.5a3.5 3.5 0 010 3.5"/><circle cx="12" cy="10" r="1.2" fill="currentColor"/>`,
+dish:`<path d="M4 8a9 9 0 0010 10z" ${F}/><path d="M11 13l6-6M16 3l4 4M9 21h6"/>`,
+rotor:`<path d="M12 12L2.5 9.5c-1-.3-1 2.2 0 2.5zM12 12l9.5 2.5c1 .3 1-2.2 0-2.5z" ${F}/><circle cx="12" cy="12" r="1.8"/><path d="M12 12v8M9 20h6"/>`,
+propeller:`<ellipse cx="12" cy="6.5" rx="2.2" ry="4.5" ${F}/><ellipse cx="12" cy="6.5" rx="2.2" ry="4.5" ${F} transform="rotate(120 12 12)"/><ellipse cx="12" cy="6.5" rx="2.2" ry="4.5" ${F} transform="rotate(240 12 12)"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/>`,
+helicopter:`<ellipse cx="10" cy="14" rx="6" ry="4" ${F}/><path d="M16 13l6-2M2 5h16M10 5v5M6 18.5h9M7.5 18l-1 2M13 18l1 2"/>`,
+rocket:`<path d="M12 2c4 3 5 8 4 13H8c-1-5 0-10 4-13z" ${F}/><circle cx="12" cy="9" r="1.8"/><path d="M8 15l-3 4 4-1M16 15l3 4-4-1M11 18l1 3 1-3"/>`,
+jet:`<path d="M3 8h11l5-2v12l-5-2H3z" ${F}/><path d="M19 9c2.5 1 2.5 5 0 6M7 8v8"/>`,
+wheel:`<circle cx="12" cy="12" r="9" ${F}/><circle cx="12" cy="12" r="2"/><path d="M12 3v7M12 14v7M3 12h7M14 12h7"/>`,
+wings:`<path d="M12 13C9 6 5 6 2 7c1 5 4 8 10 8M12 13c3-7 7-7 10-6-1 5-4 8-10 8" ${F}/>`,
+parachute:`<path d="M3 11a9 8 0 0118 0z" ${F}/><path d="M3 11l9 9M21 11l-9 9M12 11v9"/>`,
+fan:`<circle cx="12" cy="12" r="9"/><path d="M12 12c0-5 4-6 5-3-1 2-3 3-5 3zM12 12c5 0 6 4 3 5-2-1-3-3-3-5zM12 12c0 5-4 6-5 3 1-2 3-3 5-3zM12 12c-5 0-6-4-3-5 2 1 3 3 3 5z" ${F}/>`,
+solar:`<path d="M5 1h38l4 28H1z" ${F}/><path d="M17 1l-3 28M31 1l3 28M3 15h42"/>`,
+fingerprint:`<path d="M6 10a6 6 0 0112 0M8.5 19c-.8-2-.5-5 1-6.5M12 21c-1.5-3-1-7 .5-8.5M15.5 19c1-2 1-5-.5-7M5 14c0-1 .3-2 .8-3"/>`,
+stylus:`<path d="M17 3l4 4L8 20l-5 1 1-5z" ${F}/><path d="M14 6l4 4"/>`,
+keyboard:`<rect x="1" y="1" width="58" height="30" rx="4" ${F}/><path d="M9 9h4M18 9h4M27 9h4M36 9h4M45 9h4M9 17h4M18 17h4M27 17h4M36 17h4M45 17h4M14 25h32" stroke-width="3"/>`,
+trackball:`<circle cx="12" cy="10" r="6" ${F}/><rect x="4" y="16" width="16" height="5" rx="2" ${F}/>`,
+buttons:`<rect x="1" y="1" width="12" height="16" rx="3" ${F}/><rect x="1" y="23" width="12" height="16" rx="3" ${F}/>`,
+joystick:`<circle cx="12" cy="6" r="3" ${F}/><path d="M12 9v7"/><rect x="4" y="16" width="16" height="5" rx="2" ${F}/>`,
+gamepad:`<path d="M7 8h10a5 5 0 015 5v1a3 3 0 01-5 2l-2-2H9l-2 2a3 3 0 01-5-2v-1a5 5 0 015-5z" ${F}/><path d="M7 11v3M5.5 12.5h3M16 12h.01M18 13.5h.01" stroke-width="2"/>`,
+toaster:`<rect x="1" y="9" width="42" height="22" rx="6" ${F}/><path d="M10 9V4h10v5M24 9V4h10v5M34 22h5"/>`,
+umbrella:`<path d="M3 12a9 8 0 0118 0z" ${F}/><path d="M12 12v7a2 2 0 004 0"/>`,
+knife:`<rect x="1" y="9" width="58" height="12" rx="6" ${F}/><path d="M14 9L9 2M26 9l-2-7M40 9l7-7"/>`,
+thermometer:`<path d="M10 14V5a2 2 0 014 0v9a4 4 0 11-4 0z" ${F}/><path d="M12 8v8"/>`,
+nfc:`<path d="M8 8a6 6 0 010 8M12 5a10 10 0 010 14M16 3a14 14 0 010 18"/>`,
+disco:`<circle cx="12" cy="13" r="7" ${F}/><path d="M5 13h14M12 6v14M7 8c3 2 7 2 10 0M7 18c3-2 7-2 10 0M12 2v4"/>`,
+snail:`<circle cx="9.5" cy="11" r="6" ${F}/><path d="M9.5 11a1 1 0 011-1 2 2 0 012 2 3.2 3.2 0 01-3.2 3.2 4.4 4.4 0 01-4.4-4.4 5.6 5.6 0 015.6-5.6"/><path d="M2.5 19h16.5a2.5 2.5 0 002.5-2.5V13M21.5 13l-1.5-3M21.5 13l1.5-3"/>`,
+neural:`<rect x="4" y="4" width="16" height="16" rx="3" ${F}/><circle cx="9" cy="9" r="1.5"/><circle cx="15" cy="9" r="1.5"/><circle cx="12" cy="15.5" r="1.5"/><path d="M10.5 9h3M10 10.3l1.2 3.7M14 10.3l-1.2 3.7"/>`,
+bt12:`<rect x="1" y="1" width="38" height="20" rx="4" ${F}/><text x="20" y="15" font-size="10" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none">BT12</text>`,
+modem9g:`<rect x="1" y="1" width="38" height="20" rx="4" ${F}/><text x="20" y="15.5" font-size="11" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none">9G</text>`,
+haptic:`<rect x="7" y="3" width="22" height="16" rx="3" ${F}/><path d="M2 7v8M34 7v8M14 11h8"/>`,
+paste:`<rect x="1" y="1" width="12" height="24" rx="2" ${F}/><path d="M3 25l4 10 4-10"/>`,
+defrag:`<rect x="1" y="1" width="46" height="20" rx="2" ${F}/><path d="M7 7h9v8H7zM21 7h5v8h-5zM31 7h10v8H31z"/>`,
+polish:`<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" ${F}/><path d="M19 16l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>`,
+splitter:`<path d="M12 3v6M12 9l-5 6M12 9l5 6"/><rect x="3" y="15" width="8" height="6" rx="1.5" ${F}/><rect x="13" y="15" width="8" height="6" rx="1.5" ${F}/>`};
+const VB={screen:[42,100],battery:[36,22],ram:[48,18],storage:[36,22],usbc:[40,14],usba:[36,18],lightning:[40,14],hdmi:[40,18],vga:[44,22],serial:[40,24],jack:[48,12],sd:[24,30],speaker:[28,40],keyboard:[60,32],buttons:[14,40],toaster:[44,32],knife:[60,22],solar:[48,30],projector:[44,28],haptic:[36,22],paste:[14,36],defrag:[48,22],bt12:[40,22],modem9g:[40,22]};
+const svg=id=>{const[w,h]=VB[id]||[24,24];return `<svg viewBox="0 0 ${w} ${h}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${IC[id]}</svg>`};
+const CATS=[["cpu","CPUs"],["mem","Memory"],["pwr","Batteries"],["scr","Screens"],["port","Ports"],["optic","Optics"],["sound","Sound"],["fly","Flight"],["gad","Gadgets"],["sens","Sensors"],["net","Comms"],["toy","Toys"],["dummy","Dummy"]];
+const COL={sens:"#06b6d4",net:"#8b5cf6",toy:"#f43f5e",cpu:"#3b82f6",mem:"#6366f1",pwr:"#10b981",scr:"#0ea5e9",core:"#3b82f6",port:"#14b8a6",optic:"#a855f7",sound:"#f59e0b",fly:"#ef4444",gad:"#22c55e",dummy:"#8b9bb0"};
+// id, name, category, size(%), grams, price($), draw(mA), battery(mAh), chaos
+const T=[
+["screen","OLED screen","scr",42,70,90,250,0,0],["battery","Battery 4000 mAh","pwr",30,45,20,0,4000,0],["chip","Super chip","cpu",14,5,60,400,0,0],["snail","Snail CPU","cpu",18,8,1,5,0,2],["ram","RAM 8 GB","mem",20,4,25,60,0,0],["storage","Storage 128 GB","mem",16,6,30,40,0,0],
+["usbc","USB-C port","port",8,3,2,0,0,0],["usba","USB-A port","port",9,6,2,0,0,0],["lightning","Lightning port","port",8,3,5,0,0,0],["hdmi","HDMI port","port",11,8,6,5,0,0],["vga","VGA port","port",12,20,4,10,0,1],["ethernet","Ethernet port","port",13,15,5,5,0,1],["jack","3.5mm jack","port",12,3,2,2,0,0],["sd","SD card slot","port",8,2,4,3,0,0],["serial","Serial port","port",11,25,3,0,0,1],
+["camera","Camera","optic",13,12,25,60,0,0],["telescope","Telescope lens","optic",20,80,150,10,0,2],["fisheye","Fisheye lens","optic",13,10,30,50,0,1],["flash","Flashlight","optic",10,2,3,40,0,0],["laser","Laser pointer","optic",18,25,6,120,0,2],["projector","Projector","optic",22,90,120,500,0,2],["nightvision","Night vision","optic",13,12,70,150,0,1],["binoculars","Binoculars","optic",22,200,80,0,0,2],
+["speaker","Speaker","sound",12,8,6,30,0,0],["mic","Microphone","sound",11,3,5,15,0,0],["subwoofer","Subwoofer","sound",20,150,25,180,0,1],["antenna","Antenna","sound",14,18,4,5,0,0],["dish","Satellite dish","sound",24,300,60,50,0,2],
+["rotor","Rotor","fly",34,120,40,900,0,3],["propeller","Propeller","fly",22,40,15,500,0,3],["helicopter","Helicopter","fly",30,600,500,1500,0,4],["rocket","Rocket","fly",20,300,200,3000,0,5],["jet","Jet engine","fly",24,400,350,2500,0,5],["wheel","Wheel","fly",18,60,10,0,0,1],["wings","Wings","fly",34,90,45,0,0,3],["parachute","Parachute","fly",26,50,20,0,0,2],["fan","Cooling fan","fly",14,15,6,80,0,0],["solar","Solar panel","fly",26,50,40,-150,0,1],
+["fingerprint","Fingerprint scanner","gad",11,3,15,10,0,0],["stylus","Stylus","gad",24,15,12,0,0,0],["keyboard","Keyboard","gad",36,120,30,20,0,1],["trackball","Trackball","gad",16,35,10,0,0,1],["buttons","Volume buttons","gad",4,4,2,0,0,0],["joystick","Joystick","gad",14,30,8,0,0,1],["gamepad","Game controls","gad",24,140,20,40,0,1],["toaster","Toaster","gad",24,900,15,1200,0,4],["umbrella","Umbrella","gad",24,120,10,0,0,3],["knife","Pocket knife","gad",28,70,12,0,0,3],["thermometer","Thermometer","gad",10,6,8,5,0,0],["nfc","NFC chip","gad",10,2,3,5,0,0],["disco","Disco ball","gad",18,300,25,400,0,3],
+["neural","Neural bezel engine","dummy",14,6,45,60,0,0],["bt12","Bluetooth 12 module","dummy",12,3,18,15,0,0],["modem9g","9G modem","dummy",12,5,80,120,0,1],["haptic","Haptic flux regulator","dummy",14,9,22,30,0,0],["paste","Thermal paste tube","dummy",5,25,3,0,0,0],["defrag","RAM defragmenter","dummy",18,4,35,25,0,0],["polish","Pixel polish unit","dummy",14,7,28,10,0,0],["splitter","Battery splitter","dummy",16,10,15,0,0,0],
+["mid","Mid-range chip","cpu",14,5,25,250,0,0],["i486","Old 486 chip","cpu",13,10,8,350,0,1],["trash","Trash CPU","cpu",14,8,2,200,0,2],["potato","Potato CPU","cpu",16,150,1,20,0,3],["calcchip","Calculator chip","cpu",12,2,1,5,0,1],["hamster","Hamster-wheel CPU","cpu",20,200,15,5,0,3],["abacus","Abacus CPU","cpu",20,400,5,0,0,3],["quantum","Quantum chip","cpu",16,6,900,1200,0,3],
+["ram64k","64 KB RAM chip","mem",10,1,1,1,0,0],["ram1m","1 MB RAM stick","mem",14,1,1,2,0,0],["ram512","512 MB RAM","mem",14,2,8,20,0,0],["ram4g","4 GB RAM","mem",15,3,15,35,0,0],["ram16g","16 GB RAM","mem",17,5,60,90,0,0],["ram64g","64 GB overkill RAM","mem",20,9,300,200,0,1],
+["floppy","Floppy disk (1.44 MB)","mem",14,20,1,5,0,2],["tape","Cassette tape","mem",20,40,1,30,0,2],["punch","Punch cards","mem",16,30,1,0,0,3],["cd","CD-ROM (700 MB)","mem",18,16,2,120,0,2],["usbstick","16 GB USB stick","mem",16,8,6,15,0,0],["ssd1t","1 TB SSD","mem",18,10,90,60,0,0],["hdd","Spinning hard drive","mem",22,120,40,800,0,2],
+["sibat","Silicon battery","pwr",24,40,60,0,6000,0],["ssbat","Solid-state battery","pwr",24,48,70,0,5000,0],["coin","Coin cell","pwr",10,3,2,0,200,0],["aa","AA battery pack","pwr",26,90,6,0,2400,0],["potatobat","Potato battery","pwr",22,150,1,0,120,2],["lemonbat","Lemon battery","pwr",20,80,1,0,40,2],["carbat","Car battery","pwr",34,10000,80,0,50000,4],["nuke","Nuclear battery","pwr",22,2000,50000,0,200000,5],
+["lcd","LCD screen","scr",42,90,25,350,0,0],["eink","E-ink screen","scr",42,50,70,10,0,0],["crt","CRT screen","scr",42,3000,40,900,0,2],["mono","Nokia mono screen","scr",30,20,8,20,0,0],["tiny","Tiny 1-inch screen","scr",14,5,6,10,0,1],["amoled","4K AMOLED screen","scr",42,80,400,600,0,0],
+["periscope","Periscope lens","optic",8,40,60,40,0,1],["macro","Macro lens","optic",9,10,20,30,0,0],["thermal","Thermal camera","optic",11,20,200,120,0,1],["lidar","LiDAR scanner","optic",9,5,50,150,0,0],["ringlight","Ring light","optic",18,30,15,200,0,1],["cam360","360 camera","optic",11,30,120,150,0,1],
+["gyro","Gyroscope","sens",8,2,5,5,0,0],["accel","Accelerometer","sens",8,2,4,5,0,0],["baro","Barometer","sens",8,2,6,5,0,0],["compass","Compass","sens",8,2,3,3,0,0],["light","Light sensor","sens",7,1,2,2,0,0],["heart","Heart-rate sensor","sens",8,3,10,10,0,0],["gps","GPS chip","sens",10,3,12,40,0,0],["geiger","Geiger counter","sens",14,40,60,15,0,1],["metal","Metal detector","sens",16,60,30,60,0,1],["aq","Air quality sensor","sens",10,5,15,20,0,0],
+["wifi","Wi-Fi 7 chip","net",10,3,20,80,0,0],["sim","SIM tray","net",8,2,1,0,0,0],["ir","Infrared blaster","net",8,2,2,10,0,0],["coil","Wireless charging coil","net",22,10,10,0,0,0],["bt","Bluetooth chip","net",8,2,5,15,0,0],["lora","Walkie-talkie radio","net",16,40,30,100,0,1],["fm","FM radio tuner","net",12,5,4,20,0,0],["thunderbolt","Thunderbolt port","net",8,4,10,5,0,0],
+["horn","Air horn","sound",14,60,8,30,0,2],["megaphone","Megaphone","sound",18,150,12,200,0,2],["vinyl","Record player","sound",22,500,40,150,0,3],["bone","Bone-conduction speaker","sound",8,5,25,15,0,0],
+["magnet","Magnet","toy",10,40,3,0,0,1],["tesla","Tesla coil","toy",14,80,50,300,0,3],["confetti","Confetti cannon","toy",12,60,10,20,0,2],["bubble","Bubble blower","toy",10,30,6,40,0,2],["watergun","Water gun","toy",14,90,8,0,0,2],["grapple","Grappling hook","toy",14,200,40,0,0,3],["balloon","Hot air balloon","toy",26,100,60,0,0,3],
+["coffee","Coffee machine","gad",18,800,40,900,0,3],["fridge","Mini fridge","gad",16,1500,60,200,0,3],["popcorn","Popcorn maker","gad",16,600,25,700,0,3],["hairdryer","Hair dryer","gad",18,400,15,1000,0,3],["mirror","Pocket mirror","gad",10,10,3,0,0,0],["pen","Pen","gad",18,15,2,0,0,0],["mouse","Mouse","gad",12,80,10,10,0,1],["vr","VR headset","gad",22,500,200,600,0,2],
+["microb","USB Micro-B port","port",8,2,1,0,0,0],["minib","USB Mini-B port","port",9,3,1,0,0,0],["displayport","DisplayPort","port",11,6,6,5,0,0],["dvi","DVI port","port",14,30,5,10,0,1],["scart","SCART port","port",18,60,5,15,0,2],["rca","RCA jacks","port",14,15,3,5,0,1],["firewire","FireWire port","port",10,6,3,0,0,1],["ps2","PS/2 port","port",10,8,2,0,0,1],["xlr","XLR mic port","port",11,20,12,5,0,1],["toslink","Optical audio port","port",9,4,5,5,0,1],
+["oc","Overclocked chip","cpu",14,6,120,900,0,2],["arm","ARM Lite chip","cpu",13,3,15,120,0,0],["i8086","Ancient 8086","cpu",13,12,3,300,0,2],
+["ram8m","8 MB RAM","mem",14,1,2,3,0,0],["ram32g","32 GB ECC RAM","mem",18,6,120,120,0,0],["ram128k","128 KB toaster RAM","mem",12,40,1,1,0,2],
+["zip","ZIP disk","mem",16,40,2,40,0,2],["bluray","Blu-ray disc","mem",18,16,8,150,0,2],["crystal","Holographic crystal","mem",16,300,5000,100,0,3],
+["supercap","Supercapacitor","pwr",20,25,30,0,1500,0],["liair","Lithium-air battery","pwr",24,38,120,0,8000,0],["jar","Lightning in a jar","pwr",16,200,500,0,10000,4],
+["pled","PLED screen","scr",42,55,110,230,0,0],["qled","QLED screen","scr",42,85,200,450,0,0],["fold","Foldable screen","scr",42,110,600,320,0,1],["transp","Transparent screen","scr",42,60,300,200,0,2],
+["printer","Photo printer","gad",20,300,80,500,0,2],["scale","Pocket scale","gad",18,60,10,10,0,1],["smoke","Fog machine","toy",14,120,20,300,0,2]];
+const P=Object.fromEntries(T.map(t=>[t[0],{id:t[0],name:t[1],cat:t[2],size:t[3],g:t[4],$:t[5],mA:t[6],mAh:t[7],ch:t[8]}]));
+const FEAT={rotor:"Rotor: it hovers when you answer calls, badly.",propeller:"Propeller: fast charging for your hair, not the battery.",helicopter:"Helicopter: texts are delivered by air.",rocket:"Rocket: orbital notifications.",jet:"Jet engine: unlocks the phone and the sound barrier.",wings:"Wings: technically a glider with a screen.",parachute:"Parachute: survives drops from planes.",wheel:"Wheel: rolls away whenever you look the other way.",laser:"Laser pointer: the cat now owns this phone.",telescope:"Telescope lens: 900x zoom on the Moon, 0x on your own notifications.",binoculars:"Binoculars: you can read tomorrow’s texts today.",projector:"Projector: every wall is now a screen.",vga:"VGA port: plugs into 1997.",serial:"Serial port: plugs into 1985.",ethernet:"Ethernet port: finally, a stable connection.",hdmi:"HDMI port: your phone is the TV.",toaster:"Toaster: tasty notifications, with butter.",disco:"Disco ball: instant party mode.",umbrella:"Umbrella: IP99 weather protection.",knife:"Pocket knife: opens boxes and, eventually, the phone.",subwoofer:"Subwoofer: ringtones felt in the next town.",dish:"Satellite dish: signal everywhere, including space.",nightvision:"Night vision: selfies in the dark.",solar:"Solar panel: charges while you ignore it.",keyboard:"Keyboard: texting, but with clicking.",gamepad:"Game controls: every app is now a game.",joystick:"Joystick: scrolling with style.",jack:"3.5mm jack: the legend returns.",fisheye:"Fisheye lens: everything looks like a bubble.",snail:"Snail CPU: opens apps in 3 to 5 business days. Do not salt.",neural:"Neural bezel engine: makes the bezels 3% smarter.",bt12:"Bluetooth 12: connects to devices that don’t exist yet.",modem9g:"9G modem: four bars in places with no towers.",haptic:"Haptic flux regulator: your phone purrs politely.",paste:"Thermal paste tube: totally essential, mostly cosmetic.",defrag:"RAM defragmenter: tidies memory that was never messy.",polish:"Pixel polish unit: shinier pixels, same pixels.",splitter:"Battery splitter: two half-batteries, same total."};
+let items=[],sel=null,uid=1,zc=1,drag=null,tab="cpu",powered=false,view_="f";
+const els=new Map(),stage=$("stage");
+const msg=t=>$("status").textContent=t;
+const find=u=>items.find(i=>i.u===u);
+const rect=()=>stage.getBoundingClientRect();
+const inStage=(x,y)=>{const r=rect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom};
+const toPct=(x,y)=>{const r=rect();return[Math.min(97,Math.max(3,(x-r.left)/r.width*100)),Math.min(97,Math.max(3,(y-r.top)/r.height*100))]};
+function place(el,it){const p=P[it.id];el.style.left=it.x+"%";el.style.top=it.y+"%";el.style.width=p.size*it.s+"%";el.style.zIndex=it.z;el.style.transform=`translate(-50%,-50%) rotate(${it.r}deg)`}
+function sync(){
+  const vis=items.filter(i=>i.side===view_);
+  if(sel!==null&&!vis.some(i=>i.u===sel))sel=null;
+  for(const[u,el]of els)if(!vis.some(i=>i.u===u)){el.remove();els.delete(u)}
+  for(const it of vis){
+    let el=els.get(it.u);
+    if(!el){el=document.createElement("div");el.className="pp";el.style.aspectRatio=(VB[it.id]||[24,24]).join("/");el.dataset.u=it.u;el.style.color=tint(it.id);el.innerHTML=svg(it.id);el.title=P[it.id].name;stage.appendChild(el);els.set(it.u,el)}
+    place(el,it);el.classList.toggle("sel",it.u===sel)}
+  ["rot","big","sml","cpy","del"].forEach(id=>$(id).disabled=sel===null);
+  stats()}
+function stats(){
+  let g=120,pr=0,dr=0,bat=0,ch=0;
+  for(const it of items){const p=P[it.id];g+=p.g*it.s;pr+=p.$;dr+=p.mA;bat+=p.mAh;ch+=p.ch}
+  let life;if(!bat)life="No battery";else if(dr<=0)life="Unlimited";else{const h=bat/dr;life=h<1?Math.max(1,Math.round(h*60))+" min":h.toFixed(1)+" h"}
+  $("stats").innerHTML=[["Parts",items.length+"/40"],["Weight",Math.round(g)+" g"],["Price","$"+pr],["Battery life",life],["Chaos",ch]].map(([k,v])=>`<div><b>${v}</b>${k}</div>`).join("");
+  return{g,pr,dr,bat,ch}}
+function off(){if(powered){powered=false;$("body").classList.remove("on");$("result").style.display="none"}if(typeof stopSim==="function")stopSim()}
+function add(id,x,y){
+  if(items.length>=40){msg("The phone is full (40 parts). Remove something first.");return}
+  off();const it={u:uid++,id,x,y,s:1,r:0,z:++zc,side:view_};items.push(it);sel=it.u;sync();msg(`Added ${P[id].name.toLowerCase()}. Drag it into place.`)}
+function remove(u){off();items=items.filter(i=>i.u!==u);if(sel===u)sel=null;sync()}
+function drawBin(){
+  $("tabs").innerHTML=CATS.map(([k,n])=>`<button data-t="${k}" class="${k===tab?"on":""}">${n}</button>`).join("");
+  $("bin").innerHTML=T.filter(t=>t[2]===tab).map(t=>`<div class="bp" data-id="${t[0]}" style="color:${tint(t[0])}">${svg(t[0])}<span style="color:var(--tx)">${t[1]}</span><small>$${t[5]} · ${t[4]} g</small></div>`).join("")}
+$("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b){tab=b.dataset.t;drawBin()}});
+/* ---------- Drag: from the bin, and on the stage ---------- */
+$("bin").addEventListener("pointerdown",e=>{const el=e.target.closest(".bp");if(el)drag={mode:"new",id:el.dataset.id,x:e.clientX,y:e.clientY,moved:false}});
+stage.addEventListener("pointerdown",e=>{
+  const el=e.target.closest(".pp");
+  if(!el){sel=null;sync();return}
+  e.preventDefault();const it=find(+el.dataset.u);it.z=++zc;sel=it.u;sync();
+  drag={mode:"move",it,el,x:e.clientX,y:e.clientY,moved:false}});
+window.addEventListener("pointermove",e=>{
+  if(!drag)return;
+  if(!drag.moved&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>6){
+    drag.moved=true;
+    if(drag.mode==="new"){const g=document.createElement("div");g.className="ghost";g.style.color=tint(drag.id);g.innerHTML=svg(drag.id);document.body.appendChild(g);drag.ghost=g}}
+  if(!drag.moved)return;
+  if(drag.mode==="new"){drag.ghost.style.left=e.clientX+"px";drag.ghost.style.top=e.clientY+"px"}
+  else{const[x,y]=toPct(e.clientX,e.clientY);drag.it.x=x;drag.it.y=y;place(drag.el,drag.it);drag.el.classList.toggle("out",!inStage(e.clientX,e.clientY))}});
+function endDrag(e,cancel){
+  if(!drag)return;const d=drag;drag=null;
+  if(d.ghost)d.ghost.remove();
+  if(d.mode==="new"){
+    if(cancel)return;
+    if(!d.moved)add(d.id,50+(Math.random()-.5)*24,50+(Math.random()-.5)*30);
+    else if(inStage(e.clientX,e.clientY)){const[x,y]=toPct(e.clientX,e.clientY);add(d.id,x,y)}
+    else msg("Dropped outside the phone, so nothing was added.")}
+  else if(d.moved){
+    d.el.classList.remove("out");
+    if(!cancel&&!inStage(e.clientX,e.clientY)){msg(`Removed ${P[d.it.id].name.toLowerCase()}.`);remove(d.it.u)}else off()}}
+window.addEventListener("pointerup",e=>endDrag(e,false));
+window.addEventListener("pointercancel",e=>endDrag(e,true));
+/* ---------- Tools ---------- */
+const cur=()=>find(sel);
+$("rot").onclick=()=>{const i=cur();if(i){i.r=(i.r+45)%360;off();sync()}};
+$("big").onclick=()=>{const i=cur();if(i){i.s=Math.min(3,i.s*1.2);off();sync()}};
+$("sml").onclick=()=>{const i=cur();if(i){i.s=Math.max(.4,i.s/1.2);off();sync()}};
+$("cpy").onclick=()=>{const i=cur();if(i&&items.length<40){off();const n={...i,u:uid++,x:Math.min(97,i.x+6),y:Math.min(97,i.y+6),z:++zc};items.push(n);sel=n.u;sync()}};
+$("del").onclick=()=>{if(sel!==null)remove(sel)};
+$("clr").onclick=()=>{items=[];sel=null;off();sync();msg("Cleared. Start fresh.")};
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT"||e.ctrlKey||e.metaKey||sel===null)return;
+  if(e.key==="r"||e.key==="R")$("rot").click();
+  else if(e.key==="+"||e.key==="=")$("big").click();
+  else if(e.key==="-")$("sml").click();
+  else if(e.key==="Delete"||e.key==="Backspace"){e.preventDefault();$("del").click()}});
+$("col").onchange=()=>document.documentElement.style.setProperty("--case",$("col").value);
+/* ---------- Power on ---------- */
+function power(){
+  const has=id=>items.some(i=>i.id===id);
+  const miss=[[hasScr(),"a screen"],[batMah()>0,"a battery"],[!!cpuInfo(),"a CPU (any chip, even a snail)"]].filter(x=>!x[0]).map(x=>x[1]);
+  if(miss.length){msg("Can’t power on yet. Your phone needs "+miss.join(" and ")+".");return}
+  const s=stats(),name=$("pname").value.trim()||"My Dream Phone",hrs=s.dr>0?s.bat/s.dr:99;
+  powered=true;$("body").classList.add("on");$("bname").textContent=name;
+  const ids=[...new Set(items.map(i=>i.id))],feats=ids.filter(id=>FEAT[id]).map(id=>FEAT[id]);
+  const boot=bootText(cpuInfo().boot),OSN=os();const life=hrs>=99?"Unlimited":hrs<1?Math.max(1,Math.round(hrs*60))+" minutes":hrs.toFixed(1)+" hours";
+  let v;
+  if(hrs<.1)v="It boots for a few seconds, then trips every fuse in the house.";
+  else if(hrs<1)v="It works, but you’ll want a charger and a fire extinguisher.";
+  else if(s.ch>=25)v="Not legal in most countries. Extremely cool anyway.";
+  else if(s.ch>=10)v="Weird, loud and wonderful. A true dream phone.";
+  else if(s.ch>=1)v="A normal phone with a tiny bit of mischief.";
+  else v="A sensible phone. Boring, but it works.";
+  $("result").style.display="block";
+  $("result").innerHTML=`<h2>${name.replace(/[<>&]/g,"")} powers on!</h2>Weight ${Math.round(s.g)} g · Price $${s.pr} · Battery ${life} · Boot ${boot} · Chaos ${s.ch}<br>${OSN.name}: ${OSN.blurb}<br><b>${v}</b>${feats.length?"<ul>"+feats.slice(0,8).map(f=>`<li>${f}</li>`).join("")+"</ul>":""}`;
+  msg("Your phone is on. Scroll down to use it.");startSim()}
+/* ================= Phone simulator ================= */
+Object.assign(IC,{
+a_phone:`<path d="M6 3h4l2 5-2.5 1.5a11 11 0 005 5L16 12l5 2v4a2 2 0 01-2 2A16 16 0 013 5a2 2 0 013-2z"/>`,
+a_msg:`<path d="M4 5h16v11H9l-5 4z"/>`,
+a_notes:`<path d="M6 3h9l3 3v15H6zM9 10h6M9 14h6"/>`,
+a_calc:`<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M9 11h.01M12 11h.01M15 11h.01M9 15h.01M12 15h.01M15 15h.01" stroke-width="2.4"/>`,
+a_clock:`<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>`,
+a_set:`<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>`});
+/* ----- more parts, tints, extras ----- */
+Object.assign(IC,{
+periscope:`<rect x="8" y="2" width="8" height="5" ${F}/><rect x="11" y="7" width="2" height="10" ${F}/><rect x="8" y="17" width="8" height="5" ${F}/>`,
+macro:`<circle cx="12" cy="12" r="8" ${F}/><circle cx="12" cy="12" r="3"/><path d="M12 4v2M12 18v2M4 12h2M18 12h2"/>`,
+thermal:`<rect x="3" y="5" width="18" height="14" rx="3" ${F}/><path d="M7 15c2-4 3 0 5-3s3 1 5-2"/>`,
+lidar:`<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>`,
+ringlight:`<circle cx="12" cy="12" r="9" ${F}/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/>`,
+cam360:`<circle cx="12" cy="12" r="6" ${F}/><path d="M3 12a9 4 0 0018 0M3 12a9 4 0 0118 0"/>`,
+gyro:`<circle cx="12" cy="12" r="8" ${F}/><ellipse cx="12" cy="12" rx="8" ry="3"/><path d="M12 4v16"/>`,
+accel:`<rect x="5" y="5" width="14" height="14" rx="2" ${F}/><path d="M9 15l6-6M11 9h4v4"/>`,
+baro:`<circle cx="12" cy="12" r="9" ${F}/><path d="M12 12l4-3M12 5v2M19 12h-2M5 12h2"/>`,
+compass:`<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z" ${F}/>`,
+light:`<circle cx="12" cy="12" r="4" ${F}/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M6 6l1.5 1.5M16.5 16.5L18 18M18 6l-1.5 1.5M7.5 16.5L6 18"/>`,
+heart:`<path d="M12 20s-8-5-8-11a4.5 4.5 0 018-2.5A4.5 4.5 0 0120 9c0 6-8 11-8 11z" ${F}/>`,
+gps:`<path d="M12 21s-7-6-7-11a7 7 0 0114 0c0 5-7 11-7 11z" ${F}/><circle cx="12" cy="10" r="2.5"/>`,
+geiger:`<rect x="4" y="6" width="16" height="12" rx="2" ${F}/><path d="M8 12h2l1-3 2 6 1-3h2"/>`,
+metal:`<circle cx="10" cy="14" r="7" ${F}/><circle cx="10" cy="14" r="3"/><path d="M15 9l6-6"/>`,
+aq:`<rect x="4" y="5" width="16" height="14" rx="3" ${F}/><path d="M8 10h8M8 14h8"/>`,
+wifi:`<path d="M3 9a13 13 0 0118 0M6 12.5a8.5 8.5 0 0112 0M9 16a4 4 0 016 0"/><circle cx="12" cy="19" r="1.2" fill="currentColor"/>`,
+sim:`<path d="M7 3h7l4 4v14H7z" ${F}/><rect x="10" y="11" width="5" height="6"/>`,
+ir:`<rect x="3" y="9" width="12" height="6" rx="3" ${F}/><path d="M17 8c2 2 2 6 0 8M20 6c3 3 3 9 0 12"/>`,
+coil:`<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="3" ${F}/>`,
+bt:`<path d="M7 7l10 10-5 4V3l5 4-10 10"/>`,
+lora:`<rect x="8" y="6" width="9" height="16" rx="2" ${F}/><path d="M12 6V2M10 11h5M10 14h5"/>`,
+fm:`<rect x="3" y="8" width="18" height="11" rx="2" ${F}/><circle cx="16" cy="13.5" r="3"/><path d="M6 12h6M6 15h4M7 8l8-5"/>`,
+thunderbolt:IC.lightning,
+horn:`<path d="M3 10h4l8-5v14l-8-5H3z" ${F}/><path d="M18 9a4 4 0 010 6"/>`,
+megaphone:`<path d="M4 10h5l9-5v14l-9-5H4z" ${F}/><path d="M7 14l1 5h3l-1-5"/>`,
+vinyl:`<circle cx="12" cy="12" r="9" ${F}/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6" fill="none"/><path d="M20 3l-4 8"/>`,
+bone:`<rect x="3" y="8" width="18" height="8" rx="4" ${F}/><path d="M8 12h8"/>`,
+magnet:`<path d="M5 3v8a7 7 0 0014 0V3h-4v8a3 3 0 01-6 0V3z" ${F}/><path d="M5 6h4M15 6h4"/>`,
+tesla:`<path d="M12 3l-2 6h4l-3 6"/><path d="M8 21h8l-1-5H9z" ${F}/>`,
+confetti:`<path d="M4 20l5-12 7 7z" ${F}/><path d="M13 5h.01M17 8h.01M15 3h.01M20 11h.01" stroke-width="2.6"/>`,
+bubble:`<circle cx="8" cy="14" r="5" ${F}/><circle cx="17" cy="8" r="3" ${F}/><circle cx="18" cy="17" r="2"/>`,
+watergun:`<path d="M3 10h13l4 3v3H8l-2 5H3z" ${F}/><path d="M20 9c1 0 2 1 2 2"/>`,
+grapple:`<path d="M12 3v9M7 9a5 5 0 0010 0M7 9l-2-2M17 9l2-2M12 12v9"/>`,
+balloon:`<path d="M12 3c-5 0-7 4-7 7 0 4 4 6 7 8 3-2 7-4 7-8 0-3-2-7-7-7z" ${F}/><path d="M10 18l-1 3h6l-1-3"/>`,
+coffee:`<path d="M5 8h11v7a5 5 0 01-5 5H10a5 5 0 01-5-5z" ${F}/><path d="M16 10h2a2.5 2.5 0 010 5h-2M8 3v2M12 3v2"/>`,
+fridge:`<rect x="6" y="2" width="12" height="20" rx="2" ${F}/><path d="M6 10h12M9 5v2M9 13v3"/>`,
+popcorn:`<path d="M6 10l1 11h10l1-11z" ${F}/><path d="M6 10a3 3 0 015-3 3 3 0 015 0 3 3 0 012 3M9 12v7M12 12v7M15 12v7"/>`,
+hairdryer:`<path d="M3 8a5 5 0 015-5h6a5 5 0 010 10H8a5 5 0 01-5-5z" ${F}/><path d="M10 13l-2 8h3l1-8"/>`,
+mirror:`<ellipse cx="12" cy="10" rx="7" ry="8" ${F}/><path d="M12 18v4M9 22h6M8 7l2-2"/>`,
+pen:`<path d="M5 19L18 6l2 2L7 21H5zM16 4l2-2 4 4-2 2" ${F}/>`,
+mouse:`<rect x="6" y="3" width="12" height="18" rx="6" ${F}/><path d="M12 3v7M6 10h12"/>`,
+vr:`<rect x="2" y="7" width="20" height="10" rx="3" ${F}/><circle cx="8" cy="12" r="2.2"/><circle cx="16" cy="12" r="2.2"/><path d="M11 12h2"/>`});
+const TINT={chip:"#64748b",mid:"#64748b",i486:"#64748b",trash:"#78716c",quantum:"#8b5cf6",ram:"#16a34a",ram64k:"#16a34a",ram1m:"#16a34a",ram512:"#16a34a",ram4g:"#16a34a",ram16g:"#16a34a",ram64g:"#16a34a",battery:"#22c55e",sibat:"#38bdf8",ssbat:"#38bdf8",coin:"#a3a3a3",aa:"#f59e0b",carbat:"#6b7280",nuke:"#84cc16",screen:"#1e3a8a",lcd:"#1e3a8a",eink:"#6b7280",crt:"#475569",mono:"#3f6212",tiny:"#1e3a8a",amoled:"#1e3a8a",camera:"#475569",telescope:"#a16207",toaster:"#a8a29e",coffee:"#92400e",balloon:"#ef4444",vinyl:"#111827"};
+const tint=id=>TINT[id]||COL[P[id].cat];
+const canCharge=()=>has("usbc")||has("lightning")||has("thunderbolt")||has("coil")||has("microb")||has("minib")||has("firewire");
+const SENS=["gyro","accel","baro","compass","light","heart","gps","geiger","metal","aq","lidar"];
+const ANT=`<rect width="200" height="200" fill="#4d7c0f"/><path d="M0 200L200 0" stroke="#3f6212" stroke-width="30" fill="none"/><ellipse cx="100" cy="103" rx="6" ry="4.5" fill="#1c1917"/><ellipse cx="108" cy="102" rx="4.5" ry="3.5" fill="#292524"/><circle cx="94" cy="100" r="3.2" fill="#1c1917"/><ellipse cx="116" cy="105" rx="6" ry="4.2" fill="#1c1917"/><path d="M98 105l-4 5M102 105l-1 6M106 104l3 6M110 105l5 5M94 98l-6-4M92 100l-7 1" stroke="#1c1917" stroke-width=".6" fill="none"/>`;
+Object.assign(FEAT,{periscope:"Periscope lens: you can see around corners.",macro:"Macro lens: a very close look at ants.",thermal:"Thermal camera: finds warm cats in the dark.",lidar:"LiDAR scanner: measures the room, and your doubts.",ringlight:"Ring light: flattering selfies.",cam360:"360 camera: pan around the scene.",gyro:"Gyroscope: knows when you flip it.",gps:"GPS chip: you are definitely somewhere.",geiger:"Geiger counter: clicks when the battery gets spicy.",metal:"Metal detector: finds your keys, and your fork.",wifi:"Wi-Fi 7 chip: connected to the fanciest router.",ir:"Infrared blaster: remote control for every TV.",coil:"Wireless charging coil: charge without cables.",lora:"Walkie-talkie radio: over and out.",fm:"FM radio tuner: static as a feature.",horn:"Air horn: very loud, no regrets.",megaphone:"Megaphone: announcements, whether wanted or not.",vinyl:"Record player: your phone now has a needle.",magnet:"Magnet: paperclips love it.",tesla:"Tesla coil: sparks, safely behind glass.",confetti:"Confetti cannon: every call is a party.",bubble:"Bubble blower: soap bubbles on demand.",watergun:"Water gun: sneak attack.",grapple:"Grappling hook: swings between shelves.",balloon:"Hot air balloon: the slowest, calmest lift.",coffee:"Coffee machine: espresso on the go.",fridge:"Mini fridge: cold drinks in your pocket.",popcorn:"Popcorn maker: movie night anywhere.",hairdryer:"Hair dryer: warm air, loud phone.",vr:"VR headset: the phone sits in your face.",mouse:"Mouse: it is a tiny mouse. For clicking.",mirror:"Pocket mirror: always check your hair.",pen:"Pen: for the old-fashioned notes."});
+/* ----- core part variants ----- */
+const SPEC={chip:{perf:100,boot:3},mid:{perf:40,boot:8},i486:{perf:4,boot:45},trash:{perf:5,boot:60},potato:{perf:3,boot:90},calcchip:{perf:2,boot:20},hamster:{perf:8,boot:45},snail:{perf:1,boot:240},abacus:{perf:.5,boot:600},quantum:{perf:400,boot:1}};
+const RAMMB={ram:8192,ram64k:.0625,ram1m:1,ram512:512,ram4g:4096,ram16g:16384,ram64g:65536};
+const STOMB={storage:131072,floppy:1.44,tape:.64,punch:.08,cd:700,usbstick:16384,ssd1t:1048576,hdd:512000};
+const CPUS=Object.keys(SPEC),SCRS=["screen","lcd","eink","crt","mono","tiny","amoled"];
+const lbl=(x,y,fs,t)=>`<text x="${x}" y="${y}" font-size="${fs}" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none">${t}</text>`;
+const mk=(id,vb,inner)=>{VB[id]=vb;IC[id]=inner};
+const ramI=t=>`<rect x="1" y="1" width="46" height="13" rx="1" ${F}/><path d="M5 14v3M11 14v3M17 14v3M23 14v3M29 14v3M35 14v3M41 14v3"/>${lbl(24,10.2,8,t)}`;
+const batI=t=>`<rect x="1" y="1" width="32" height="20" rx="3" ${F}/><path d="M35 8v6"/>${lbl(17,14.5,8.5,t)}`;
+const scrI=(t,fs)=>`<rect x="1" y="1" width="40" height="98" rx="7" ${F}/><path d="M15 7h12M15 93h12"/>${lbl(21,52,fs,t)}`;
+const stoI=t=>`<rect x="1" y="1" width="34" height="20" rx="3" ${F}/>${lbl(18,14.5,9,t)}`;
+const cpuI=t=>`<rect x="6" y="6" width="12" height="12" rx="1.5" ${F}/><path d="M9 3v3M12 3v3M15 3v3M9 18v3M12 18v3M15 18v3M3 9h3M3 12h3M3 15h3M18 9h3M18 12h3M18 15h3"/>${lbl(12,14.2,5.2,t)}`;
+[["ram64k","64K"],["ram1m","1MB"],["ram512","512M"],["ram4g","4G"],["ram16g","16G"],["ram64g","64G"]].forEach(([id,t])=>mk(id,[48,18],ramI(t)));
+[["sibat","Si"],["ssbat","SS"],["coin","3V"],["aa","AA"],["potatobat","POT"],["lemonbat","LMN"],["carbat","12V"],["nuke","N"]].forEach(([id,t])=>mk(id,[36,22],batI(t)));
+[["lcd","LCD",9],["eink","E-INK",7],["crt","CRT",9],["mono","MONO",7],["tiny","1in",9],["amoled","4K",11]].forEach(([id,t,f])=>mk(id,[42,100],scrI(t,f)));
+[["ssd1t","1TB"],["hdd","500G"]].forEach(([id,t])=>mk(id,[36,22],stoI(t)));
+[["mid","MID"],["i486","486"],["calcchip","+-"],["quantum","Q"]].forEach(([id,t])=>mk(id,[24,24],cpuI(t)));
+Object.assign(IC,{
+trash:`<path d="M5 7h14M9 7V4h6v3M7 7l1 14h8l1-14M10 11v7M14 11v7"/>`,
+potato:`<ellipse cx="12" cy="12" rx="9" ry="6" ${F} transform="rotate(-20 12 12)"/><path d="M8 11h.01M13 10h.01M15 14h.01M10 14h.01" stroke-width="2.6"/>`,
+hamster:`<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/><circle cx="12" cy="12" r="3" ${F}/>`,
+abacus:`<rect x="3" y="4" width="18" height="16" rx="1" ${F}/><path d="M3 9h18M3 15h18"/><path d="M7 9h.01M10 9h.01M15 15h.01M18 15h.01M7 15h.01M12 9h.01" stroke-width="3"/>`,
+floppy:`<path d="M3 3h15l3 3v15H3z" ${F}/><rect x="7" y="3" width="9" height="6"/><rect x="7" y="14" width="10" height="7"/>`,
+tape:`<rect x="2" y="6" width="20" height="12" rx="2" ${F}/><circle cx="8" cy="12" r="2.5"/><circle cx="16" cy="12" r="2.5"/><path d="M8 17l1.5-2h5l1.5 2"/>`,
+punch:`<rect x="4" y="4" width="16" height="16" ${F}/><path d="M8 8h.01M12 8h.01M16 8h.01M8 12h.01M16 12h.01M12 16h.01" stroke-width="3"/>`,
+cd:`<circle cx="12" cy="12" r="9" ${F}/><circle cx="12" cy="12" r="2.5"/>`,
+usbstick:`<rect x="2" y="9" width="12" height="6" rx="1" ${F}/><rect x="14" y="10" width="7" height="4"/>`});
+Object.assign(FEAT,{trash:"Trash CPU: rescued from a bin. Works most days.",potato:"Potato CPU: runs on starch and optimism.",hamster:"Hamster-wheel CPU: please feed the hamster.",abacus:"Abacus CPU: clack, clack, clack.",quantum:"Quantum chip: answers before you ask.",calcchip:"Calculator chip: very good at 7 times 6.",i486:"Old 486 chip: runs Doom, barely.",mid:"Mid-range chip: perfectly fine, honestly.",sibat:"Silicon battery: 50% more juice.",ssbat:"Solid-state battery: safe and sturdy.",coin:"Coin cell: a watch battery pretending to be a phone battery.",aa:"AA battery pack: replaceable at any shop.",potatobat:"Potato battery: dinner and power in one.",lemonbat:"Lemon battery: sour taste, sourer charge.",carbat:"Car battery: you can jump-start your car with your phone.",nuke:"Nuclear battery: lasts decades. Do not lick.",ram1m:"1 MB RAM: enough for a few thoughts.",ram64k:"64 KB RAM: pure nostalgia.",ram64g:"64 GB RAM: 3,000 tabs of nothing.",floppy:"Floppy disk: the save icon is real storage again.",tape:"Cassette tape: rewind your photos.",punch:"Punch cards: every photo is a stack of paper.",cd:"CD-ROM: spins up like a tiny jet.",hdd:"Spinning hard drive: you can hear it think.",usbstick:"USB stick: storage you can lose in a pocket.",ssd1t:"1 TB SSD: room for a million cat photos.",eink:"E-ink screen: great in sunlight, grayscale only.",crt:"CRT screen: heavy, warm and extremely retro.",mono:"Nokia mono screen: green and proud.",tiny:"Tiny 1-inch screen: squinting required.",lcd:"LCD screen: affordable, a little washed out.",amoled:"4K AMOLED screen: stunning and thirsty."});
+const hasScr=s=>items.some(i=>SCRS.includes(i.id)&&(!s||i.side===s));
+const scrKind=s=>{const i=items.find(i=>SCRS.includes(i.id)&&i.side===s);return i?"k-"+i.id:""};
+const cpuInfo=()=>{const c=items.filter(i=>SPEC[i.id]);if(!c.length)return null;let b=c[0];for(const i of c)if(SPEC[i.id].perf>SPEC[b.id].perf)b=i;return{id:b.id,perf:c.reduce((a,i)=>a+SPEC[i.id].perf,0),boot:Math.min(...c.map(i=>SPEC[i.id].boot))}};
+const ramMB=()=>items.reduce((a,i)=>a+(RAMMB[i.id]||0),0),stoMB=()=>items.reduce((a,i)=>a+(STOMB[i.id]||0)+(i.id==="sd"?65536:0),0);
+const fm=mb=>mb>=1073741824?+(mb/1073741824).toFixed(1)+" PB":mb>=1048576?+(mb/1048576).toFixed(1)+" TB":mb>=1024?+(mb/1024).toFixed(1)+" GB":mb>=1?+mb.toFixed(2)+" MB":Math.max(1,Math.round(mb*1024))+" KB";
+const bootText=s=>s<60?s+" second"+(s===1?"":"s"):+(s/60).toFixed(1)+" minutes";
+const OSES=[
+{id:"quantum",name:"QuantumOS 12",perf:300,ram:16384,sto:524288,mb:16384,blurb:"It knows what you want before you do."},
+{id:"full",name:"PhoneOS 15",perf:60,ram:4096,sto:65536,mb:8192,blurb:"Smooth, modern and full of features."},
+{id:"lite",name:"PhoneOS Lite 9",perf:20,ram:512,sto:4096,mb:2048,deny:["fly","proj","sat"],blurb:"Fine for everyday use. Heavy apps are locked."},
+{id:"go",name:"PhoneOS Go 3",perf:5,ram:64,sto:512,mb:512,deny:["fly","proj","sat","cast","draw","cam","music","maps","web"],blurb:"The basics only. Many apps are locked."},
+{id:"feature",name:"T9 Classic 1.0",perf:2,ram:1,sto:1,mb:.5,list:1,only:["phone","msg","clock","calc","notes","games"],blurb:"Calls, texts and a little game. Pure bliss."},
+{id:"calc",name:"CalcOS 0.1",perf:.5,ram:.0625,sto:0,mb:0,list:1,only:["calc","clock"],blurb:"It adds numbers. That is all it does."},
+{id:"rom",name:"ROM Monitor 0.1",perf:0,ram:0,sto:0,mb:0,list:1,only:["term"],blurb:"A blinking cursor and nothing else."}];
+const os=()=>{const c=cpuInfo(),p=c?c.perf:0,r=ramMB(),s=stoMB();return OSES.find(o=>p>=o.perf&&r>=o.ram&&s>=o.sto)};
+const NEED={sens:8,maps:64,web:128,remote:2,radio:8,kitchen:8,toys:8,cam:256,fly:512,proj:256,music:64,laser:32,draw:32,games:32,toast:8,disco:8,wx:4,sat:16,cast:64,pay:4,term:0,files:8,drive:16,torch:2,set:2,msg:.5,phone:.25,notes:.25,calc:.05,clock:.05,tools:1};
+const openDelay=()=>{const p=cpuInfo().perf;return p>=100?0:Math.min(3000,Math.round(6000/p-60))};
+const freeMB=()=>stoMB()-os().mb-S.photos*5;
+/* ----- round 4: ports, screens, more parts ----- */
+Object.assign(IC,{
+microb:`<path d="M3 9h18l-2.5 6h-13z" ${F}/><path d="M8 12h8"/>`,
+minib:`<path d="M4 9h16v4l-2 3H6l-2-3z" ${F}/><path d="M9 12h6"/>`,
+displayport:`<path d="M3 8h18v5l-3 4H3z" ${F}/><path d="M7 11h10"/>`,
+dvi:`<rect x="2" y="7" width="20" height="10" rx="1" ${F}/><path d="M6 10h.01M9 10h.01M12 10h.01M15 10h.01M18 10h.01M6 14h.01M9 14h.01M12 14h.01M15 14h.01M18 14h.01" stroke-width="2"/>`,
+scart:`<rect x="2" y="8" width="20" height="8" rx="1" ${F}/><path d="M5 11h14M5 13h14"/>`,
+rca:`<circle cx="5" cy="12" r="3" ${F}/><circle cx="12" cy="12" r="3" ${F}/><circle cx="19" cy="12" r="3" ${F}/>`,
+firewire:`<path d="M5 9h14v6H5z" ${F}/><path d="M8 12h8"/>`,
+ps2:`<circle cx="12" cy="12" r="8" ${F}/><path d="M8 12h.01M12 8h.01M16 12h.01M10 16h.01M14 16h.01" stroke-width="2.4"/>`,
+xlr:`<circle cx="12" cy="12" r="8" ${F}/><path d="M9 10h.01M15 10h.01M12 15h.01" stroke-width="2.6"/>`,
+toslink:`<rect x="5" y="7" width="14" height="10" rx="2" ${F}/><circle cx="12" cy="12" r="2.5" fill="#f33" stroke="none"/>`,
+zip:`<rect x="3" y="3" width="18" height="18" rx="2" ${F}/><rect x="8" y="3" width="8" height="6"/>`,
+bluray:`<circle cx="12" cy="12" r="9" ${F}/><circle cx="12" cy="12" r="2.5"/><path d="M12 3a9 9 0 019 9" stroke="#38bdf8"/>`,
+crystal:`<path d="M12 2l6 6-6 14L6 8z" ${F}/><path d="M6 8h12M12 2v20"/>`,
+jar:`<path d="M8 3h8v3l2 2v12a2 2 0 01-2 2H8a2 2 0 01-2-2V8l2-2z" ${F}/><path d="M12 9l-2 4h3l-2 4"/>`,
+printer:`<rect x="4" y="9" width="16" height="8" rx="2" ${F}/><path d="M7 9V4h10v5M7 14h10v6H7z"/>`,
+scale:`<rect x="3" y="12" width="18" height="7" rx="2" ${F}/><path d="M12 12V7M9 9l3-2 3 2"/>`,
+smoke:`<path d="M5 17a4 4 0 01.5-7.9A5 5 0 0115 8a3.5 3.5 0 011 6.9" ${F}/><path d="M6 20h12"/>`});
+[["oc","OC"],["arm","ARM"],["i8086","8086"]].forEach(([id,t])=>mk(id,[24,24],cpuI(t)));
+[["ram8m","8M"],["ram32g","32G"],["ram128k","128K"]].forEach(([id,t])=>mk(id,[48,18],ramI(t)));
+[["supercap","SC"],["liair","LiO2"]].forEach(([id,t])=>mk(id,[36,22],batI(t)));
+[["pled","PLED",8],["qled","QLED",8],["fold","FOLD",7],["transp","CLEAR",6]].forEach(([id,t,f])=>mk(id,[42,100],scrI(t,f)));
+Object.assign(SPEC,{oc:{perf:160,boot:2},arm:{perf:25,boot:6},i8086:{perf:1.5,boot:100}});
+Object.assign(RAMMB,{ram8m:8,ram32g:32768,ram128k:.125});
+Object.assign(STOMB,{zip:100,bluray:25600,crystal:1073741824});
+SCRS.push("pled","qled","fold","transp");CPUS.push("oc","arm","i8086");
+Object.assign(TINT,{pled:"#1e3a8a",qled:"#1e3a8a",fold:"#1e3a8a",transp:"#7dd3fc",oc:"#dc2626",arm:"#64748b",i8086:"#78716c",zip:"#6366f1",bluray:"#2563eb",crystal:"#a78bfa",jar:"#facc15",supercap:"#22c55e",liair:"#38bdf8",printer:"#94a3b8"});
+Object.assign(FEAT,{microb:"USB Micro-B port: the classic. Charges slowly, very nostalgic.",minib:"USB Mini-B port: from the camera era.",displayport:"DisplayPort: 8K video out.",dvi:"DVI port: crisp digital video from 2002.",scart:"SCART port: plugs into 1985.",rca:"RCA jacks: yellow, red and white. You know the ones.",firewire:"FireWire port: fast in its day, powers things too.",ps2:"PS/2 port: for the keyboard from your dad's PC.",xlr:"XLR mic port: studio-grade confidence.",toslink:"Optical audio port: sound by laser light.",oc:"Overclocked chip: fast and hot. Very hot.",arm:"ARM Lite chip: efficient, quiet, sensible.",i8086:"Ancient 8086: ran a PC in 1978.",ram8m:"8 MB RAM: a respectable amount, in 1996.",ram32g:"32 GB ECC RAM: fixes its own mistakes.",ram128k:"128 KB toaster RAM: salvaged, still toasty.",zip:"ZIP disk: 100 MB of satisfying clicking.",bluray:"Blu-ray disc: 25 GB, spins loudly.",crystal:"Holographic crystal: 1 PB of storage that glows.",supercap:"Supercapacitor: charges in no time, drains just as fast.",liair:"Lithium-air battery: breathes for power.",jar:"Lightning in a jar: free power, one jar per storm.",pled:"PLED screen: plastic OLED, crisp and slightly flexible.",qled:"QLED screen: quantum-dot colors that glow.",fold:"Foldable screen: with a crease right down the middle.",transp:"Transparent screen: you can see right through it.",printer:"Photo printer: prints your photos on the spot.",scale:"Pocket scale: weighs things, including your phone.",smoke:"Fog machine: surprise atmosphere."});
+const SCRPX={tiny:105,mono:150,screen:270,pled:272,lcd:276,eink:285,amoled:285,qled:285,fold:285,transp:270,crt:340};
+const chargeRate=()=>has("usbc")||has("lightning")||has("thunderbolt")?6:has("coil")?3:2;
+const efx=()=>{if(S&&S.vw&&S.vw.closest&&S.vw.closest(".k-eink")){S.vw.classList.remove("ef");void S.vw.offsetWidth;S.vw.classList.add("ef")}};
+const has=id=>items.some(i=>i.id===id),hasS=(id,s)=>items.some(i=>i.id===id&&i.side===s),cnt=id=>items.filter(i=>i.id===id).length;
+const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const q=(r,s)=>r.querySelector(s),pick=a=>a[Math.floor(Math.random()*a.length)];
+const ENG={rotor:60,propeller:50,helicopter:120,rocket:400,jet:300};
+const ACT=new Set(["printer","smoke","rotor","propeller","helicopter","rocket","jet","laser","projector","toaster","disco","flash","subwoofer"]);["coffee","popcorn","hairdryer","tesla","vinyl","megaphone","ringlight","thermal","lidar","horn"].forEach(x=>ACT.add(x));
+const LENSES=["camera","telescope","fisheye","nightvision","binoculars","periscope","macro","thermal","cam360"],PORTS=["usbc","usba","lightning","hdmi","vga","ethernet","jack","sd","serial"];
+const hasSignal=()=>has("antenna")||has("modem9g")||has("dish");
+const totalG=()=>120+items.reduce((a,i)=>a+P[i.id].g*i.s,0);
+const batMah=()=>items.reduce((a,i)=>a+P[i.id].mAh,0);
+const baseDraw=()=>items.filter(i=>!ACT.has(i.id)).reduce((a,i)=>a+P[i.id].mA,0);
+const pname=()=>esc($("pname").value.trim()||"My Dream Phone");
+const fz=z=>z>=100?Math.round(z)+"x":z.toFixed(1)+"x";
+const mmss=s=>Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");
+const RATE=2; // simulated minutes per real second
+let S=null,tickT=null;
+const clk=()=>{const m=Math.floor(S.min%1440);return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")};
+const toast=t=>{const s=$("scr");if(!s)return;const d=document.createElement("div");d.className="toast";d.textContent=t;s.appendChild(d);setTimeout(()=>d.remove(),2200)};
+const ANY=(...a)=>()=>a.some(has);
+const APPS=[["phone","Phone","a_phone","#22c55e",()=>1],["msg","Messages","a_msg","#3b82f6",()=>1],["cam","Camera","camera","#64748b",()=>1],["music","Music","speaker","#ec4899",()=>1],["notes","Notes","a_notes","#f59e0b",()=>1],["calc","Calculator","a_calc","#475569",()=>1],["clock","Clock","a_clock","#0ea5e9",()=>1],
+["files","Files","sd","#8b5cf6",()=>stoMB()>0],["fly","Flight","rotor","#ef4444",ANY(...Object.keys(ENG),"wings","parachute","balloon")],["drive","Drive","wheel","#f97316",ANY("wheel")],["torch","Torch","flash","#eab308",ANY("flash")],["laser","Laser","laser","#dc2626",ANY("laser")],["proj","Projector","projector","#6366f1",ANY("projector")],["wx","Weather","thermometer","#06b6d4",ANY("thermometer")],["toast","Toaster","toaster","#b45309",ANY("toaster")],["disco","Disco","disco","#d946ef",ANY("disco")],["pay","Pay","nfc","#16a34a",ANY("nfc")],["draw","Draw","stylus","#14b8a6",ANY("stylus")],["games","Games","gamepad","#7c3aed",ANY("gamepad","joystick","trackball")],["term","Terminal","serial","#334155",ANY("serial")],["cast","Cast","hdmi","#0891b2",ANY("hdmi","vga","displayport","dvi","scart","rca")],["sat","Satellite","dish","#2563eb",ANY("dish")],["tools","Tools","knife","#65a30d",ANY("knife","umbrella","scale")],["sens","Sensors","gyro","#14b8a6",()=>SENS.some(has)],["maps","Maps","gps","#ef4444",ANY("gps")],["web","Browser","wifi","#2563eb",ANY("wifi","ethernet","modem9g","antenna")],["remote","Remote","ir","#a855f7",ANY("ir")],["radio","Audio+","fm","#f97316",ANY("fm","lora","vinyl","horn","megaphone","bone")],["kitchen","Kitchen","coffee","#92400e",ANY("coffee","fridge","popcorn","hairdryer")],["toys","Toys","confetti","#ec4899",ANY("magnet","tesla","confetti","bubble","watergun","grapple","smoke")],["set","Settings","a_set","#6b7280",()=>1]];
+function partsView(sd){
+  return `<div class="pv">`+items.filter(i=>i.side===sd).sort((a,b)=>a.z-b.z).map(it=>{
+    const p=P[it.id],[vw,vh]=VB[it.id]||[24,24];
+    return `<div style="position:absolute;left:${(it.x-27)/46*100}%;top:${(it.y-7)/86*100}%;width:${p.size*it.s/46*100}%;aspect-ratio:${vw}/${vh};transform:translate(-50%,-50%) rotate(${it.r}deg);color:${tint(it.id)}">${svg(it.id)}</div>`}).join("")+`</div>`}
+function stopApp(){if(S){if(S.stop){const f=S.stop;S.stop=null;try{f()}catch(e){}}S.extra=0}}
+function stopSim(){clearInterval(tickT);tickT=null;if(S)stopApp();S=null;$("sim").style.display="none"}
+function startSim(){
+  stopSim();
+  S={phase:"boot",bootT:0,bootTotal:3,speed:1,bat:100,min:540,side:hasScr("f")?"f":"b",photos:0,extra:0,charging:false,dead:false,cracked:false,msgs:[],cam:{},app:null,vw:null};
+  $("sim").style.display="block";$("chg").textContent="Plug in charger";
+  boot();tickT=setInterval(tick,500);
+  if($("sim").scrollIntoView)$("sim").scrollIntoView({behavior:"smooth",block:"start"})}
+function boot(){S.phase="boot";S.bootT=0;S.bootTotal=os().id==="rom"?Math.min(2,cpuInfo().boot):cpuInfo().boot;S.speed=1;S.dead=false;render()}
+function render(){
+  if(!S)return;
+  const ph=$("ph"),sd=S.side,nm=sd==="f"?"front":"back";
+  stopApp();clearTimeout(S.tm);if(S.phase==="app")S.phase="home";
+  $("fl").textContent="Flip phone: "+nm;const kd=scrKind(sd).slice(2);ph.className=hasScr(sd)&&kd?"k-"+kd:"";ph.style.width="min(100%,"+(hasScr(sd)?(SCRPX[kd]||270):270)+"px)";
+  if(!hasScr(sd)){S.vw=null;ph.innerHTML=partsView(sd);$("scap").textContent=`This is the ${nm} of your phone. There is no screen here. Flip it to find the screen.`;return}
+  $("scap").textContent=S.cracked?"The screen is cracked. Very authentic.":"";const hole=sd==="f"&&items.some(i=>i.side==="f"&&LENSES.includes(i.id))?'<i class="hole"></i>':"";
+  ph.innerHTML=`<div id="scr" class="${scrKind(sd)}${S.cracked?" cracked":""}">${hole}<div id="sb"></div><div id="vw"></div><div id="nv"><button id="hm" aria-label="Home"></button></div></div>`;
+  S.vw=$("vw");$("hm").onclick=goHome;statusbar();view()}
+function statusbar(){
+  const sb=$("sb");if(!sb||!S)return;
+  const sig=has("modem9g")?"9G":has("antenna")?"4 bars":has("dish")?"SAT":"No signal",b=Math.max(0,Math.round(S.bat));
+  sb.innerHTML=`<span>${S.phase==="boot"?"":clk()}</span><span>${sig}${has("bt12")?" · BT12":""}${has("fan")?" · fan":""}</span><span>${S.charging?(chargeRate()<3?"slow charging ":"charging "):""}${has("splitter")?Math.round(b/2)+"%+"+Math.round(b/2)+"%":b+"%"}</span>`}
+function updateBoot(){
+  const bp=$("bp"),bt=$("bt");if(!bp)return;
+  bp.style.width=Math.min(100,S.bootT/S.bootTotal*100)+"%";
+  bt.textContent=P[cpuInfo().id].name+" starting... "+mmss(Math.max(0,S.bootTotal-S.bootT))+" left"}
+function view(){
+  const v=S.vw;if(!v)return;stopApp();clearTimeout(S.tm);
+  const o=os(),c=cpuInfo();
+  v.className=(S.phase==="home"||S.phase==="lock")?"wp":"";efx();
+  if(S.phase==="dead"){v.innerHTML=`<div class="boot"><b>Battery empty</b><div>${canCharge()?"Plug in the charger to wake it up.":"No charging port. Your phone is now a very nice paperweight."}</div></div>`}
+  else if(S.phase==="boot"){
+    v.innerHTML=`<div class="boot"><div class="logo">${svg(c.id)}</div><b>${pname()}</b><small>${o.name}</small><div class="pbar"><i id="bp"></i></div><div id="bt"></div>${S.bootTotal>=20?`<button id="ff">Fast-forward (x60)</button><small>Boot time: ${bootText(S.bootTotal)}</small>`:""}${items.filter(i=>SPEC[i.id]).length>1?`<small>The other CPUs are riding along.</small>`:""}</div>`;
+    updateBoot();const ff=$("ff");if(ff)ff.onclick=()=>{S.speed=60;ff.remove()}}
+  else if(S.phase==="lock"){
+    const fp=has("fingerprint");
+    v.innerHTML=`<div class="boot lock"><div class="big2">${clk()}</div><b>${pname()}</b><small>${o.name}</small><button id="un">${fp?svg("fingerprint")+"<br>Touch to scan":"Tap to unlock"}</button></div>`;
+    $("un").onclick=()=>{if(fp){$("un").textContent="Scanning...";setTimeout(()=>{if(S&&S.phase==="lock"){S.phase="home";view()}},600)}else{S.phase="home";view()}}}
+  else{
+    if(o.id==="rom"){S.phase="app";S.app="term";showApp("term");return}
+    const vis=APPS.filter(a=>a[4]()&&(!o.only||o.only.includes(a[0])));
+    if(o.list)v.innerHTML=`<div class="ap menu"><b>${o.name}</b>${vis.map(a=>`<button class="app" data-a="${a[0]}">${a[1]}</button>`).join("")}</div>`;
+    else v.innerHTML=`<div class="grid4">${vis.map(a=>`<button class="app${o.deny&&o.deny.includes(a[0])?" lk":""}" data-a="${a[0]}"><i style="background:${a[3]}">${svg(a[2])}</i>${a[1]}</button>`).join("")}</div>`;
+    v.querySelectorAll(".app").forEach(b=>b.onclick=()=>openApp(b.dataset.a))}}
+function goHome(){if(!S||!S.vw)return;if(S.phase==="app"){S.phase="home";view()}}
+function openApp(id){
+  const o=os(),a=APPS.find(x=>x[0]===id),need=NEED[id]===undefined?.1:NEED[id];S.app=id;S.phase="app";S.vw.className="";
+  if(o.deny&&o.deny.includes(id)){S.vw.innerHTML=`<div class="boot"><b>${a[1]}</b><div>${o.name} can’t run this app. Build a stronger phone (60+ CPU power, 4 GB RAM and 64 GB storage) to run PhoneOS 15.</div></div>`;return}
+  if(need>0&&ramMB()<need){S.vw.innerHTML=`<div class="boot"><b>Out of memory</b><div>${a[1]} needs ${fm(need)} of RAM. Your phone has ${fm(ramMB())}.</div></div>`;return}
+  const d=openDelay(),p=cpuInfo().perf;
+  if(d>0){S.vw.innerHTML=`<div class="boot">Opening ${a[1]}...<div class="crawl" style="--t:${d}ms">${svg(p<=1?"snail":cpuInfo().id)}</div><small>${p<=1?"A snail is carrying the app. 3 to 5 business days (we skipped ahead).":"Your slow CPU is thinking about it."}</small></div>`;S.tm=setTimeout(()=>showApp(id),d)}
+  else showApp(id)}
+function showApp(id){if(!S||S.phase!=="app")return;stopApp();S.vw.className="";efx();S.vw.innerHTML="";AP[id](S.vw)}
+function tick(){
+  if(!S)return;const dt=.5;
+  if(S.phase==="boot"){S.bootT+=dt*S.speed;updateBoot();if(S.bootT>=S.bootTotal){S.phase="lock";S.side=S.side;if(S.vw)view();statusbar()}return}
+  if(S.dead){if(S.charging){S.bat+=chargeRate()*1.3*dt;if(S.bat>=5){boot();return}}statusbar();return}
+  S.min+=RATE*dt;
+  const b=batMah(),d=b>0?(baseDraw()+S.extra)/b*(RATE*dt/60)*100:0;
+  S.bat=Math.min(100,S.bat-d+(S.charging?chargeRate()*dt:0));
+  if(S.bat<=0){S.bat=0;S.dead=true;S.phase="dead";stopApp();if(S.vw)view();toast("Battery empty")}
+  statusbar()}
+$("flip").onclick=()=>{view_=view_==="f"?"b":"f";sel=null;$("body").classList.toggle("back",view_==="b");$("sidelbl").textContent=view_==="f"?"FRONT":"BACK";$("flip").textContent="Flip phone: "+(view_==="f"?"front":"back");sync();msg(`Showing the ${view_==="f"?"front":"back"} of the phone. Parts you add go on this side.`)};
+$("fl").onclick=()=>{if(!S)return;S.side=S.side==="f"?"b":"f";render()};
+$("chg").onclick=()=>{if(!S)return;if(!canCharge()){$("scap").textContent="No way to charge (USB-C, Lightning, Thunderbolt, Micro-B, Mini-B, FireWire or a wireless coil). Solar panels still help a little.";return}S.charging=!S.charging;$("chg").textContent=S.charging?"Unplug charger":"Plug in charger"};
+$("pwr").onclick=()=>{stopSim();$("body").classList.remove("on");powered=false;msg("Powered off. Edit your phone and power on again.")};
+/* ---------- Apps ---------- */
+const AP={};
+AP.phone=r=>{
+  let num="";
+  r.innerHTML=`<div class="ap"><div id="dn" class="big">&nbsp;</div><div class="keys">${"123456789*0#".split("").map(k=>`<button>${k}</button>`).join("")}</div><div class="row"><button id="call">Call</button></div><p id="cm"></p></div>`;
+  r.querySelectorAll(".keys button").forEach(b=>b.onclick=()=>{num=(num+b.textContent).slice(0,14);q(r,"#dn").textContent=num});
+  q(r,"#call").onclick=()=>{
+    const m=q(r,"#cm");
+    if(!num){m.textContent="Type a number first.";return}
+    if(!hasSignal()){m.textContent="No signal. Add an antenna, a 9G modem or a satellite dish.";return}
+    const mic=has("mic"),sp=has("speaker")||has("subwoofer")||has("jack");
+    m.textContent=`Calling ${num}... connected. `+(mic&&sp?"Loud and clear.":!mic&&!sp?"A very quiet call: no microphone and no speaker.":!mic?"They can’t hear you: no microphone.":"You can’t hear them: no speaker.")}};
+AP.msg=r=>{
+  if(!hasSignal()){r.innerHTML=`<div class="ap">No signal. Add an antenna, a 9G modem or a satellite dish to send messages.</div>`;return}
+  r.innerHTML=`<div class="ap"><div id="ml">${S.msgs.map(m=>`<p class="b ${m[0]}">${m[1]}</p>`).join("")}</div><div class="row"><input id="mi" placeholder="${has("keyboard")?"Use your physical keyboard":"Type a message"}"><button id="ms">Send</button></div></div>`;
+  const add=(w,t)=>{S.msgs.push([w,t]);q(r,"#ml")&&q(r,"#ml").insertAdjacentHTML("beforeend",`<p class="b ${w}">${t}</p>`)};
+  const R=["ok","lol","Who is this?"];
+  if(has("rocket"))R.push("Did you just text me from orbit?");if(has("rotor")||has("helicopter")||has("propeller"))R.push("Why is your phone flying past my window?");
+  if(has("telescope"))R.push("Stop zooming in on my window.");if(has("toaster"))R.push("Do I smell toast?");if(has("laser"))R.push("The cat has gone crazy.");if(has("disco"))R.push("Is there a party?");if(cpuInfo().perf<=1)R.push("Your message arrived 3 days late.");
+  q(r,"#ms").onclick=()=>{const i=q(r,"#mi");if(!i.value)return;add("me",esc(i.value));i.value="";const d=openDelay()>1500?2200:700;const t=setTimeout(()=>add("them",pick(R)),d)}};
+AP.cam=r=>{
+  const st=S.cam;if(!st.side)st.side="b";
+  const draw=()=>{
+    const sd=st.side,nm=sd==="b"?"back":"front",L=items.filter(i=>i.side===sd&&LENSES.includes(i.id)).map(i=>i.id),n=id=>L.filter(x=>x===id).length;
+    const other=`<button id="sw">Use ${sd==="b"?"front":"back"} lens</button>`;
+    if(!L.length){r.innerHTML=`<div class="ap">No lens on the ${nm} of this phone.<br>Flip the phone in the builder and add a camera, telescope, binoculars or fisheye lens.<br>${other}</div>`;q(r,"#sw").onclick=()=>{st.side=sd==="b"?"f":"b";draw()};return}
+    const tel=n("telescope"),max=tel?1000+500*(tel-1):n("binoculars")?50:n("periscope")?10:n("camera")?5:n("macro")?4:n("thermal")?2:1,lens=tel?"Telescope":n("binoculars")?"Binoculars":n("periscope")?"Periscope":n("camera")?"Camera":n("macro")?"Macro":n("thermal")?"Thermal":n("cam360")?"360":"Fisheye";
+    st.z=Math.min(st.z||1,max);
+    r.innerHTML=`<div class="vf${n("fisheye")?" fe":""}" id="vf"><svg id="sc" viewBox="0 0 200 200">${scene(sd,n("macro")&&!tel&&!n("camera"))}</svg></div><div class="ap"><div>${lens} lens on the ${nm}${tel>1?" ("+tel+" telescopes stacked)":""}. Max zoom ${max}x.</div>${max>1?`<input type="range" id="zm" min="0" max="100" value="${Math.round(Math.log(st.z)/Math.log(max)*100)}">`:""}<div id="zl" class="big">${fz(st.z)}</div>${n("nightvision")?`<label><input type="checkbox" id="nv"> Night vision</label>`:""}${hasS("ringlight",sd)?`<label><input type="checkbox" id="rl"> Ring light</label>`:""}${n("cam360")?`<label>Pan <input type="range" id="pn" min="0" max="100" value="50"></label>`:""}<div class="row"><button id="sh">Shutter</button>${other}${has("printer")?`<button id="pr">Print</button>`:""}</div></div>`;
+    const sc=q(r,"#sc"),ap=()=>{sc.style.transform=`scale(${st.z})`;q(r,"#zl").textContent=fz(st.z)};ap();
+    const zm=q(r,"#zm");if(zm)zm.oninput=()=>{st.z=Math.pow(max,zm.value/100);ap()};
+    const nv=q(r,"#nv");if(nv)nv.onchange=()=>{q(r,"#vf").style.filter=nv.checked?"hue-rotate(90deg) saturate(2.5) brightness(1.5)":""};const rl=q(r,"#rl");if(rl)rl.onchange=()=>{q(r,"#vf").style.filter=rl.checked?"brightness(1.4) contrast(1.05)":""};const pn=q(r,"#pn");if(pn)pn.oninput=()=>{sc.style.transformOrigin=pn.value+"% 50%"};if(n("thermal"))q(r,"#vf").style.filter="grayscale(1) contrast(1.5) sepia(1) hue-rotate(-35deg) saturate(6)";
+    q(r,"#sw").onclick=()=>{st.side=sd==="b"?"f":"b";st.z=1;draw()};
+    {const pr=q(r,"#pr");if(pr)pr.onclick=()=>toast("Printed. It smells like fresh ink.")}q(r,"#sh").onclick=()=>{if(freeMB()>=5){S.photos++;toast("Photo saved at "+fz(st.z))}else toast(stoMB()?"Storage full: photo not saved":"No storage: photo not saved")}};
+  draw()};
+function scene(sd,mac){
+  if(mac)return ANT;
+  if(sd==="f")return `<rect width="200" height="200" fill="#c99a7b"/><path d="M70 88q30-14 60 0" fill="none" stroke="#5a3a2a" stroke-width="3"/><ellipse cx="100" cy="102" rx="24" ry="12" fill="#fff"/><circle cx="100" cy="102" r="10" fill="#4a7d4a"/><circle cx="100" cy="102" r="4.5" fill="#111"/><circle cx="96.5" cy="98.5" r="1.8" fill="#fff"/><path d="M78 96l-5-6M88 92l-3-7M100 90v-8M112 92l3-7M122 96l5-6" stroke="#222" stroke-width="1.5" fill="none"/>`;
+  return `<defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1b4a"/><stop offset="1" stop-color="#3b5fb5"/></linearGradient></defs><rect width="200" height="200" fill="url(#sk)"/><circle cx="30" cy="30" r="1" fill="#fff"/><circle cx="160" cy="45" r="1" fill="#fff"/><circle cx="60" cy="70" r="1" fill="#fff"/><circle cx="100" cy="100" r="14" fill="#e9e6d8"/><circle cx="95" cy="96" r="3" fill="#cfcbb8"/><circle cx="106" cy="104" r="2.2" fill="#cfcbb8"/><circle cx="101" cy="93" r="1.2" fill="#cfcbb8"/><path d="M99.6 100.2v-3" stroke="#444" stroke-width=".25" fill="none"/><path d="M99.6 97.2h1.5v1h-1.5z" fill="#e11"/><path d="M0 200v-45l40-25 35 22 30-30 35 28 60-32v82z" fill="#0a1020"/>`}
+AP.music=r=>{
+  if(!(has("speaker")||has("subwoofer")||has("jack"))){r.innerHTML=`<div class="ap">No speaker, subwoofer or headphone jack. Nothing to play music with.</div>`;return}
+  const out=has("subwoofer")?"Subwoofer":has("speaker")?"Speaker":"Headphone jack",tr=["Song of the Snail","Rocket Rain","Toaster Blues"];let k=0,ac=null,iv=0;
+  r.innerHTML=`<div class="ap"><div class="big" id="tn">${tr[0]}</div>Output: ${out}<div class="row"><button id="pl">Play</button><button id="nx">Next</button></div>${has("subwoofer")?`<label>Bass boost <input type="range" id="bs" min="0" max="100" value="60"></label>`:""}<div id="eq" class="eq"></div></div>`;
+  const stop=()=>{clearInterval(iv);iv=0;if(ac){try{ac.close()}catch(e){}ac=null}const p=q(r,"#pl");if(p)p.textContent="Play"};
+  const beep=()=>{const o=ac.createOscillator(),g=ac.createGain();o.type="triangle";o.frequency.value=[220,262,330,392,330,262][Math.floor(Date.now()/300)%6]*(1+k*.25);g.gain.value=.05;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.25);
+    if(has("subwoofer")){const b=ac.createOscillator(),bg=ac.createGain();b.frequency.value=55;bg.gain.value=q(r,"#bs").value/1500;b.connect(bg);bg.connect(ac.destination);b.start();b.stop(ac.currentTime+.25)}
+    const e=q(r,"#eq");if(e)e.innerHTML=Array.from({length:12},()=>`<i style="height:${10+Math.random()*40}px"></i>`).join("")};
+  q(r,"#pl").onclick=()=>{if(iv){stop();return}try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(e){toast("Audio is not available here");return}iv=setInterval(beep,300);q(r,"#pl").textContent="Pause"};
+  q(r,"#nx").onclick=()=>{k=(k+1)%3;q(r,"#tn").textContent=tr[k]};
+  S.stop=stop};
+AP.notes=r=>{r.innerHTML=`<div class="ap">Notes${has("keyboard")?" (physical keyboard detected)":""}<textarea id="nt" rows="9" style="width:100%">${esc(S.note||"")}</textarea></div>`;q(r,"#nt").oninput=e=>S.note=e.target.value};
+AP.calc=r=>{
+  let e="";
+  r.innerHTML=`<div class="ap"><div id="cd" class="big">0</div><div class="keys c">${"789/456*123-0.=+C".split("").map(k=>`<button>${k}</button>`).join("")}</div></div>`;
+  r.querySelectorAll(".keys button").forEach(b=>b.onclick=()=>{const k=b.textContent;if(k==="C")e="";else if(k==="="){try{e=String(Function('"use strict";return ('+e.replace(/[^0-9+\-*/.]/g,"")+')')())}catch(x){e="Error"}}else e+=k;q(r,"#cd").textContent=e||"0"})};
+AP.clock=r=>{
+  let t=0,iv=0;
+  r.innerHTML=`<div class="ap"><div class="big">${clk()}</div>On for ${Math.floor((S.min-540)/60)} simulated hours<div id="sw2" class="big">0.0 s</div><button id="sg">Start</button></div>`;
+  q(r,"#sg").onclick=()=>{if(iv){clearInterval(iv);iv=0;q(r,"#sg").textContent="Start";return}iv=setInterval(()=>{t+=.1;const e=q(r,"#sw2");if(e)e.textContent=t.toFixed(1)+" s"},100);q(r,"#sg").textContent="Stop"};
+  S.stop=()=>clearInterval(iv)};
+AP.files=r=>{
+  const cap=stoMB(),mb=S.photos*5+os().mb;
+  r.innerHTML=`<div class="ap">Storage: ${fm(cap)}${cnt("sd")?" (including SD card)":""}<div class="pbar"><i style="width:${Math.min(100,mb/cap*100)}%"></i></div>Used: ${fm(mb)} (system ${fm(os().mb)})<br>Photos: ${S.photos}<br>Notes: ${S.note?S.note.length+" characters":"empty"}</div>`};
+AP.set=r=>{
+  const L=ids=>ids.filter(has).map(id=>P[id].name+(cnt(id)>1?" x"+cnt(id):"")).join(", ")||"none",gb=cnt("ram")*8,sc=["f","b"].filter(s=>hasScr(s)).map(s=>s==="f"?"front":"back").join(" and ");
+  const rows=[["Model",pname()],["OS",os().name],["Processor",L(CPUS)+" (power "+cpuInfo().perf+")"],["Boot time",bootText(S.bootTotal)],["Memory",ramMB()?fm(ramMB()):"No RAM"],["Storage",stoMB()?fm(stoMB()):"none"],["Battery",batMah()+" mAh"],["Screen",L(SCRS)+" ("+(sc||"none")+")"],["Cameras",L(LENSES)],["Ports",L(PORTS)],["Sound",L(["speaker","mic","subwoofer"])],["Sensors",L(["fingerprint","nfc","thermometer",...SENS])],["Signal",L(["antenna","modem9g","bt12","dish","wifi","sim","bt","ir","fm","lora"])],["Movement",L([...Object.keys(ENG),"wheel","wings","parachute"])],["Extras",L(["neural","haptic","paste","defrag","polish","splitter","fan","solar"])],["Weight",Math.round(totalG())+" g"]];
+  const ex=["neural","bt12","modem9g","haptic","paste","defrag","polish","splitter"].filter(has).map(id=>`<p>${FEAT[id]}</p>`).join("");
+  r.innerHTML=`<div class="ap">${rows.map(([k,v])=>`<div class="kv"><b>${k}</b><span>${v}</span></div>`).join("")}${ex}${has("defrag")?`<button id="df">Defragment RAM</button> <span id="dr"></span>`:""}</div>`;
+  const d=q(r,"#df");if(d)d.onclick=()=>{q(r,"#dr").textContent="Done. 0 bytes freed.";};};
+AP.fly=r=>{
+  const eng=items.filter(i=>ENG[i.id]),T=eng.reduce((a,i)=>a+ENG[i.id],0),m=totalG()/100,W=m*10,chute=has("parachute"),wing=has("wings"),jetty=has("rocket")||has("jet"),LIFT=cnt("balloon")*70;
+  let alt=0,vy=0,x=100,th=0,boost=0,open=0,last=performance.now();
+  r.innerHTML=`<svg id="fs" class="fs" viewBox="0 0 200 160"><rect id="sk" width="200" height="160" fill="#7dd3fc"/><rect y="148" width="200" height="12" fill="#166534"/><g id="fg"><rect x="-5" y="-9" width="10" height="18" rx="2" fill="#111" stroke="#fff"/>${wing?'<path d="M-5 0l-12 6v-10zM5 0l12 6v-10z" fill="#cbd5e1"/>':""}<path id="pc" d="M-12 -12a12 10 0 0124 0z" fill="#f43f5e" opacity="0"/>${T?'<path d="M-3 9l3 8 3-8" fill="#fb923c"/>':""}</g></svg><div class="ap"><div id="frd"></div><div>Thrust ${T} vs weight ${Math.round(W)}${T+LIFT<W?" (too heavy to take off)":""}${LIFT?" + balloon lift "+LIFT:""}</div>${T?`<label>Throttle <input type="range" id="th" min="0" max="100" value="0"></label>`:`<div>No engine. Add a rotor, propeller, helicopter, rocket or jet to take off.</div>`}<div class="row"><button id="lf">Left</button><button id="rt">Right</button>${jetty?`<button id="bo">Boost</button>`:""}${chute?`<button id="pa">Parachute</button>`:""}<button id="dp">Drop from 200 m</button></div></div>`;
+  const e=s=>q(r,s);
+  if(e("#th"))e("#th").oninput=ev=>{th=ev.target.value/100};
+  e("#lf").onclick=()=>{x=Math.max(10,x-10)};e("#rt").onclick=()=>{x=Math.min(190,x+10)};
+  if(e("#bo"))e("#bo").onclick=()=>{boost=boost?0:1;toast(boost?"Afterburner on":"Afterburner off")};
+  if(e("#pa"))e("#pa").onclick=()=>{open=1;e("#pc").setAttribute("opacity","1")};
+  e("#dp").onclick=()=>{alt=200;vy=0;open=0;e("#pc").setAttribute("opacity","0")};
+  const step=t=>{
+    const dt=Math.min(.05,(t-last)/1000);last=t;
+    const f=(S.dead?0:th)*(boost&&jetty?1.8:1),a=(T*f+LIFT)/m-10;
+    if(alt<=0&&a<=0){vy=0;alt=0}else vy+=a*dt;
+    if(open)vy=Math.max(vy,-4);else if(wing&&f===0)vy=Math.max(vy,-8);
+    alt+=vy*dt;
+    if(alt<=0){if(vy<-12&&!S.cracked){S.cracked=true;const s=$("scr");if(s)s.classList.add("cracked");toast("CRASH! The screen cracked.")}alt=0;vy=0;if(open){open=0;e("#pc").setAttribute("opacity","0")}}
+    S.extra=eng.reduce((s,i)=>s+P[i.id].mA,0)*f;
+    const y=alt<=0?139:Math.max(25,139-Math.log10(1+alt)*22);
+    e("#fg").setAttribute("transform",`translate(${x},${y})`);
+    e("#sk").setAttribute("fill",alt>40000?"#000":alt>5000?"#0b1b4a":alt>1000?"#2563eb":"#7dd3fc");
+    e("#frd").textContent=`Altitude ${Math.round(alt)} m · Speed ${Math.round(vy)} m/s · `+(alt>=100000?"You reached space!":alt>0?(open?"Under parachute":"In the air"):"On the ground");
+    S.raf=requestAnimationFrame(step)};
+  S.raf=requestAnimationFrame(step);S.stop=()=>cancelAnimationFrame(S.raf)};
+AP.drive=r=>{
+  const w=cnt("wheel"),T=items.filter(i=>ENG[i.id]).reduce((a,i)=>a+ENG[i.id],0),max=w*12+Math.round(T/3),kind=["","Unicycle","Bike","Trike"][w]||"Car";
+  let v=0,d=0;
+  r.innerHTML=`<div class="ap"><div id="dv" class="big">0 km/h</div>${kind} mode (${w} wheel${w>1?"s":""}), top speed ${max} km/h${T?" thanks to your engine":""}.<div id="dd">Distance 0 m</div><div class="row"><button id="ga">Accelerate</button><button id="gb">Brake</button></div></div>`;
+  q(r,"#ga").onclick=()=>{v=Math.min(max,v+max/6)};q(r,"#gb").onclick=()=>{v=Math.max(0,v-max/3)};
+  const iv=setInterval(()=>{v=Math.max(0,v-max/60);d+=v/3.6*.25;const a=q(r,"#dv");if(a){a.textContent=Math.round(v)+" km/h";q(r,"#dd").textContent="Distance "+Math.round(d)+" m"}},250);
+  S.stop=()=>clearInterval(iv)};
+AP.torch=r=>{
+  let on=0,iv=0;
+  r.innerHTML=`<div id="tl" class="torch"></div><div class="ap"><button id="tt">Turn on</button><label> Brightness <input type="range" id="tb" min="10" max="100" value="100"></label>${has("disco")?`<label><input type="checkbox" id="ts"> Strobe</label>`:""}</div>`;
+  const tl=q(r,"#tl"),up=()=>{tl.style.opacity=on?q(r,"#tb").value/100:0;S.extra=on?P.flash.mA*cnt("flash"):0};
+  q(r,"#tt").onclick=()=>{on=on?0:1;q(r,"#tt").textContent=on?"Turn off":"Turn on";up()};q(r,"#tb").oninput=up;
+  const st=q(r,"#ts");if(st)st.onchange=()=>{clearInterval(iv);if(st.checked)iv=setInterval(()=>{if(on)tl.style.opacity=tl.style.opacity==="0"?q(r,"#tb").value/100:0},120)};
+  S.stop=()=>clearInterval(iv)};
+AP.laser=r=>{
+  S.extra=P.laser.mA*cnt("laser");
+  r.innerHTML=`<div class="ap">Drag in the box. The cat will chase the dot.<div id="la" class="la"><div id="ld"></div><div id="ct"></div></div><div id="ls">Catches: 0</div></div>`;
+  const a=q(r,"#la"),d=q(r,"#ld"),c=q(r,"#ct");let dx=100,dy=60,cx=20,cy=20,n=0;
+  a.onpointermove=a.onpointerdown=e=>{const b=a.getBoundingClientRect();dx=e.clientX-b.left;dy=e.clientY-b.top};
+  const loop=()=>{cx+=(dx-cx)*.06;cy+=(dy-cy)*.06;if(Math.hypot(dx-cx,dy-cy)<6){n++;q(r,"#ls").textContent="Catches: "+n;cx=Math.random()*200;cy=Math.random()*120}d.style.left=dx+"px";d.style.top=dy+"px";c.style.left=cx+"px";c.style.top=cy+"px";S.raf=requestAnimationFrame(loop)};
+  loop();S.stop=()=>cancelAnimationFrame(S.raf)};
+AP.proj=r=>{
+  S.extra=P.projector.mA*cnt("projector");
+  r.innerHTML=`<div class="ap">Projector on${cnt("projector")>1?" ("+cnt("projector")+" projectors)":""}.<svg viewBox="0 0 200 120" class="pj"><path d="M0 62L72 34h56l72-34v120l-72-34H72z" fill="#fff" opacity=".12"/><rect x="72" y="34" width="56" height="30" fill="#38bdf8"/><text x="100" y="52" font-size="8" text-anchor="middle" fill="#0b1020" stroke="none">Movie night</text></svg><select id="ps"><option>Movie night</option><option>Slides</option><option>Cat video</option></select></div>`;
+  q(r,"#ps").onchange=e=>{q(r,"text").textContent=e.target.value}};
+AP.wx=r=>{const t=Math.round(18+Math.random()*14);r.innerHTML=`<div class="ap"><div class="big">${t}°C</div>Sunny with a chance of ${has("rocket")?"rocket exhaust":has("rotor")||has("helicopter")?"rotor wash":"clouds"}.${has("fan")?"<br>Your cooling fan is keeping the phone chilly.":""}<br>${has("umbrella")?"Umbrella ready in Tools.":"No umbrella installed."}</div>`};
+AP.toast=r=>{
+  let tm=0;
+  r.innerHTML=`<div class="ap">Toaster slots: ${cnt("toaster")}<label> Darkness <input type="range" id="td" min="1" max="5" value="3"></label><button id="tg">Toast!</button><div id="tr" class="big"></div></div>`;
+  q(r,"#tg").onclick=()=>{const d=+q(r,"#td").value;S.extra=P.toaster.mA*cnt("toaster");q(r,"#tr").textContent="Toasting...";clearTimeout(tm);tm=setTimeout(()=>{S.extra=0;const e=q(r,"#tr");if(e)e.textContent=["","Barely warm","Light toast","Golden toast. Ding!","Dark toast","Charcoal. Smoke alarm armed."][d]},d*700)};
+  S.stop=()=>clearTimeout(tm)};
+AP.disco=r=>{
+  S.extra=P.disco.mA*cnt("disco");
+  r.innerHTML=`<div id="db" class="disco"><div>${svg("disco")}${has("subwoofer")?"<br>Bass on":""}</div></div>`;
+  const b=q(r,"#db");let h=0;const iv=setInterval(()=>{h=(h+40)%360;b.style.background=`hsl(${h} 90% 45%)`},250);S.stop=()=>clearInterval(iv)};
+AP.pay=r=>{r.innerHTML=`<div class="ap">Hold your phone near the reader.<div class="row"><button id="pg">Tap to pay</button></div><div id="pr"></div></div>`;q(r,"#pg").onclick=()=>{q(r,"#pr").textContent=`Paid $${(Math.random()*9+1).toFixed(2)} for ${pick(["a coffee","a sandwich","a tiny umbrella","a used rocket","some toast"])}. Approved.`}};
+AP.draw=r=>{
+  r.innerHTML=`<div class="ap">Stylus sketchpad<canvas id="cv" width="220" height="260" style="width:100%;touch-action:none;background:#0f172a;border-radius:8px"></canvas><button id="cl">Clear</button></div>`;
+  const c=q(r,"#cv"),x=c.getContext("2d");let dn=0;
+  if(x){x.lineWidth=2;x.strokeStyle="#fff";x.lineCap="round"}
+  const pos=e=>{const b=c.getBoundingClientRect();return[(e.clientX-b.left)*c.width/(b.width||c.width),(e.clientY-b.top)*c.height/(b.height||c.height)]};
+  c.onpointerdown=e=>{dn=1;if(x){const[a,b]=pos(e);x.beginPath();x.moveTo(a,b)}};
+  c.onpointermove=e=>{if(!dn||!x)return;const[a,b]=pos(e);x.lineTo(a,b);x.stroke()};
+  c.onpointerup=()=>{dn=0};q(r,"#cl").onclick=()=>{if(x)x.clearRect(0,0,220,260)}};
+AP.games=r=>{
+  const ctl=has("gamepad")?"Gamepad (D-pad and buttons)":has("joystick")?"Joystick":"Trackball";
+  let px=0,py=0,gx=4,gy=4,mv=0,sc=0;
+  r.innerHTML=`<div class="ap">Star Chaser. Controls: ${ctl}<div id="gb" class="gb"></div><div class="row"><button data-d="l">Left</button><button data-d="u">Up</button><button data-d="d">Down</button><button data-d="r">Right</button></div><div id="gs"></div></div>`;
+  const draw=()=>{q(r,"#gb").innerHTML=Array.from({length:25},(_,i)=>{const a=i%5,b=Math.floor(i/5);return `<i class="${a===px&&b===py?"pl":a===gx&&b===gy?"st":""}"></i>`}).join("");q(r,"#gs").textContent=`Stars ${sc} · Moves ${mv}`};
+  r.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{const d=b.dataset.d;if(d==="l")px=Math.max(0,px-1);if(d==="r")px=Math.min(4,px+1);if(d==="u")py=Math.max(0,py-1);if(d==="d")py=Math.min(4,py+1);mv++;if(px===gx&&py===gy){sc++;gx=Math.floor(Math.random()*5);gy=Math.floor(Math.random()*5)}draw()});
+  draw()};
+AP.term=r=>{
+  r.innerHTML=`<div class="ap term"><div id="to">PhoneOS serial console. Type help.</div><input id="ti" autocomplete="off" style="width:100%"></div>`;
+  const o=q(r,"#to"),i=q(r,"#ti"),say=t=>{o.innerHTML+="<br>"+esc(t)};
+  i.onkeydown=e=>{if(e.key!=="Enter")return;const c=i.value.trim();i.value="";say("$ "+c);
+    const m={help:"help parts specs whoami uname date battery reboot",specs:"cpu power "+cpuInfo().perf+", ram "+fm(ramMB())+", storage "+fm(stoMB()),parts:items.map(x=>P[x.id].name).join(", ")||"none",whoami:"root (obviously)",uname:os().name+" on "+P[cpuInfo().id].name,date:"phone time "+clk(),battery:Math.round(S.bat)+"%"};
+    if(c==="reboot"){boot();return}say(m[c]!==undefined?m[c]:c?"command not found":"")}};
+AP.cast=r=>{
+  const C=[["hdmi","HDMI out","Mirror to TV","Mirroring to a TV in 4K. Your notifications are now huge."],["displayport","DisplayPort","Mirror to monitor","Mirroring in 8K at 240 Hz. The monitor gasps."],["dvi","DVI out","Digital mirror","A crisp digital mirror on a beige office monitor."],["vga","VGA out","Retro mirror","Mirroring to a 1997 monitor in 16 colors. It hums."],["scart","SCART out","TV from 1985","Your phone is now on a 1985 TV. The remote has 6 buttons."],["rca","RCA jacks","Composite out","Yellow, red and white cables all lit up. Fuzzy but charming."]].filter(x=>has(x[0]));
+  r.innerHTML=`<div class="ap">${C.map(x=>`<p>${x[1]}: <button data-c="${x[0]}">${x[2]}</button></p>`).join("")}<div id="cs" class="tv">No display connected</div></div>`;
+  r.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{q(r,"#cs").textContent=C.find(x=>x[0]===b.dataset.c)[3]})};
+AP.sat=r=>{r.innerHTML=`<div class="ap">Satellite link<br>Found ${12+Math.floor(Math.random()*8)} satellites<br>Lat ${(Math.random()*180-90).toFixed(3)}, Lon ${(Math.random()*360-180).toFixed(3)}<br>Signal: ${has("antenna")?"Excellent (dish and antenna)":"Good"}</div>`};
+AP.tools=r=>{
+  r.innerHTML=`<div class="ap">${has("knife")?`<p>Pocket knife: <button id="kb">Open blade</button> <span id="ks">closed</span></p>`:""}${has("umbrella")?`<p>Umbrella: <button id="ub">Deploy</button> <span id="us">closed</span></p>`:""}${has("scale")?`<p>Pocket scale: your phone weighs <b>${Math.round(totalG())} g</b>.</p>`:""}</div>`;
+  const tg=(b,s,a,c)=>{const B=q(r,b);if(B)B.onclick=()=>{const S2=q(r,s);const o=S2.textContent==="closed";S2.textContent=o?a:"closed";B.textContent=o?c:b==="#kb"?"Open blade":"Deploy"}};
+  tg("#kb","#ks","open (careful)","Close blade");tg("#ub","#us","open (it is raining)","Close umbrella")};
+AP.sens=r=>{
+  const D={gyro:["Gyroscope",()=>`${(Math.random()*2-1).toFixed(2)} / ${(Math.random()*2-1).toFixed(2)} rad/s`],accel:["Accelerometer",()=>(9.8+Math.random()*.3-.15).toFixed(2)+" m/s²"],baro:["Barometer",()=>(1013+Math.random()*4-2).toFixed(1)+" hPa"],compass:["Compass",()=>Math.round(40+Math.random()*10)+"° NE"],light:["Light sensor",()=>Math.round(300+Math.random()*60)+" lux"],heart:["Heart rate",()=>Math.round(64+Math.random()*10)+" bpm"],gps:["GPS",()=>(10.77+Math.random()*.01).toFixed(4)+", "+(106.69+Math.random()*.01).toFixed(4)],geiger:["Geiger counter",()=>Math.round(has("nuke")?9000+Math.random()*500:15+Math.random()*10)+" CPM"],metal:["Metal detector",()=>has("carbat")||has("knife")||has("nuke")?"Metal found: your own phone":"No metal nearby"],aq:["Air quality",()=>has("toaster")?"AQI 120: toast smoke":"AQI "+Math.round(35+Math.random()*10)],lidar:["LiDAR",()=>(.5+Math.random()*3.5).toFixed(2)+" m to the nearest object"]};
+  const ids=SENS.filter(has);
+  r.innerHTML=`<div class="ap">${ids.map(id=>`<div class="kv"><b>${D[id][0]}</b><span id="s_${id}"></span></div>`).join("")}</div>`;
+  const up=()=>ids.forEach(id=>{const e=q(r,"#s_"+id);if(e)e.textContent=D[id][1]()});up();
+  const iv=setInterval(up,700);S.stop=()=>clearInterval(iv)};
+AP.maps=r=>{
+  r.innerHTML=`<div class="ap">GPS fix: ${(10.77+Math.random()*.01).toFixed(4)}, ${(106.69+Math.random()*.01).toFixed(4)}<svg viewBox="0 0 200 140" class="pj"><rect width="200" height="140" fill="#1f3a2e"/><path d="M0 90h200M60 0v140M140 0v140" stroke="#cbd5e1" stroke-width="5" fill="none"/><circle cx="100" cy="70" r="6" fill="#ef4444"/>${has("compass")?'<path d="M100 20l6 18h-12z" fill="#fff"/>':""}</svg>${has("compass")?"Compass heading 042° NE":"No compass: you will have to guess the way."}</div>`};
+AP.web=r=>{
+  const pages={"news.snail":"Local snail wins slow race. Result announced next week.","cats.example":"Cats. Just cats.","toast.shop":"Buy toast online. Free delivery by rocket.","phone.wiki":"Your phone has "+items.length+" parts."};
+  const sp=has("ethernet")?1:has("wifi")?1.5:has("modem9g")?2:4;
+  r.innerHTML=`<div class="ap"><select id="wu">${Object.keys(pages).map(k=>`<option>${k}</option>`).join("")}</select> <button id="wg">Go</button><div id="wp" class="big"></div><small>${has("ethernet")?"Wired connection":has("wifi")?"Wi-Fi 7":has("modem9g")?"9G data":"Slow antenna data"}</small></div>`;
+  let tm=0;
+  q(r,"#wg").onclick=()=>{q(r,"#wp").textContent="Loading...";clearTimeout(tm);tm=setTimeout(()=>{const x=q(r,"#wp");if(x)x.textContent=pages[q(r,"#wu").value]},sp*400+openDelay()/2)};
+  S.stop=()=>clearTimeout(tm)};
+AP.remote=r=>{
+  r.innerHTML=`<div class="ap">Infrared remote<div class="row"><button>Power</button><button>Vol +</button><button>Vol -</button><button>Channel +</button></div><p id="rm"></p></div>`;
+  r.querySelectorAll(".row button").forEach(b=>b.onclick=()=>{q(r,"#rm").textContent=`Sent "${b.textContent}". The TV ${pick(["obeyed.","ignored you.","turned on the toaster.","changed to a cat channel."])}`})};
+AP.radio=r=>{
+  let ac=null;
+  const tone=(f,d,t)=>{try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=t||"sine";o.frequency.value=f;g.gain.value=.08;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){toast("Audio is not available here")}};
+  r.innerHTML=`<div class="ap">${has("fm")?`FM radio<input type="range" id="fq" min="880" max="1080" value="1000" style="width:100%"><div id="fs2" class="big">100.0 MHz</div><div id="fm2">Static</div>`:""}${has("lora")?`<p>Walkie-talkie: <button id="wk">Push to talk</button> <span id="wm"></span></p>`:""}${has("vinyl")?`<p>Record player: <button id="vn">Spin record</button></p><div id="vd" class="disc"></div>`:""}${has("horn")?`<p><button id="ho">Air horn</button></p>`:""}${has("megaphone")?`<p><button id="mg">Megaphone</button> <span id="mm"></span></p>`:""}${has("bone")?`<p>Bone-conduction speaker: sound goes straight to your skull.</p>`:""}</div>`;
+  const fq=q(r,"#fq");
+  if(fq)fq.oninput=()=>{const f=+fq.value,st={885:"Snail FM",945:"Rocket Radio",1000:"Toast 100",1055:"Disco 105.5"};q(r,"#fs2").textContent=(f/10).toFixed(1)+" MHz";const k=Object.keys(st).find(x=>Math.abs(x-f)<4);q(r,"#fm2").textContent=k?"Now playing: "+st[k]:"Static";if(k)tone(200+k%300,.15,"triangle")};
+  const wk=q(r,"#wk");if(wk)wk.onclick=()=>{q(r,"#wm").textContent=pick(["Over.","Copy that.","Say again?","Roger, toast is ready."])};
+  const vn=q(r,"#vn");if(vn)vn.onclick=()=>{q(r,"#vd").classList.toggle("spin")};
+  const ho=q(r,"#ho");if(ho)ho.onclick=()=>tone(220,.7,"sawtooth");
+  const mg=q(r,"#mg");if(mg)mg.onclick=()=>{q(r,"#mm").textContent=pick(["ATTENTION PLEASE!","YOUR TOAST IS READY!","GOOD MORNING!"]);tone(330,.4,"square")};
+  S.stop=()=>{if(ac){try{ac.close()}catch(e){}ac=null}}};
+AP.kitchen=r=>{
+  const K=[["coffee","Coffee machine","Brew",["Espresso brewed. The phone smells great.","A latte. It is mostly phone."]],["fridge","Mini fridge","Open",["Inside: one yoghurt and a tiny light.","Cold drinks, ready."]],["popcorn","Popcorn maker","Pop",["Pop pop pop! Your screen is buttery.","Popcorn is ready."]],["hairdryer","Hair dryer","Blow",["Whoosh. Hair dry, battery not.","Warm air, loud noise."]]].filter(x=>has(x[0]));
+  let tm=0;
+  r.innerHTML=`<div class="ap">${K.map(x=>`<p>${x[1]}: <button data-k="${x[0]}">${x[2]}</button></p>`).join("")}<div id="ko"></div></div>`;
+  r.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const x=K.find(y=>y[0]===b.dataset.k);S.extra=P[x[0]].mA;q(r,"#ko").textContent=pick(x[3]);clearTimeout(tm);tm=setTimeout(()=>{if(S)S.extra=0},1500)});
+  S.stop=()=>clearTimeout(tm)};
+AP.toys=r=>{
+  const T2=[["magnet","Magnet","Attract","Paperclips jump onto your phone. 14 clips."],["tesla","Tesla coil","Zap","ZAP! Blue sparks. Do not touch."],["confetti","Confetti cannon","Fire","BOOM! Confetti everywhere."],["bubble","Bubble blower","Blow","Bubbles float up and pop. Wonderful."],["watergun","Water gun","Squirt","Splash! The screen is waterproof. Mostly."],["grapple","Grappling hook","Launch","The hook catches the ceiling lamp. Hold on!"],["smoke","Fog machine","Fog","Thick fog fills the room. You can’t see the phone."]].filter(x=>has(x[0]));
+  r.innerHTML=`<div class="ap">${T2.map(x=>`<p>${x[1]}: <button data-t="${x[0]}">${x[2]}</button></p>`).join("")}<div id="to2" class="toyarea"></div><div id="tt2"></div></div>`;
+  r.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{
+    const x=T2.find(y=>y[0]===b.dataset.t);q(r,"#tt2").textContent=x[3];
+    const a=q(r,"#to2");a.innerHTML="";
+    for(let i=0;i<24;i++){const d=document.createElement("i");d.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;background:hsl(${Math.floor(Math.random()*360)} 90% 55%)`;a.appendChild(d)}
+    if(x[0]==="tesla"){S.extra=P.tesla.mA;setTimeout(()=>{if(S)S.extra=0},1200)}})};
+
+
+$("pow").onclick=power;
+const MODES=["auto","light","dark"],LBL={auto:"Auto",light:"Light",dark:"Dark"};
+let mode="auto";
+try{const m=localStorage.getItem("bp-theme");if(MODES.includes(m))mode=m}catch(e){}
+function applyTheme(){const r=document.documentElement;if(mode==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",mode);$("theme").textContent="Theme: "+LBL[mode]}
+$("theme").onclick=()=>{mode=MODES[(MODES.indexOf(mode)+1)%3];applyTheme();try{localStorage.setItem("bp-theme",mode)}catch(e){}};
+applyTheme();drawBin();sync();msg("Pick parts from the bin. Start with a screen, a battery and a chip.");
+</script></body></html>
