@@ -75,7 +75,7 @@ body.touch #dl{bottom:auto;top:calc(60px + env(safe-area-inset-top,0px));right:c
     Free HF token (optional, raises quota)<input type="text" id="token" placeholder="hf_...">
     <button type="button" id="diag" style="background:var(--card);color:var(--ink);margin-top:4px">Run connection test</button>
     <pre id="diagOut" style="white-space:pre-wrap;font-size:12px;margin:8px 0 0"></pre>
-    <p style="font-size:12px;margin:8px 0 0">Build 6</p>
+    <p style="font-size:12px;margin:8px 0 0">Build 7</p>
   </details>
 </div></div>
 <div id="help"></div><div id="hud"></div><div id="cross"></div>
@@ -172,16 +172,19 @@ $("go").onclick = async () => {
 
 $("diag").onclick = async () => {
   const out = $("diagOut"), sid = $("space").value.trim(), log = t => { out.textContent += t + "\n"; };
-  out.textContent = ""; log("Build 6, inside a frame: " + framed);
-  const probe = async (label, url) => {
+  out.textContent = ""; log("Build 7, inside a frame: " + framed);
+  const probe = async (label, url, init) => {
     try {
-      const r = await fetch(url); let extra = "";
+      const r = await fetch(url, init); let extra = "";
       if (r.ok && /config$/.test(url)) { try { extra = ", gradio " + (await r.json()).version; } catch (_) {} }
       log(label + ": HTTP " + r.status + extra);
     } catch (e) { log(label + ": FAILED (" + e.message + ")"); }
   };
   await probe("Hugging Face API", "https://huggingface.co/api/spaces/" + sid);
-  await probe("Space config", "https://" + sid.toLowerCase().replace(/[\/_.]/g, "-") + ".hf.space/config");
+  const dh = "https://" + sid.toLowerCase().replace(/[\/_.]/g, "-") + ".hf.space", jh = { headers: { "Content-Type": "application/json" } };
+  await probe("Space config", dh + "/config");
+  await probe("Config with JSON header", dh + "/config", jh);
+  await probe("API info with JSON header", dh + "/gradio_api/info", jh);
   try { await import("https://cdn.jsdelivr.net/npm/@gradio/client@2.1.0/dist/index.min.js"); log("Gradio client 2.1.0: loaded"); }
   catch (e) { log("Gradio client 2.1.0: FAILED (" + e.message + ")"); }
   log("Done. Send me these lines.");
