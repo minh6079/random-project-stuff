@@ -71,7 +71,7 @@ body.touch #dl{bottom:auto;top:calc(60px + env(safe-area-inset-top,0px));right:c
   <div class="row"><label for="size">World width</label><input type="range" id="size" min="10" max="300" value="60"><output id="sizeOut">60 m</output></div>
   <div id="err" role="alert"></div>
   <details><summary>Settings</summary>
-    Hugging Face Space (image to 3D)<input type="text" id="space" value="JeffreyXiang/TRELLIS">
+    Hugging Face Space (image to 3D)<input type="text" id="space" value="microsoft/TRELLIS.2">
     Free HF token (optional, raises quota)<input type="text" id="token" placeholder="hf_...">
   </details>
 </div></div>
@@ -122,26 +122,39 @@ $("go").onclick = async () => {
   const t0 = Date.now(); let msg = "Starting";
   const tick = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); $("status").textContent = msg + " (" + Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0") + ")"; }, 500);
   try {
+    const sid = $("space").value.trim();
+    msg = "Checking the Space";
+    try {
+      const info = await fetch("https://huggingface.co/api/spaces/" + sid);
+      if (info.status === 404) { const er = new Error("Space \u201c" + sid + "\u201d was not found. Choose another Space in Settings."); er.fatal = true; throw er; }
+      if (info.ok) {
+        const st = ((await info.json()).runtime || {}).stage;
+        if (["PAUSED", "STOPPED", "BUILD_ERROR", "RUNTIME_ERROR", "CONFIG_ERROR", "NO_APP_FILE", "DELETING"].includes(st)) { const er = new Error("Space \u201c" + sid + "\u201d is in state " + st + ". Choose another Space in Settings."); er.fatal = true; throw er; }
+      }
+    } catch (e) { if (e.fatal) throw e; }
     msg = "Connecting to the free GPU Space";
     const { Client, handle_file } = await import("https://cdn.jsdelivr.net/npm/@gradio/client@1.15.1/dist/index.min.js");
     const tok = $("token").value.trim();
-    const client = await Client.connect($("space").value.trim(), tok ? { hf_token: tok } : {});
-    try { await client.predict("/start_session", {}); } catch (_) {}
-    msg = "Preparing the image";
-    const pre = await client.predict("/preprocess_image", { image: handle_file(imgFile) });
+    const client = await Client.connect(sid, tok ? { hf_token: tok } : {});
+    const eps = ((await client.view_api()) || {}).named_endpoints || {};
+    const need = n => { if (!eps[n]) throw new Error("This Space has no " + n + " endpoint. Choose a TRELLIS Space that does image to 3D with GLB export."); return eps[n].parameters; };
+    const build = (params, img) => {
+      let k = params.findIndex(p => (p.parameter_name || "").toLowerCase() === "image");
+      if (k < 0) k = params.findIndex(p => p.component === "Image");
+      return params.map((p, i) => i === k && img !== undefined ? img : p.component === "Gallery" ? [] : p.parameter_has_default ? p.parameter_default : null);
+    };
+    if (eps["/start_session"]) { try { await client.predict("/start_session", build(eps["/start_session"].parameters)); } catch (_) {} }
+    let img = handle_file(imgFile);
+    if (eps["/preprocess_image"]) { msg = "Preparing the image"; const pre = await client.predict("/preprocess_image", build(eps["/preprocess_image"].parameters, img)); img = pre.data[0]; }
     msg = "Generating 3D, this can take several minutes while queued";
-    await client.predict("/image_to_3d", {
-      image: pre.data[0], multiimages: [], seed: 0,
-      ss_guidance_strength: 7.5, ss_sampling_steps: 12,
-      slat_guidance_strength: 3, slat_sampling_steps: 12, multiimage_algo: "stochastic"
-    });
+    await client.predict("/image_to_3d", build(need("/image_to_3d"), img));
     msg = "Building the mesh";
-    const glb = await client.predict("/extract_glb", { mesh_simplify: 0.95, texture_size: 1024 });
+    const glb = await client.predict("/extract_glb", build(need("/extract_glb")));
     const url = fileUrl(glb); if (!url) throw new Error("The Space returned no GLB file.");
     clearInterval(tick); startWorld(url, "glb", "drone");
   } catch (e) {
     clearInterval(tick); $("status").textContent = ""; $("go").disabled = false;
-    showErr("Generation failed: " + ((e && (e.message || e.detail)) || JSON.stringify(e)) + (framed ? ". This frame blocks requests to Hugging Face. Open the file in a normal browser tab instead." : ". The Space may be asleep, busy or changed. Retry, add a token, or change the Space in Settings."));
+    showErr("Generation failed: " + ((e && (e.message || e.detail)) || JSON.stringify(e)) + (framed ? ". This frame blocks requests to Hugging Face. Open the file in a normal browser tab instead." : ". If this says \u201cLoad failed\u201d or \u201cFailed to fetch\u201d, a browser extension, content blocker or network filter may be blocking huggingface.co. Otherwise the Space may be busy or changed: retry, add a token, or change the Space in Settings."));
   }
 };
 
