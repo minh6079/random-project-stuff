@@ -133,7 +133,12 @@ $("go").onclick = async () => {
       }
     } catch (e) { if (e.fatal) throw e; }
     msg = "Connecting to the free GPU Space";
-    const { Client, handle_file } = await import("https://cdn.jsdelivr.net/npm/@gradio/client@1.15.1/dist/index.min.js");
+    msg = "Loading the Gradio client library";
+    let gc;
+    try { gc = await import("https://cdn.jsdelivr.net/npm/@gradio/client@2.1.0/dist/index.min.js"); }
+    catch (_) { gc = await import("https://cdn.jsdelivr.net/npm/@gradio/client@1.15.1/dist/index.min.js"); }
+    const { Client, handle_file } = gc;
+    msg = "Connecting to the free GPU Space";
     const tok = $("token").value.trim();
     const client = await Client.connect(sid, tok ? { hf_token: tok } : {});
     const eps = ((await client.view_api()) || {}).named_endpoints || {};
@@ -154,7 +159,7 @@ $("go").onclick = async () => {
     clearInterval(tick); startWorld(url, "glb", "drone");
   } catch (e) {
     clearInterval(tick); $("status").textContent = ""; $("go").disabled = false;
-    showErr("Generation failed: " + ((e && (e.message || e.detail)) || JSON.stringify(e)) + (framed ? ". This frame blocks requests to Hugging Face. Open the file in a normal browser tab instead." : ". If this says \u201cLoad failed\u201d or \u201cFailed to fetch\u201d, a browser extension, content blocker or network filter may be blocking huggingface.co. Otherwise the Space may be busy or changed: retry, add a token, or change the Space in Settings."));
+    showErr("Generation failed at step \u201c" + msg.split(",")[0] + "\u201d: " + ((e && (e.message || e.detail)) || JSON.stringify(e)) + (framed ? ". This frame blocks requests to Hugging Face. Open the file in a normal browser tab instead." : ". If this says \u201cLoad failed\u201d or \u201cFailed to fetch\u201d, a browser extension, content blocker or network filter may be blocking huggingface.co. Otherwise the Space may be busy or changed: retry, add a token, or change the Space in Settings."));
   }
 };
 
