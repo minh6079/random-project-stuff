@@ -75,7 +75,7 @@ body.touch #dl{bottom:auto;top:calc(60px + env(safe-area-inset-top,0px));right:c
     Free HF token (optional, raises quota)<input type="text" id="token" placeholder="hf_...">
     <button type="button" id="diag" style="background:var(--card);color:var(--ink);margin-top:4px">Run connection test</button>
     <pre id="diagOut" style="white-space:pre-wrap;font-size:12px;margin:8px 0 0"></pre>
-    <p style="font-size:12px;margin:8px 0 0">Build 7</p>
+    <p style="font-size:12px;margin:8px 0 0">Build 8</p>
   </details>
 </div></div>
 <div id="help"></div><div id="hud"></div><div id="cross"></div>
@@ -118,7 +118,39 @@ function openLocal(f) {
   startWorld(f, ext, "walk");
 }
 
-const fileUrl = r => { for (const d of (r.data || [])) { const f = Array.isArray(d) ? d.find(x => x && x.url) : d; if (f && f.url) return f.url; } return null; };
+const fileUrl = (arr, host) => {
+  const walk = d => {
+    if (!d) return null;
+    if (Array.isArray(d)) { for (const x of d) { const u = walk(x); if (u) return u; } return null; }
+    if (typeof d === "object") return d.url || (d.path ? host + "/gradio_api/file=" + d.path : null);
+    if (typeof d === "string" && /\.(glb|gltf|obj)$/i.test(d)) return host + "/gradio_api/file=" + d;
+    return null;
+  };
+  return walk(arr);
+};
+
+// Calls a Gradio endpoint with plain fetch (no client library) and reads the server-sent result.
+async function gcall(host, ep, data, sess, auth) {
+  const r = await fetch(host + "/gradio_api/call" + ep, { method: "POST", headers: { "Content-Type": "application/json", ...auth }, body: JSON.stringify({ data, session_hash: sess }) });
+  if (!r.ok) throw new Error(ep + " failed to start (HTTP " + r.status + "): " + (await r.text()).slice(0, 200));
+  const { event_id } = await r.json();
+  const res = await fetch(host + "/gradio_api/call" + ep + "/" + event_id, { headers: auth });
+  if (!res.ok) throw new Error(ep + " result stream failed (HTTP " + res.status + ")");
+  const reader = res.body.getReader(), dec = new TextDecoder(); let buf = "";
+  for (;;) {
+    const { done, value } = await reader.read(); if (done) break;
+    buf += dec.decode(value, { stream: true }).replace(/\r\n/g, "\n");
+    let i;
+    while ((i = buf.indexOf("\n\n")) >= 0) {
+      const block = buf.slice(0, i); buf = buf.slice(i + 2);
+      let name = "", dat = "";
+      for (const line of block.split("\n")) { if (line.startsWith("event:")) name = line.slice(6).trim(); else if (line.startsWith("data:")) dat += line.slice(5).trim(); }
+      if (name === "complete") return JSON.parse(dat);
+      if (name === "error") throw new Error(ep + " error from the Space: " + (dat && dat !== "null" ? dat.slice(0, 300) : "no details (often a GPU quota or busy Space)"));
+    }
+  }
+  throw new Error(ep + ": the Space closed the connection without a result");
+}
 
 $("go").onclick = async () => {
   showErr(""); $("go").disabled = true;
@@ -137,32 +169,31 @@ $("go").onclick = async () => {
       }
     } catch (e) { if (e.fatal) throw e; }
     msg = "Connecting to the free GPU Space";
-    msg = "Loading the Gradio client library";
-    let gc;
-    try { gc = await import("https://cdn.jsdelivr.net/npm/@gradio/client@2.1.0/dist/index.min.js"); }
-    catch (_) { gc = await import("https://cdn.jsdelivr.net/npm/@gradio/client@1.15.1/dist/index.min.js"); }
-    const { Client, handle_file } = gc;
-    msg = "Connecting to the free GPU Space";
-    const tok = $("token").value.trim();
-    const copts = tok ? { hf_token: tok } : {};
-    let client;
-    try { client = await Client.connect(host, copts); }
-    catch (e1) { try { client = await Client.connect(sid, copts); } catch (e2) { throw new Error("could not connect to " + host + " (" + (e1 && e1.message || e1) + ") or to " + sid + " (" + (e2 && e2.message || e2) + ")"); } }
-    const eps = ((await client.view_api()) || {}).named_endpoints || {};
+    const tok = $("token").value.trim(), auth = tok ? { Authorization: "Bearer " + tok } : {};
+    msg = "Reading the Space\u2019s API list";
+    const ir = await fetch(host + "/gradio_api/info", { headers: auth });
+    if (!ir.ok) throw new Error("could not read the API list from " + host + " (HTTP " + ir.status + ")");
+    const eps = (await ir.json()).named_endpoints || {};
     const need = n => { if (!eps[n]) throw new Error("This Space has no " + n + " endpoint. Choose a TRELLIS Space that does image to 3D with GLB export."); return eps[n].parameters; };
     const build = (params, img) => {
       let k = params.findIndex(p => (p.parameter_name || "").toLowerCase() === "image");
       if (k < 0) k = params.findIndex(p => p.component === "Image");
       return params.map((p, i) => i === k && img !== undefined ? img : p.component === "Gallery" ? [] : p.parameter_has_default ? p.parameter_default : null);
     };
-    if (eps["/start_session"]) { try { await client.predict("/start_session", build(eps["/start_session"].parameters)); } catch (_) {} }
-    let img = handle_file(imgFile);
-    if (eps["/preprocess_image"]) { msg = "Preparing the image"; const pre = await client.predict("/preprocess_image", build(eps["/preprocess_image"].parameters, img)); img = pre.data[0]; }
+    const sess = Math.random().toString(36).slice(2, 12);
+    const call = (ep, params, img) => gcall(host, ep, build(params, img), sess, auth);
+    msg = "Uploading the image";
+    const fd = new FormData(); fd.append("files", imgFile, imgFile.name || "photo.jpg");
+    const up = await fetch(host + "/gradio_api/upload", { method: "POST", body: fd, headers: auth });
+    if (!up.ok) throw new Error("image upload failed (HTTP " + up.status + ")");
+    let img = { path: (await up.json())[0], orig_name: imgFile.name || "photo.jpg", meta: { _type: "gradio.FileData" } };
+    if (eps["/start_session"]) { try { await call("/start_session", eps["/start_session"].parameters); } catch (_) {} }
+    if (eps["/preprocess_image"]) { msg = "Preparing the image"; img = (await call("/preprocess_image", eps["/preprocess_image"].parameters, img))[0]; }
     msg = "Generating 3D, this can take several minutes while queued";
-    await client.predict("/image_to_3d", build(need("/image_to_3d"), img));
+    await call("/image_to_3d", need("/image_to_3d"), img);
     msg = "Building the mesh";
-    const glb = await client.predict("/extract_glb", build(need("/extract_glb")));
-    const url = fileUrl(glb); if (!url) throw new Error("The Space returned no GLB file.");
+    const glb = await call("/extract_glb", need("/extract_glb"));
+    const url = fileUrl(glb, host); if (!url) throw new Error("The Space returned no GLB file.");
     clearInterval(tick); startWorld(url, "glb", "drone");
   } catch (e) {
     clearInterval(tick); $("status").textContent = ""; $("go").disabled = false;
@@ -172,7 +203,7 @@ $("go").onclick = async () => {
 
 $("diag").onclick = async () => {
   const out = $("diagOut"), sid = $("space").value.trim(), log = t => { out.textContent += t + "\n"; };
-  out.textContent = ""; log("Build 7, inside a frame: " + framed);
+  out.textContent = ""; log("Build 8, inside a frame: " + framed);
   const probe = async (label, url, init) => {
     try {
       const r = await fetch(url, init); let extra = "";
