@@ -73,6 +73,9 @@ body.touch #dl{bottom:auto;top:calc(60px + env(safe-area-inset-top,0px));right:c
   <details><summary>Settings</summary>
     Hugging Face Space (image to 3D)<input type="text" id="space" value="microsoft/TRELLIS.2">
     Free HF token (optional, raises quota)<input type="text" id="token" placeholder="hf_...">
+    <button type="button" id="diag" style="background:var(--card);color:var(--ink);margin-top:4px">Run connection test</button>
+    <pre id="diagOut" style="white-space:pre-wrap;font-size:12px;margin:8px 0 0"></pre>
+    <p style="font-size:12px;margin:8px 0 0">Build 5</p>
   </details>
 </div></div>
 <div id="help"></div><div id="hud"></div><div id="cross"></div>
@@ -161,6 +164,23 @@ $("go").onclick = async () => {
     clearInterval(tick); $("status").textContent = ""; $("go").disabled = false;
     showErr("Generation failed at step \u201c" + msg.split(",")[0] + "\u201d: " + ((e && (e.message || e.detail)) || JSON.stringify(e)) + (framed ? ". This frame blocks requests to Hugging Face. Open the file in a normal browser tab instead." : ". If this says \u201cLoad failed\u201d or \u201cFailed to fetch\u201d, a browser extension, content blocker or network filter may be blocking huggingface.co. Otherwise the Space may be busy or changed: retry, add a token, or change the Space in Settings."));
   }
+};
+
+$("diag").onclick = async () => {
+  const out = $("diagOut"), sid = $("space").value.trim(), log = t => { out.textContent += t + "\n"; };
+  out.textContent = ""; log("Build 5, inside a frame: " + framed);
+  const probe = async (label, url) => {
+    try {
+      const r = await fetch(url); let extra = "";
+      if (r.ok && /config$/.test(url)) { try { extra = ", gradio " + (await r.json()).version; } catch (_) {} }
+      log(label + ": HTTP " + r.status + extra);
+    } catch (e) { log(label + ": FAILED (" + e.message + ")"); }
+  };
+  await probe("Hugging Face API", "https://huggingface.co/api/spaces/" + sid);
+  await probe("Space config", "https://" + sid.toLowerCase().replace(/[\/_.]/g, "-") + ".hf.space/config");
+  try { await import("https://cdn.jsdelivr.net/npm/@gradio/client@2.1.0/dist/index.min.js"); log("Gradio client 2.1.0: loaded"); }
+  catch (e) { log("Gradio client 2.1.0: FAILED (" + e.message + ")"); }
+  log("Done. Send me these lines.");
 };
 
 function startWorld(url, ext, startMode) {
