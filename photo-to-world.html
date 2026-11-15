@@ -75,7 +75,7 @@ body.touch #dl{bottom:auto;top:calc(60px + env(safe-area-inset-top,0px));right:c
     Free HF token (optional, raises quota)<input type="text" id="token" placeholder="hf_...">
     <button type="button" id="diag" style="background:var(--card);color:var(--ink);margin-top:4px">Run connection test</button>
     <pre id="diagOut" style="white-space:pre-wrap;font-size:12px;margin:8px 0 0"></pre>
-    <p style="font-size:12px;margin:8px 0 0">Build 5</p>
+    <p style="font-size:12px;margin:8px 0 0">Build 6</p>
   </details>
 </div></div>
 <div id="help"></div><div id="hud"></div><div id="cross"></div>
@@ -127,11 +127,12 @@ $("go").onclick = async () => {
   try {
     const sid = $("space").value.trim();
     msg = "Checking the Space";
+    let host = "https://" + sid.toLowerCase().replace(/[\/_.]/g, "-") + ".hf.space";
     try {
       const info = await fetch("https://huggingface.co/api/spaces/" + sid);
       if (info.status === 404) { const er = new Error("Space \u201c" + sid + "\u201d was not found. Choose another Space in Settings."); er.fatal = true; throw er; }
       if (info.ok) {
-        const st = ((await info.json()).runtime || {}).stage;
+        const j = await info.json(); const st = (j.runtime || {}).stage; if (j.host) host = j.host;
         if (["PAUSED", "STOPPED", "BUILD_ERROR", "RUNTIME_ERROR", "CONFIG_ERROR", "NO_APP_FILE", "DELETING"].includes(st)) { const er = new Error("Space \u201c" + sid + "\u201d is in state " + st + ". Choose another Space in Settings."); er.fatal = true; throw er; }
       }
     } catch (e) { if (e.fatal) throw e; }
@@ -143,7 +144,10 @@ $("go").onclick = async () => {
     const { Client, handle_file } = gc;
     msg = "Connecting to the free GPU Space";
     const tok = $("token").value.trim();
-    const client = await Client.connect(sid, tok ? { hf_token: tok } : {});
+    const copts = tok ? { hf_token: tok } : {};
+    let client;
+    try { client = await Client.connect(host, copts); }
+    catch (e1) { try { client = await Client.connect(sid, copts); } catch (e2) { throw new Error("could not connect to " + host + " (" + (e1 && e1.message || e1) + ") or to " + sid + " (" + (e2 && e2.message || e2) + ")"); } }
     const eps = ((await client.view_api()) || {}).named_endpoints || {};
     const need = n => { if (!eps[n]) throw new Error("This Space has no " + n + " endpoint. Choose a TRELLIS Space that does image to 3D with GLB export."); return eps[n].parameters; };
     const build = (params, img) => {
@@ -168,7 +172,7 @@ $("go").onclick = async () => {
 
 $("diag").onclick = async () => {
   const out = $("diagOut"), sid = $("space").value.trim(), log = t => { out.textContent += t + "\n"; };
-  out.textContent = ""; log("Build 5, inside a frame: " + framed);
+  out.textContent = ""; log("Build 6, inside a frame: " + framed);
   const probe = async (label, url) => {
     try {
       const r = await fetch(url); let extra = "";
