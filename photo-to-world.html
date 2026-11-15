@@ -75,7 +75,7 @@ body.touch #dl{bottom:auto;top:calc(60px + env(safe-area-inset-top,0px));right:c
     Free HF token (optional, raises quota)<input type="text" id="token" placeholder="hf_...">
     <button type="button" id="diag" style="background:var(--card);color:var(--ink);margin-top:4px">Run connection test</button>
     <pre id="diagOut" style="white-space:pre-wrap;font-size:12px;margin:8px 0 0"></pre>
-    <p style="font-size:12px;margin:8px 0 0">Build 8</p>
+    <p style="font-size:12px;margin:8px 0 0">Build 9</p>
   </details>
 </div></div>
 <div id="help"></div><div id="hud"></div><div id="cross"></div>
@@ -186,11 +186,19 @@ $("go").onclick = async () => {
     const fd = new FormData(); fd.append("files", imgFile, imgFile.name || "photo.jpg");
     const up = await fetch(host + "/gradio_api/upload", { method: "POST", body: fd, headers: auth });
     if (!up.ok) throw new Error("image upload failed (HTTP " + up.status + ")");
-    let img = { path: (await up.json())[0], orig_name: imgFile.name || "photo.jpg", meta: { _type: "gradio.FileData" } };
+    const upj = await up.json(), first = Array.isArray(upj) ? upj[0] : upj, upPath = typeof first === "string" ? first : first && first.path;
+    if (!upPath) throw new Error("the upload returned no file path: " + JSON.stringify(upj).slice(0, 120));
+    let img = { path: upPath, url: host + "/gradio_api/file=" + upPath, orig_name: imgFile.name || "photo.jpg", size: imgFile.size, mime_type: imgFile.type || "image/jpeg", meta: { _type: "gradio.FileData" } };
+    let prepNote = "";
     if (eps["/start_session"]) { try { await call("/start_session", eps["/start_session"].parameters); } catch (_) {} }
-    if (eps["/preprocess_image"]) { msg = "Preparing the image"; img = (await call("/preprocess_image", eps["/preprocess_image"].parameters, img))[0]; }
+    if (eps["/preprocess_image"]) {
+      msg = "Preparing the image";
+      try { img = (await call("/preprocess_image", eps["/preprocess_image"].parameters, img))[0]; }
+      catch (e) { prepNote = e.message; }
+    }
     msg = "Generating 3D, this can take several minutes while queued";
-    await call("/image_to_3d", need("/image_to_3d"), img);
+    try { await call("/image_to_3d", need("/image_to_3d"), img); }
+    catch (e) { if (prepNote) e.message += " [Image preparation had also failed earlier: " + prepNote.slice(0, 150) + "]"; throw e; }
     msg = "Building the mesh";
     const glb = await call("/extract_glb", need("/extract_glb"));
     const url = fileUrl(glb, host); if (!url) throw new Error("The Space returned no GLB file.");
@@ -203,7 +211,7 @@ $("go").onclick = async () => {
 
 $("diag").onclick = async () => {
   const out = $("diagOut"), sid = $("space").value.trim(), log = t => { out.textContent += t + "\n"; };
-  out.textContent = ""; log("Build 8, inside a frame: " + framed);
+  out.textContent = ""; log("Build 9, inside a frame: " + framed);
   const probe = async (label, url, init) => {
     try {
       const r = await fetch(url, init); let extra = "";
