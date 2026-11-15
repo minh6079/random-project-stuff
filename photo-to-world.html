@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Photo to world</title>
+<link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--sky:#cfe3ee;--ink:#12303f;--card:#f6fbfd;--hot:#ff6a2b;--mut:#587888}
+@media (prefers-color-scheme:dark){:root{--sky:#16303d;--ink:#e6f3f9;--card:#1d3b4a;--mut:#8fb2c2}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:Chivo,system-ui,sans-serif;background:var(--sky);color:var(--ink);overflow:hidden}
+#panel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:5;overflow:auto}
+.box{background:var(--card);border:2px solid var(--ink);padding:26px;max-width:480px;width:100%;box-shadow:8px 8px 0 var(--ink)}
+h1{font-size:34px;line-height:1.05;margin:0 0 10px;font-weight:900}
+h2{font-size:16px;margin:18px 0 8px}
+p{margin:0 0 12px;color:var(--mut);line-height:1.45}
+label.drop{display:block;border:2px dashed var(--ink);padding:18px;text-align:center;cursor:pointer;margin-bottom:10px}
+label.drop.over{background:var(--hot);color:#fff}
+label.drop:focus-within{outline:3px solid var(--hot)}
+input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
+#prev{max-width:100%;max-height:130px;display:none;margin:0 auto 8px}
+button{font:inherit;font-weight:700;background:var(--hot);color:#fff;border:2px solid var(--ink);padding:12px 18px;cursor:pointer;width:100%}
+button:disabled{opacity:.5;cursor:wait}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.row{display:flex;gap:10px;align-items:center;color:var(--mut);font-size:14px;margin-top:14px}
+input[type=range]{flex:1}
+details{margin-top:14px;color:var(--mut);font-size:14px}
+input[type=text]{width:100%;padding:8px;margin:4px 0 8px;border:1px solid var(--ink);background:var(--card);color:var(--ink);font:inherit}
+#status{margin-top:10px;font-weight:700;min-height:1.4em}
+#err{color:#c0262d;margin-top:8px;font-size:14px;word-break:break-word}
+#hud,#help{position:absolute;z-index:4;display:none;background:var(--card);border:2px solid var(--ink);padding:8px 12px;font-size:13px;line-height:1.4}
+#hud{left:16px;bottom:14px;font-weight:700}
+#help{right:16px;top:14px;max-width:280px}
+#cross{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:var(--hot);z-index:4;display:none}
+canvas{display:block;touch-action:none}
+body{overscroll-behavior:none;-webkit-touch-callout:none}
+#touch{display:none;position:absolute;inset:0;z-index:6;pointer-events:none;user-select:none;-webkit-user-select:none}
+body.touch #touch{display:block}
+body.touch #help{display:none!important}
+body.touch #hud{left:calc(12px + env(safe-area-inset-left,0px));top:calc(12px + env(safe-area-inset-top,0px));bottom:auto}
+#look{position:absolute;right:0;top:0;width:58%;height:100%;pointer-events:auto;touch-action:none}
+#stick{position:absolute;left:calc(24px + env(safe-area-inset-left,0px));bottom:calc(28px + env(safe-area-inset-bottom,0px));width:136px;height:136px;border-radius:50%;border:2px solid var(--ink);background:var(--card);opacity:.75;pointer-events:auto;touch-action:none}
+#knob{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px;border-radius:50%;background:var(--hot);border:2px solid var(--ink)}
+#touch button{width:auto;touch-action:none;pointer-events:auto;-webkit-user-select:none;user-select:none}
+.tb{position:absolute;right:calc(20px + env(safe-area-inset-right,0px));width:72px!important;height:72px;border-radius:50%;padding:0!important;font-size:14px}
+#bUp{bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+#bDown{bottom:calc(30px + env(safe-area-inset-bottom,0px))}
+.ts{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));padding:8px 12px!important;font-size:13px}
+#bMode{right:calc(12px + env(safe-area-inset-right,0px))}
+#bRes{right:calc(96px + env(safe-area-inset-right,0px))}
+#dl{display:none;position:absolute;z-index:7;right:16px;bottom:14px;width:auto;padding:8px 12px;font-size:13px}
+body.touch #dl{bottom:auto;top:calc(60px + env(safe-area-inset-top,0px));right:calc(12px + env(safe-area-inset-right,0px))}
+</style>
+</head>
+<body>
+<div id="panel"><div class="box">
+  <h1>Photo to world</h1>
+  <p>Turn a photo into a 3D model, then fly a drone around it or walk through it. Generation takes a few minutes on a free cloud GPU.</p>
+
+  <p id="frameNote" style="display:none;color:#c0262d;font-weight:700">This page is inside a frame that blocks outside network requests, so photo generation cannot work here. Open the file in a normal browser tab (from localhost or any web host). Opening a 3D file below still works.</p>
+  <h2>1. Generate from a photo</h2>
+  <label class="drop"><img id="prev" alt="Selected photo"><span id="dropText">Choose a photo</span><input type="file" id="file" accept="image/*"></label>
+  <button id="go" disabled>Generate and fly</button>
+  <div id="status" role="status"></div>
+
+  <h2>2. Or open a 3D file you already have</h2>
+  <label class="drop" id="drop"><span>Choose or drop a .glb, .gltf or .obj</span><input type="file" id="glbFile" accept=".glb,.gltf,.obj"></label>
+
+  <div class="row"><label for="size">World width</label><input type="range" id="size" min="10" max="300" value="60"><output id="sizeOut">60 m</output></div>
+  <div id="err" role="alert"></div>
+  <details><summary>Settings</summary>
+    Hugging Face Space (image to 3D)<input type="text" id="space" value="JeffreyXiang/TRELLIS">
+    Free HF token (optional, raises quota)<input type="text" id="token" placeholder="hf_...">
+  </details>
+</div></div>
+<div id="help"></div><div id="hud"></div><div id="cross"></div>
+<button id="dl">Download model</button>
+<div id="touch">
+  <div id="look"></div>
+  <div id="stick" aria-label="Move"><div id="knob"></div></div>
+  <button class="tb" id="bUp" aria-label="Up or jump">Up</button>
+  <button class="tb" id="bDown" aria-label="Down or run">Down</button>
+  <button class="ts" id="bRes">Respawn</button>
+  <button class="ts" id="bMode">Walk</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+<script type="module">
+const $ = id => document.getElementById(id);
+let imgFile = null, started = false;
+const touchMode = matchMedia("(pointer: coarse)").matches;
+const framed = window.self !== window.top;
+if (framed) $("frameNote").style.display = "block";
+
+$("size").oninput = () => $("sizeOut").textContent = $("size").value + " m";
+$("file").onchange = e => {
+  imgFile = e.target.files[0]; if (!imgFile) return;
+  $("prev").src = URL.createObjectURL(imgFile); $("prev").style.display = "block";
+  $("dropText").textContent = imgFile.name; $("go").disabled = false;
+};
+$("glbFile").onchange = e => { const f = e.target.files[0]; if (f) openLocal(f); };
+const drop = $("drop");
+["dragover", "dragenter"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => e.dataTransfer.files[0] && openLocal(e.dataTransfer.files[0]));
+
+const showErr = m => { $("err").textContent = m; };
+function openLocal(f) {
+  showErr(""); const ext = f.name.split(".").pop().toLowerCase();
+  if (!["glb", "gltf", "obj"].includes(ext)) return showErr("Use a .glb, .gltf or .obj file. Gaussian splat files (.ply, .spz) are not supported here.");
+  startWorld(f, ext, "walk");
+}
+
+const fileUrl = r => { for (const d of (r.data || [])) { const f = Array.isArray(d) ? d.find(x => x && x.url) : d; if (f && f.url) return f.url; } return null; };
+
+$("go").onclick = async () => {
+  showErr(""); $("go").disabled = true;
+  const t0 = Date.now(); let msg = "Starting";
+  const tick = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); $("status").textContent = msg + " (" + Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0") + ")"; }, 500);
+  try {
+    msg = "Connecting to the free GPU Space";
+    const { Client, handle_file } = await import("https://cdn.jsdelivr.net/npm/@gradio/client@1.15.1/dist/index.min.js");
+    const tok = $("token").value.trim();
+    const client = await Client.connect($("space").value.trim(), tok ? { hf_token: tok } : {});
+    try { await client.predict("/start_session", {}); } catch (_) {}
+    msg = "Preparing the image";
+    const pre = await client.predict("/preprocess_image", { image: handle_file(imgFile) });
+    msg = "Generating 3D, this can take several minutes while queued";
+    await client.predict("/image_to_3d", {
+      image: pre.data[0], multiimages: [], seed: 0,
+      ss_guidance_strength: 7.5, ss_sampling_steps: 12,
+      slat_guidance_strength: 3, slat_sampling_steps: 12, multiimage_algo: "stochastic"
+    });
+    msg = "Building the mesh";
+    const glb = await client.predict("/extract_glb", { mesh_simplify: 0.95, texture_size: 1024 });
+    const url = fileUrl(glb); if (!url) throw new Error("The Space returned no GLB file.");
+    clearInterval(tick); startWorld(url, "glb", "drone");
+  } catch (e) {
+    clearInterval(tick); $("status").textContent = ""; $("go").disabled = false;
+    showErr("Generation failed: " + ((e && (e.message || e.detail)) || JSON.stringify(e)) + (framed ? ". This frame blocks requests to Hugging Face. Open the file in a normal browser tab instead." : ". The Space may be asleep, busy or changed. Retry, add a token, or change the Space in Settings."));
+  }
+};
+
+function startWorld(url, ext, startMode) {
+  if (started) return;
+  const THREE_ = window.THREE;
+  if (!THREE_ || !THREE_.GLTFLoader || !THREE_.OBJLoader) return showErr("The 3D libraries failed to load. Check your connection and reload.");
+  let dlBlob, dlName;
+  const fail = e => {
+    $("go").disabled = !imgFile; $("status").textContent = "";
+    showErr("Could not read the 3D file: " + (e instanceof ProgressEvent ? "the file could not be fetched" : (e && e.message) || e));
+  };
+  (async () => {
+    try {
+      let buf;
+      if (typeof url === "string") {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("download failed with HTTP " + res.status);
+        buf = await res.arrayBuffer();
+      } else buf = await url.arrayBuffer();
+      dlName = typeof url === "string" ? "photo-world-" + Date.now() + "." + ext : url.name;
+      dlBlob = new Blob([buf], { type: ext === "obj" ? "text/plain" : ext === "gltf" ? "model/gltf+json" : "model/gltf-binary" });
+      if (ext === "obj") build(new THREE_.OBJLoader().parse(new TextDecoder().decode(buf)));
+      else new THREE_.GLTFLoader().parse(ext === "gltf" ? new TextDecoder().decode(buf) : buf, "", g => build(g.scene), fail);
+    } catch (e) { fail(e); }
+  })();
+
+  function build(world) {
+    started = true; $("panel").style.display = "none";
+    ["hud", "help", "cross", "dl"].forEach(i => $(i).style.display = "block");
+    $("dl").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(dlBlob); a.download = dlName; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); };
+    if (touchMode) document.body.classList.add("touch");
+    const T = THREE_, W = +$("size").value;
+    const sky = new T.Color(0xbfd9e8);
+    const scene = new T.Scene(); scene.background = sky; scene.fog = new T.Fog(sky, W * 1.5, W * 12);
+    const cam = new T.PerspectiveCamera(75, innerWidth / innerHeight, 0.05, 5000);
+    const r = new T.WebGLRenderer({ antialias: true }); r.setSize(innerWidth, innerHeight); r.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(r.domElement);
+    scene.add(new T.HemisphereLight(0xffffff, 0x667788, 1.15));
+    const sun = new T.DirectionalLight(0xffffff, 0.8); sun.position.set(100, 200, 80); scene.add(sun);
+    const grid = new T.GridHelper(W * 10, 80, 0x7aa0b4, 0x9bbccd); scene.add(grid);
+
+    let box = new T.Box3().setFromObject(world), s0 = box.getSize(new T.Vector3());
+    world.scale.setScalar(W / Math.max(s0.x, s0.z, 1e-6));
+    box = new T.Box3().setFromObject(world); const c = box.getCenter(new T.Vector3());
+    world.position.set(-c.x, -box.min.y, -c.z);
+    world.traverse(o => { if (o.isMesh) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { m.side = T.DoubleSide; }); });
+    scene.add(world); world.updateMatrixWorld(true); box = new T.Box3().setFromObject(world);
+
+    const EYE = 1.7, STEP = 0.7, RAD = 0.4, UP = new T.Vector3(0, 1, 0), DOWN = new T.Vector3(0, -1, 0), ray = new T.Raycaster();
+    const hitAt = (o, d, far) => { ray.set(o, d); ray.far = far; const h = ray.intersectObject(world, true); return h.length ? h[0] : null; };
+    const feet = new T.Vector3(), vel = new T.Vector3(), fwd = new T.Vector3(), right = new T.Vector3();
+    let mode = startMode, yaw = 0, pitch = 0, vy = 0, grounded = false, droneSpeed = W * 0.7;
+
+    function respawn() {
+      const cx = (box.min.x + box.max.x) / 2, cz = (box.min.z + box.max.z) / 2, w = box.max.x - box.min.x;
+      vel.set(0, 0, 0); vy = 0;
+      if (mode === "drone") { feet.set(cx, (box.max.y - box.min.y) * 0.6 + 4, box.max.z + w * 0.9); yaw = 0; pitch = -0.2; return; }
+      for (let i = 0; i < 40; i++) {
+        const a = i * 2.4, rad = i === 0 ? 0 : w * 0.04 * Math.sqrt(i);
+        const h = hitAt(new T.Vector3(cx + Math.cos(a) * rad, box.max.y + 5, cz + Math.sin(a) * rad), DOWN, box.max.y - box.min.y + 20);
+        if (h) { feet.copy(h.point); return; }
+      }
+      feet.set(cx, (box.min.y + box.max.y) / 2, cz);
+    }
+    function setMode(m) {
+      mode = m; grid.visible = m === "drone"; vel.set(0, 0, 0); vy = 0;
+      $("bUp").textContent = m === "drone" ? "Up" : "Jump"; $("bDown").textContent = m === "drone" ? "Down" : "Run"; $("bMode").textContent = m === "drone" ? "Walk" : "Drone";
+      $("help").innerHTML = "Click to take control. Esc releases the mouse.<br>" + (m === "drone"
+        ? "Drone: W A S D fly, Space up, Shift down, wheel changes speed."
+        : "Walk: W A S D walk, Shift run, Space jump.") + "<br>T switches drone and walk, R respawns.";
+    }
+    setMode(mode); respawn();
+
+    const tMove = { x: 0, y: 0 };
+    r.domElement.onclick = () => { if (!touchMode) r.domElement.requestPointerLock(); };
+    if (touchMode) {
+      const stick = $("stick"), knob = $("knob"), R = 48;
+      const setStick = e => { const b = stick.getBoundingClientRect(); let dx = e.clientX - (b.left + b.width / 2), dy = e.clientY - (b.top + b.height / 2); const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } tMove.x = dx / R; tMove.y = dy / R; knob.style.transform = "translate(" + dx + "px," + dy + "px)"; };
+      const endStick = () => { tMove.x = tMove.y = 0; knob.style.transform = ""; };
+      stick.addEventListener("pointerdown", e => { stick.setPointerCapture(e.pointerId); setStick(e); });
+      stick.addEventListener("pointermove", e => { if (stick.hasPointerCapture(e.pointerId)) setStick(e); });
+      stick.addEventListener("pointerup", endStick); stick.addEventListener("pointercancel", endStick);
+      const look = $("look"); let lx = 0, ly = 0;
+      look.addEventListener("pointerdown", e => { look.setPointerCapture(e.pointerId); lx = e.clientX; ly = e.clientY; });
+      look.addEventListener("pointermove", e => { if (!look.hasPointerCapture(e.pointerId)) return; yaw -= (e.clientX - lx) * 0.005; pitch = Math.max(-1.5, Math.min(1.5, pitch - (e.clientY - ly) * 0.005)); lx = e.clientX; ly = e.clientY; });
+      const hold = (id, code) => { const b = $(id), up = () => { keys[code] = false; }; b.addEventListener("pointerdown", e => { b.setPointerCapture(e.pointerId); keys[code] = true; }); b.addEventListener("pointerup", up); b.addEventListener("pointercancel", up); };
+      hold("bUp", "Space"); hold("bDown", "ShiftLeft");
+      $("bMode").onclick = () => setMode(mode === "drone" ? "walk" : "drone");
+      $("bRes").onclick = () => respawn();
+    }
+    addEventListener("mousemove", e => { if (document.pointerLockElement) { yaw -= e.movementX * 0.0022; pitch = Math.max(-1.5, Math.min(1.5, pitch - e.movementY * 0.0022)); } });
+    addEventListener("wheel", e => { droneSpeed = Math.max(2, Math.min(W * 4, droneSpeed * (e.deltaY < 0 ? 1.1 : 0.9))); });
+    const keys = {};
+    addEventListener("keydown", e => { keys[e.code] = true; if (e.code === "KeyT") setMode(mode === "drone" ? "walk" : "drone"); if (e.code === "KeyR") respawn(); });
+    addEventListener("keyup", e => keys[e.code] = false);
+    addEventListener("resize", () => { cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); r.setSize(innerWidth, innerHeight); });
+
+    function blocked(dx, dz) {
+      const d = new T.Vector3(dx, 0, dz), len = d.length(); if (!len) return false; d.normalize();
+      for (const oy of [STEP, 1.2]) if (hitAt(new T.Vector3(feet.x, feet.y + oy, feet.z), d, len + RAD)) return true;
+      return false;
+    }
+    const clock = new T.Clock();
+    (function loop() {
+      requestAnimationFrame(loop); const dt = Math.min(clock.getDelta(), 0.05);
+      cam.rotation.set(pitch, yaw, 0, "YXZ"); cam.getWorldDirection(fwd);
+      if (mode === "walk") fwd.y = 0; fwd.normalize(); right.crossVectors(fwd, UP).normalize();
+      const want = new T.Vector3();
+      const ix = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0) + tMove.x, iz = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0) - tMove.y;
+      want.addScaledVector(fwd, iz).addScaledVector(right, ix);
+      let roll = 0;
+      if (mode === "drone") {
+        if (keys.Space) want.y += 1; if (keys.ShiftLeft || keys.ShiftRight) want.y -= 1;
+        if (want.length() > 1) want.normalize(); want.multiplyScalar(droneSpeed);
+        vel.lerp(want, 1 - Math.exp(-3 * dt)); feet.addScaledVector(vel, dt);
+        if (feet.y < 0.3) feet.y = 0.3; roll = -vel.dot(right) * 0.004;
+      } else {
+        if (want.length() > 1) want.normalize(); want.multiplyScalar(keys.ShiftLeft || keys.ShiftRight ? 9 : 4);
+        const k = 1 - Math.exp(-10 * dt); vel.x += (want.x - vel.x) * k; vel.z += (want.z - vel.z) * k;
+        const mx = vel.x * dt, mz = vel.z * dt;
+        if (!blocked(mx, 0)) feet.x += mx; else vel.x = 0;
+        if (!blocked(0, mz)) feet.z += mz; else vel.z = 0;
+        vy -= 22 * dt; if (keys.Space && grounded) { vy = 7; grounded = false; }
+        feet.y += vy * dt;
+        const g = hitAt(new T.Vector3(feet.x, feet.y + STEP, feet.z), DOWN, STEP + Math.max(0.05, -vy * dt) + 0.05);
+        if (g && vy <= 0) { feet.y = g.point.y; vy = 0; grounded = true; } else grounded = false;
+        if (feet.y < box.min.y - 80) respawn();
+      }
+      cam.position.set(feet.x, feet.y + EYE, feet.z); cam.rotation.set(pitch, yaw, roll, "YXZ");
+      $("hud").textContent = (mode === "drone" ? "Drone" : "Walking") + "   Height " + (feet.y - box.min.y).toFixed(1) + " m" + (mode === "drone" ? "   Speed " + vel.length().toFixed(0) + " m/s" : "");
+      r.render(scene, cam);
+    })();
+  }
+}
+</script>
+</body>
+</html>
