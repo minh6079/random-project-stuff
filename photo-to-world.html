@@ -62,6 +62,7 @@ body.touch #dl{bottom:auto;top:calc(60px + env(safe-area-inset-top,0px));right:c
   <p id="frameNote" style="display:none;color:#c0262d;font-weight:700">This page is inside a frame that blocks outside network requests, so photo generation cannot work here. Open the file in a normal browser tab (from localhost or any web host). Opening a 3D file below still works.</p>
   <h2>1. Generate from a photo</h2>
   <label class="drop"><img id="prev" alt="Selected photo"><span id="dropText">Choose a photo</span><input type="file" id="file" accept="image/*"></label>
+  <label style="display:block;margin:0 0 10px;font-size:14px;color:var(--mut)"><input type="checkbox" id="autoDl" checked> Download the .glb as soon as it\u2019s created</label>
   <button id="go" disabled>Generate and fly</button>
   <div id="status" role="status"></div>
 
@@ -72,10 +73,11 @@ body.touch #dl{bottom:auto;top:calc(60px + env(safe-area-inset-top,0px));right:c
   <div id="err" role="alert"></div>
   <details><summary>Settings</summary>
     Hugging Face Space (image to 3D)<input type="text" id="space" value="microsoft/TRELLIS.2">
-    Free HF token (optional, raises quota)<input type="text" id="token" placeholder="hf_...">
+    Free HF token (optional, raises quota)<input type="password" id="token" placeholder="hf_..." autocomplete="off">
+    <label style="display:block;margin:4px 0"><input type="checkbox" id="skipPrep"> Skip background removal (saves GPU quota)</label>
     <button type="button" id="diag" style="background:var(--card);color:var(--ink);margin-top:4px">Run connection test</button>
     <pre id="diagOut" style="white-space:pre-wrap;font-size:12px;margin:8px 0 0"></pre>
-    <p style="font-size:12px;margin:8px 0 0">Build 9</p>
+    <p style="font-size:12px;margin:8px 0 0">Build 13</p>
   </details>
 </div></div>
 <div id="help"></div><div id="hud"></div><div id="cross"></div>
@@ -152,6 +154,43 @@ async function gcall(host, ep, data, sess, auth) {
   throw new Error(ep + ": the Space closed the connection without a result");
 }
 
+// Official Gradio queue protocol over plain fetch: join, then read the server-sent events for this session.
+async function qcall(host, cfg, ep, data, sess, auth, onmsg) {
+  const pre = cfg.api_prefix || "/gradio_api";
+  const dep = (cfg.dependencies || []).find(d => "/" + d.api_name === ep);
+  if (!dep) throw new Error("endpoint " + ep + " is missing from the Space\u2019s config");
+  // The queue protocol wants one value per input component. Hidden state inputs get null; the server fills them from this session.
+  const comps = new Map((cfg.components || []).map(c => [c.id, c])); let k = 0;
+  const full = (dep.inputs || []).map(id => { const c = comps.get(id); return c && c.type === "state" ? null : data[k++]; });
+  if (!dep.inputs) full.push(...data);
+  const jr = await fetch(host + pre + "/queue/join", { method: "POST", headers: { "Content-Type": "application/json", ...auth }, body: JSON.stringify({ data: full, event_data: null, fn_index: dep.id, trigger_id: null, session_hash: sess }) });
+  if (!jr.ok) throw new Error(ep + " could not start (HTTP " + jr.status + "): " + (await jr.text()).slice(0, 200));
+  const { event_id } = await jr.json();
+  const res = await fetch(host + pre + "/queue/data?session_hash=" + encodeURIComponent(sess), { headers: auth });
+  if (!res.ok) throw new Error(ep + " result stream failed (HTTP " + res.status + ")");
+  const reader = res.body.getReader(), dec = new TextDecoder(); let buf = "";
+  for (;;) {
+    const { done, value } = await reader.read(); if (done) break;
+    buf += dec.decode(value, { stream: true }).replace(/\r\n/g, "\n");
+    let i;
+    while ((i = buf.indexOf("\n\n")) >= 0) {
+      const block = buf.slice(0, i); buf = buf.slice(i + 2);
+      const line = block.split("\n").find(l => l.startsWith("data:")); if (!line) continue;
+      let m; try { m = JSON.parse(line.slice(5)); } catch (_) { continue; }
+      if (m.event_id && m.event_id !== event_id) continue;
+      if (m.msg === "estimation") onmsg(m.rank != null ? "queue position " + (m.rank + 1) + " of " + m.queue_size : "waiting");
+      else if (m.msg === "process_starts") onmsg("running on the GPU");
+      else if (m.msg === "queue_full") throw new Error("the Space queue is full, try again later");
+      else if (m.msg === "unexpected_error") throw new Error(ep + " unexpected error: " + String(m.message || "").slice(0, 300));
+      else if (m.msg === "process_completed") {
+        if (m.success === false || (m.output && m.output.error)) throw new Error(ep + " error from the Space: " + String((m.output && m.output.error) || "no details (often a GPU quota or busy Space)").slice(0, 300));
+        return m.output.data;
+      }
+    }
+  }
+  throw new Error(ep + ": the Space closed the connection without a result");
+}
+
 $("go").onclick = async () => {
   showErr(""); $("go").disabled = true;
   const t0 = Date.now(); let msg = "Starting";
@@ -181,7 +220,10 @@ $("go").onclick = async () => {
       return params.map((p, i) => i === k && img !== undefined ? img : p.component === "Gallery" ? [] : p.parameter_has_default ? p.parameter_default : null);
     };
     const sess = Math.random().toString(36).slice(2, 12);
-    const call = (ep, params, img) => gcall(host, ep, build(params, img), sess, auth);
+    const cr = await fetch(host + "/config", { headers: auth });
+    if (!cr.ok) throw new Error("could not read the Space config (HTTP " + cr.status + ")");
+    const cfg = await cr.json();
+    const call = (ep, params, img) => { const base = msg.split(",")[0]; return qcall(host, cfg, ep, build(params, img), sess, auth, t => { msg = base + ", " + t; }); };
     msg = "Uploading the image";
     const fd = new FormData(); fd.append("files", imgFile, imgFile.name || "photo.jpg");
     const up = await fetch(host + "/gradio_api/upload", { method: "POST", body: fd, headers: auth });
@@ -191,7 +233,7 @@ $("go").onclick = async () => {
     let img = { path: upPath, url: host + "/gradio_api/file=" + upPath, orig_name: imgFile.name || "photo.jpg", size: imgFile.size, mime_type: imgFile.type || "image/jpeg", meta: { _type: "gradio.FileData" } };
     let prepNote = "";
     if (eps["/start_session"]) { try { await call("/start_session", eps["/start_session"].parameters); } catch (_) {} }
-    if (eps["/preprocess_image"]) {
+    if (eps["/preprocess_image"] && !$("skipPrep").checked) {
       msg = "Preparing the image";
       try { img = (await call("/preprocess_image", eps["/preprocess_image"].parameters, img))[0]; }
       catch (e) { prepNote = e.message; }
@@ -211,7 +253,7 @@ $("go").onclick = async () => {
 
 $("diag").onclick = async () => {
   const out = $("diagOut"), sid = $("space").value.trim(), log = t => { out.textContent += t + "\n"; };
-  out.textContent = ""; log("Build 9, inside a frame: " + framed);
+  out.textContent = ""; log("Build 13, inside a frame: " + framed);
   const probe = async (label, url, init) => {
     try {
       const r = await fetch(url, init); let extra = "";
@@ -228,6 +270,11 @@ $("diag").onclick = async () => {
   catch (e) { log("Gradio client 2.1.0: FAILED (" + e.message + ")"); }
   log("Done. Send me these lines.");
 };
+
+function saveBlob(blob, name) {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
 
 function startWorld(url, ext, startMode) {
   if (started) return;
@@ -248,6 +295,7 @@ function startWorld(url, ext, startMode) {
       } else buf = await url.arrayBuffer();
       dlName = typeof url === "string" ? "photo-world-" + Date.now() + "." + ext : url.name;
       dlBlob = new Blob([buf], { type: ext === "obj" ? "text/plain" : ext === "gltf" ? "model/gltf+json" : "model/gltf-binary" });
+      if (typeof url === "string" && $("autoDl").checked) saveBlob(dlBlob, dlName);
       if (ext === "obj") build(new THREE_.OBJLoader().parse(new TextDecoder().decode(buf)));
       else new THREE_.GLTFLoader().parse(ext === "gltf" ? new TextDecoder().decode(buf) : buf, "", g => build(g.scene), fail);
     } catch (e) { fail(e); }
@@ -256,7 +304,7 @@ function startWorld(url, ext, startMode) {
   function build(world) {
     started = true; $("panel").style.display = "none";
     ["hud", "help", "cross", "dl"].forEach(i => $(i).style.display = "block");
-    $("dl").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(dlBlob); a.download = dlName; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); };
+    $("dl").onclick = () => saveBlob(dlBlob, dlName);
     if (touchMode) document.body.classList.add("touch");
     const T = THREE_, W = +$("size").value;
     const sky = new T.Color(0xbfd9e8);
