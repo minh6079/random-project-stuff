@@ -24,22 +24,39 @@ button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
 #bd.live .cell:not(.X):not(.O):hover{border-color:var(--acc);cursor:pointer}
 #bd.live .cell:not(.X):not(.O):hover::after{content:"X";color:var(--x);opacity:.3}
 .hint{color:var(--mut);font-size:.85rem}
+#bd.live.o .cell:not(.X):not(.O):hover::after{content:"O";color:var(--o)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:16px}.modal.on{display:flex}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;max-width:600px;width:100%}
+.box textarea{width:100%;font:12px/1.3 ui-monospace,Menlo,monospace;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px;margin:8px 0}
+.cell.last{box-shadow:inset 0 0 0 3px var(--acc)}
 </style></head>
 <body><main>
 <h1>Tic Tac Toe</h1>
 <div class="hint" id="goal"></div>
 <div class="bar">
- <label>Robot level <select id="lvl"><option value="easy">Easy</option><option value="mid">Medium</option><option value="hard">Hard</option></select></label>
+ <label>Play against <select id="opp"><option value="r">Robot</option><option value="p">Two players</option></select></label>
+ <label>Robot level <select id="lvl"><option value="easy">Easy</option><option value="mid">Medium</option><option value="hard">Hard</option><option value="imp">Impossible</option></select></label>
  <label>Grid <select id="gs"></select></label>
  <label>In a row <select id="kk"></select></label>
  <label>Goes first <select id="first"><option value="p">You</option><option value="r">Robot</option></select></label>
  <button id="new" class="pri">New round</button>
  <button id="theme">Theme: Auto</button>
 </div>
+<div class="bar" id="recbar">
+ <button id="rsave" class="pri" style="display:none">Save game (.json)</button>
+ <button id="rload">Load game (.json)</button><input type="file" id="rfile" accept=".json,application/json" hidden>
+ <button id="rpaste">Paste JSON</button>
+ <button id="rrep" style="display:none">Replay loaded game</button>
+ <button id="rinst" style="display:none">Instant replay</button>
+ <button id="rstop" style="display:none">Stop replay</button>
+ <label>Replay speed <select id="rspd"><option value="1">1x (real time)</option><option value="2">2x</option><option value="5">5x</option><option value="20">20x</option><option value="0">No delay</option></select></label>
+</div>
+<div id="rinfo" class="hint"></div>
 <div id="status"></div>
-<div id="score"><div><b id="sw">0</b>You</div><div><b id="sd">0</b>Draws</div><div><b id="sl">0</b>Robot</div></div>
+<div id="score"><div><b id="sw">0</b><span id="l1">You</span></div><div><b id="sd">0</b>Draws</div><div><b id="sl">0</b><span id="l3">Robot</span></div></div>
 <div id="bd"></div>
-<p class="hint">Easy: random moves. Medium: wins or blocks when it can, otherwise random. Hard: on 3×3 it searches every possible game and never loses. On bigger grids it looks a few moves ahead with alpha-beta pruning and scores every possible line.</p>
+<p class="hint">Easy: random moves. Medium: wins or blocks when it can, otherwise random. Hard: on 3×3 it searches every possible game and never loses. On bigger grids it looks a few moves ahead with alpha-beta pruning and scores every possible line. Impossible: the robot searches every move it can: a complete, perfect search on 3×3, and up to 10 seconds of the deepest search it can manage on bigger boards. It gets no extra marks, so set Goes first to Robot for the toughest game. When a game ends you can save it as JSON, load a saved game, and replay it, or use Instant replay for the latest match. Two players: take turns on one screen.</p>
+<div id="rmodal" class="modal"><div class="box"><b id="rmt"></b><textarea id="rta" rows="12" spellcheck="false"></textarea><div class="bar"><button id="rok" class="pri"></button><button id="rcopy">Copy</button><button id="rclose">Close</button></div><div id="rmsg" class="hint"></div></div></div>
 </main>
 <script>
 const $=id=>document.getElementById(id),rnd=a=>a[Math.floor(Math.random()*a.length)];
@@ -77,8 +94,11 @@ function cands(b){ // empty cells (centre first); on big boards only cells near 
     if(near)out.push(i)}
   if(!out.length){const e=ORD.find(i=>!b[i]);if(e!==undefined)out.push(e)}
   return out}
+let deadline=0,timeUp=false,nodes=0;
 function ab(b,d,al,be,max,li,lp){
   if(lineAt(b,li,lp))return lp==="O"?1e6+d:-1e6-d;
+  if(deadline&&(++nodes&1023)===0&&Date.now()>deadline)timeUp=true;
+  if(timeUp)return 0;
   const cs=cands(b);
   if(!cs.length)return 0;
   if(d<=0)return evalT(b);
@@ -88,46 +108,174 @@ function ab(b,d,al,be,max,li,lp){
     if(max){best=Math.max(best,v);al=Math.max(al,v)}else{best=Math.min(best,v);be=Math.min(be,v)}
     if(al>=be)break}
   return best}
-function aiHard(){
+function aiHard(boost=0){deadline=0;timeUp=false;
   let m=immediate("O");if(m>=0)return m;m=immediate("X");if(m>=0)return m;
   const f=free(b);FULL=f.length<=9;
-  const D=FULL?f.length:(N<=5?4:N<=8?3:2);
+  const D=FULL?f.length:(N<=5?4:N<=8?3:2)+boost;
   let best=-Infinity,mv=[];
   for(const i of cands(b)){
     b[i]="O";const v=ab(b,D-1,-Infinity,Infinity,false,i,"O");b[i]="";
     if(v>best){best=v;mv=[i]}else if(v===best)mv.push(i)}
   return rnd(mv)}
-const AI={easy:aiEasy,mid:aiMid,hard:aiHard};
+function aiImp(){ // fair play: perfect search on small boards, time-limited deep search on big ones
+  let m=immediate("O");if(m>=0)return m;m=immediate("X");if(m>=0)return m;
+  if(free(b).length<=9)return aiHard(0);
+  FULL=false;deadline=Date.now()+2200;timeUp=false;nodes=0;
+  let best=null;
+  for(let D=2;D<=14;D++){
+    const cs=cands(b).map(i=>{b[i]="O";const e=evalT(b);b[i]="";return[i,e]}).sort((a,c)=>c[1]-a[1]);
+    let bv=-Infinity,mv=[];
+    for(const[i]of cs){b[i]="O";const v=ab(b,D-1,-Infinity,Infinity,false,i,"O");b[i]="";if(timeUp)break;if(v>bv){bv=v;mv=[i]}else if(v===bv)mv.push(i)}
+    if(timeUp)break;best=mv;if(bv>=1e6)break}
+  deadline=0;
+  return rnd(best||[cands(b)[0]])}
+const AI={easy:aiEasy,mid:aiMid,hard:()=>aiHard(0),imp:aiImp};
+const two=()=>$("opp").value==="p";
 
+/* ===== match record, save, load and replay (board games) ===== */
+const GAME="tictactoe";
+const REC={cur:null,last:null,loaded:null,replaying:false,tok:0,timers:[],t0:0,tl:0},RP={};
+const rinfo=t=>{$("rinfo").textContent=t};
+function updBtns(){
+  const rp=REC.replaying;
+  $("rsave").style.display=REC.cur&&REC.cur.result&&!rp?"":"none";
+  $("rrep").style.display=REC.loaded&&!rp?"":"none";
+  $("rinst").style.display=REC.last&&!rp?"":"none";
+  $("rstop").style.display=rp?"":"none"}
+function recStart(settings,players,extra){REC.cur=Object.assign({game:GAME,version:1,startedAt:new Date().toISOString(),settings,players,moves:[],result:null,totalMs:0},extra||{});REC.t0=REC.tl=performance.now();updBtns()}
+function recMove(m){const c=REC.cur;if(!c||c.result)return;const now=performance.now();c.moves.push(Object.assign({n:c.moves.length+1},m,{timeMs:Math.round(now-REC.t0),thinkMs:Math.round(now-REC.tl)}));REC.tl=now}
+function recFinish(result){const c=REC.cur;if(!c||c.result)return;c.result=result;c.totalMs=Math.round(performance.now()-REC.t0);REC.last=JSON.parse(JSON.stringify(c));updBtns()}
+function openModal(title,text,okLabel,onOk,readonly){$("rmt").textContent=title;const ta=$("rta");ta.value=text;ta.readOnly=!!readonly;$("rok").textContent=okLabel;$("rok").onclick=()=>onOk(ta.value);$("rmsg").textContent="";$("rmodal").classList.add("on")}
+const closeModal=()=>$("rmodal").classList.remove("on");
+async function saveRec(){
+  const c=REC.cur;if(!c||!c.result)return;
+  const text=JSON.stringify(c,null,2),name=`${GAME}-${c.startedAt.replace(/[:.]/g,"-")}.json`;
+  let d=null;try{if(window.claude&&claude.use)d=await claude.use("downloads")}catch(e){}
+  if(d){try{await d.save({filename:name,data:text});rinfo("Saved "+name+".");return}catch(e){if(e&&e.code==="declined"){rinfo("Save cancelled.");return}}}
+  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"application/json"}));a.download=name;document.body.appendChild(a);a.click();a.remove()}catch(e){}
+  openModal("Your game as JSON (copy it if the download did not start)",text,"Close",closeModal,true)}
+function loadText(text){
+  let d;try{d=JSON.parse(text)}catch(e){rinfo("That is not valid JSON.");return false}
+  if(!d||d.game!==GAME||!Array.isArray(d.moves)||!d.moves.length||!d.settings){rinfo(d&&d.game&&d.game!==GAME?`That file is for another game (${d.game}).`:"That file is not a saved game for this page.");return false}
+  REC.loaded=d;updBtns();rinfo(`Loaded a ${d.moves.length}-move game${d.result?" ("+(d.result.text||d.result.winner)+")":""}. Press Replay loaded game.`);return true}
+function stopReplay(silent){REC.tok++;REC.timers.forEach(clearTimeout);REC.timers=[];const was=REC.replaying;REC.replaying=false;if(was&&!silent&&RP.stopped)RP.stopped();updBtns()}
+function playRecord(r){
+  if(!r||!r.moves||!r.moves.length)return;
+  stopReplay(true);REC.replaying=true;const tok=REC.tok;
+  if(RP.reset)RP.reset(r);updBtns();
+  const sp=+$("rspd").value;let i=0;
+  const next=()=>{
+    if(tok!==REC.tok)return;
+    if(i>=r.moves.length){REC.replaying=false;if(RP.finish)RP.finish(r);updBtns();return}
+    const m=r.moves[i],wait=sp===0?150:Math.max(300,Math.min(8000,m.thinkMs||600))/sp;
+    REC.timers.push(setTimeout(()=>{if(tok!==REC.tok)return;RP.apply(m,i,r);i++;if(RP.status)RP.status(`Replay: move ${i} of ${r.moves.length}`);next()},wait))};
+  if(RP.status)RP.status(`Replay: ${r.moves.length} moves`);
+  next()}
+$("rload").onclick=()=>$("rfile").click();
+$("rfile").onchange=e=>{const f=e.target.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>loadText(String(fr.result));fr.onerror=()=>rinfo("Could not read that file. Try Paste JSON instead.");fr.readAsText(f);e.target.value=""};
+$("rpaste").onclick=()=>openModal("Paste a saved game (JSON)","","Load",t=>{if(loadText(t))closeModal();else $("rmsg").textContent=$("rinfo").textContent},false);
+$("rclose").onclick=closeModal;
+$("rcopy").onclick=()=>{const ta=$("rta");ta.select();try{document.execCommand("copy");$("rmsg").textContent="Copied."}catch(e){$("rmsg").textContent="Select the text and copy it."}};
+$("rsave").onclick=saveRec;
+$("rrep").onclick=()=>playRecord(REC.loaded);
+$("rinst").onclick=()=>playRecord(REC.last);
+$("rstop").onclick=()=>stopReplay(false);
+/* ---------- Impossible mode: searches every move it can, up to 10 seconds ---------- */
+let thinkId=0,lastCell=-1,Z1=[],Z2=[],TT=new Map();
+const r32=()=>Math.floor(Math.random()*4294967296)>>>0;
+function initZ(){TT.clear();Z1=[null,[],[]];Z2=[null,[],[]];for(let i=0;i<N*N;i++){Z1[1][i]=r32()&0x1fffff;Z1[2][i]=r32()&0x1fffff;Z2[1][i]=r32();Z2[2][i]=r32()}}
+function abT(b,d,al,be,max,li,lp,h1,h2){
+  if(lineAt(b,li,lp))return lp==="O"?1e6+d:-1e6-d;
+  if((++nodes&1023)===0&&Date.now()>deadline)timeUp=true;
+  if(timeUp)return 0;
+  const cs=cands(b);if(!cs.length)return 0;if(d<=0)return evalT(b);
+  const key=h1*4294967296+(h2>>>0),e=TT.get(key),a0=al,b0=be;let first=-1;
+  if(e){first=e.m;if(e.d>=d){if(e.f===0)return e.v;if(e.f===1)al=Math.max(al,e.v);else be=Math.min(be,e.v);if(al>=be)return e.v}}
+  const order=first>=0&&cs.includes(first)?[first,...cs.filter(c=>c!==first)]:cs;
+  let best=max?-Infinity:Infinity,bm=-1;const p=max?"O":"X",pi=max?2:1;
+  for(const i of order){
+    b[i]=p;const s=abT(b,d-1,al,be,!max,i,p,h1^Z1[pi][i],h2^Z2[pi][i]);b[i]="";
+    if(timeUp)return 0;
+    if(max){if(s>best){best=s;bm=i}al=Math.max(al,best)}else{if(s<best){best=s;bm=i}be=Math.min(be,best)}
+    if(al>=be)break}
+  TT.set(key,{d,v:best,f:best<=a0?2:best>=b0?1:0,m:bm});return best}
+function impAsync(cb){
+  let m=immediate("O");if(m>=0)return cb(m);m=immediate("X");if(m>=0)return cb(m);
+  const f=free(b);
+  if(f.length<=9){FULL=true;return setTimeout(()=>cb(aiHard(0)),30)} // complete search of every possible game
+  FULL=f.length<=16;initZ();
+  let h1=0,h2=0;for(let i=0;i<N*N;i++)if(b[i]){const pi=b[i]==="O"?2:1;h1^=Z1[pi][i];h2^=Z2[pi][i]}
+  const my=thinkId,t0=Date.now(),end=t0+9500;let D=1,best=null;
+  const iter=()=>{
+    if(my!==thinkId)return;
+    D++;deadline=end;timeUp=false;nodes=0;
+    const cs=cands(b).map(i=>{b[i]="O";const e=evalT(b);b[i]="";return[i,e]}).sort((a,c)=>c[1]-a[1]);
+    let bv=-Infinity,mv=[];
+    for(const[i]of cs){b[i]="O";const v=abT(b,D-1,-Infinity,Infinity,false,i,"O",h1^Z1[2][i],h2^Z2[2][i]);b[i]="";if(timeUp)break;if(v>bv){bv=v;mv=[i]}else if(v===bv)mv.push(i)}
+    deadline=0;
+    if(timeUp)return cb(rnd(best||[cands(b)[0]]));
+    best=mv;
+    if(bv>=1e6||bv<=-1e6||D>=f.length||Date.now()>=end)return cb(rnd(best));
+    msg(`Robot is searching every move… depth ${D} (${((Date.now()-t0)/1000).toFixed(1)}s)`);
+    setTimeout(iter,0)};
+  iter()}
 /* ---------- Game ---------- */
 const msg=t=>$("status").textContent=t;
 function render(){
   const bd=$("bd");bd.style.setProperty("--n",N);
   if(bd.children.length!==N*N)bd.innerHTML=Array.from({length:N*N},(_,i)=>`<button class="cell" data-i="${i}" aria-label="Cell ${i+1}"></button>`).join("");
-  [...bd.children].forEach((d,i)=>{d.textContent=b[i];d.className="cell"+(b[i]?" "+b[i]:"")+(line.includes(i)?" win":"")});
-  bd.classList.toggle("live",!over&&turn==="X");
+  [...bd.children].forEach((d,i)=>{d.textContent=b[i];d.className="cell"+(b[i]?" "+b[i]:"")+(line.includes(i)?" win":"")+(i===lastCell?" last":"")});
+  bd.classList.toggle("live",!over&&(two()||turn==="X"));bd.classList.toggle("o",two()&&turn==="O");
   $("sw").textContent=sc.w;$("sd").textContent=sc.d;$("sl").textContent=sc.l;
-  $("goal").textContent=`You are X. The robot is O. Get ${K} in a row on a ${N}×${N} grid.`}
+  $("l1").textContent=two()?"X wins":"You";$("l3").textContent=two()?"O wins":"Robot";
+  $("goal").textContent=(two()?"Two players: X and O take turns.":"You are X. The robot is O.")+` Get ${K} in a row on a ${N}×${N} grid.`}
 function finish(i,p){
   const w=lineAt(b,i,p);
-  if(w){over=true;line=w;if(p==="X"){sc.w++;msg("🎉 You win!")}else{sc.l++;msg("The robot wins.")}return true}
-  if(!free(b).length){over=true;sc.d++;msg("It’s a draw.");return true}
+  if(w){over=true;line=w;let t;
+    if(two()){if(p==="X")sc.w++;else sc.l++;t=p+" wins!";msg("🎉 "+t)}
+    else if(p==="X"){sc.w++;t="You win!";msg("🎉 You win!")}else{sc.l++;t="The robot wins.";msg(t)}
+    recFinish({winner:p,line:w,text:t});return true}
+  if(!free(b).length){over=true;sc.d++;msg("It’s a draw.");recFinish({winner:"draw",line:[],text:"Draw"});return true}
   return false}
 function robot(){
-  if(over)return;
-  const m=AI[$("lvl").value]();b[m]="O";
-  if(!finish(m,"O")){turn="X";msg("Your turn (X).")}
-  render()}
+  if(over||REC.replaying)return;
+  const lvl=$("lvl").value;
+  if(lvl==="imp"){const my=++thinkId;msg("Robot is searching every move…");impAsync(m=>{if(my===thinkId&&!over&&!REC.replaying)playRobot(m)});return}
+  playRobot(AI[lvl]())}
+function playRobot(m){b[m]="O";lastCell=m;recMove({player:"O",cell:m,row:Math.floor(m/N),col:m%N});if(!finish(m,"O")){turn="X";msg("Your turn (X).")}render()}
+function applyMode(){
+  const t=two();$("lvl").disabled=t;
+  $("first").options[0].text=t?"X":"You";$("first").options[1].text=t?"O":"Robot"}
 function start(){
-  b=Array(N*N).fill("");over=false;line=[];
-  if($("first").value==="r"){turn="O";msg("Robot is thinking…");render();setTimeout(robot,450)}
-  else{turn="X";msg("Your turn (X).");render()}}
+  applyMode();stopReplay(true);thinkId++;
+  b=Array(N*N).fill("");over=false;line=[];lastCell=-1;
+  turn=$("first").value==="r"?"O":"X";
+  recStart({mode:two()?"two":"robot",level:two()?null:$("lvl").value,N,K,first:turn},{X:two()?"Player X":"You",O:two()?"Player O":"Robot ("+$("lvl").value+")"});
+  if(two()){msg(turn+" goes first.");render();return}
+  if(turn==="O"){msg("Robot is thinking…");render();setTimeout(robot,450)}
+  else{msg("Your turn (X).");render()}}
 $("bd").addEventListener("click",e=>{
-  const el=e.target.closest(".cell");if(!el)return;const k=+el.dataset.i;
-  if(over||turn!=="X"||b[k])return;
-  b[k]="X";
+  const el=e.target.closest(".cell");if(!el||REC.replaying)return;const k=+el.dataset.i;
+  if(over||b[k])return;
+  const mv=p=>recMove({player:p,cell:k,row:Math.floor(k/N),col:k%N});
+  if(two()){b[k]=turn;lastCell=k;mv(turn);if(finish(k,turn)){render();return}turn=turn==="X"?"O":"X";msg(turn+"’s turn.");render();return}
+  if(turn!=="X")return;
+  b[k]="X";lastCell=k;mv("X");
   if(finish(k,"X")){render();return}
   turn="O";msg("Robot is thinking…");render();setTimeout(robot,450)});
+$("opp").onchange=()=>{sc={w:0,d:0,l:0};start()};
+$("lvl").onchange=()=>{start()};
+/* replay hooks */
+RP.reset=r=>{
+  thinkId++;N=r.settings.N;K=r.settings.K;mkOrd();
+  $("gs").value=N;fillSel("kk",3,N,K,v=>v);
+  b=Array(N*N).fill("");over=true;line=[];lastCell=-1;turn="X";render();
+  $("l1").textContent=r.players.X;$("l3").textContent=r.players.O};
+RP.apply=m=>{b[m.cell]=m.player;lastCell=m.cell;render()};
+RP.finish=r=>{line=(r.result&&r.result.line)||[];render();msg("Replay finished: "+(r.result?r.result.text:"no result recorded"));applyScoreLabels()};
+RP.status=t=>msg(t);
+RP.stopped=()=>{msg("Replay stopped. Press New round to play.");applyScoreLabels()};
+function applyScoreLabels(){$("l1").textContent=two()?"X wins":"You";$("l3").textContent=two()?"O wins":"Robot"}
 function fillSel(id,from,to,sel,fmt){const s=$(id);s.innerHTML="";for(let v=from;v<=to;v++)s.add(new Option(fmt(v),v));s.value=sel}
 function newSettings(){sc={w:0,d:0,l:0};mkOrd();start()}
 $("gs").onchange=()=>{N=+$("gs").value;K=defaultK(N);fillSel("kk",3,N,K,v=>v);newSettings()};

@@ -105,9 +105,9 @@ svg *{vector-effect:non-scaling-stroke}
 #body::before{content:"";position:absolute;right:-3px;top:24%;width:3px;height:9%;background:#aab4c2;border-radius:0 2px 2px 0}
 #body.back{background:var(--case);background:linear-gradient(215deg,var(--case),color-mix(in srgb,var(--case) 50%,#000))}
 .sb{position:absolute;left:-3px;width:3px;background:#aab4c2;border-radius:2px 0 0 2px}.sb1{top:18%;height:6%}.sb2{top:26%;height:6%}
-.pp svg,.pv svg,.bp svg{filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+.pp svg,.pv svg,.bp svg{filter:none}
 #ph{background:var(--case);background:linear-gradient(145deg,var(--case),color-mix(in srgb,var(--case) 55%,#000));box-shadow:inset 0 0 0 3px rgba(255,255,255,.2),inset 0 0 0 7px rgba(0,0,0,.35),0 14px 32px rgba(0,0,0,.4)}
-#ph::after{content:"";position:absolute;inset:4%;border-radius:24px;background:linear-gradient(115deg,rgba(255,255,255,.13),rgba(255,255,255,0) 38%);pointer-events:none;z-index:6}
+#ph::after{content:"";position:absolute;inset:4%;border-radius:24px;background:linear-gradient(var(--ang,115deg),rgba(255,255,255,.16),rgba(255,255,255,0) 40%);pointer-events:none;z-index:6}
 #ph::before{content:"";position:absolute;right:-3px;top:24%;width:3px;height:8%;background:#aab4c2;border-radius:0 2px 2px 0}
 .hole{position:absolute;top:6px;left:50%;width:9px;height:9px;margin-left:-4px;border-radius:50%;background:#000;box-shadow:0 0 0 2px #1e293b,inset 1px 1px 2px #334;z-index:5}
 .app i{box-shadow:inset 0 -6px 10px rgba(0,0,0,.25),inset 0 2px 3px rgba(255,255,255,.35),0 2px 4px rgba(0,0,0,.4)}
@@ -144,10 +144,65 @@ svg *{vector-effect:non-scaling-stroke}
 #ph.k-tiny{border-radius:16px;padding:5%}#ph.k-tiny #scr{border-radius:9px}
 #ph.k-mono{border-radius:20px;padding:6%}#ph.k-mono #scr{border-radius:6px}
 #scr.k-tiny{font-size:.5rem}#scr.k-tiny .app i{width:22px;height:22px;border-radius:7px}#scr.k-tiny .app svg{width:13px;height:13px}#scr.k-tiny .app{font-size:.4rem}#scr.k-tiny .grid4{gap:6px 1px;padding:6px 3px}#scr.k-tiny .big,#scr.k-tiny .big2{font-size:.9rem}#scr.k-tiny #sb{padding:3px 5px;font-size:.45rem}#scr.k-tiny #scr button{padding:3px 6px}
+
+.vf{touch-action:none;cursor:grab;user-select:none}.vf:active{cursor:grabbing}.vf svg *{vector-effect:none}
+.cap{margin:4px 0;color:#9fb0c4}#scr .row button.sel{background:#2563eb}
+
+.vf.pin{clip-path:circle(26% at 50% 50%)}
+.vf.pol{border:14px solid #f8f5ee;border-bottom-width:46px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px}
+.th{aspect-ratio:1;overflow:hidden;background:#000;cursor:pointer;border-radius:4px}
+.th svg{width:100%;height:100%;display:block}.th svg *{vector-effect:none}
+.th.fe{border-radius:50%}.th.pol{border:3px solid #f8f5ee;border-bottom-width:9px}.th.pin{clip-path:circle(26% at 50% 50%)}
+
+.fog{position:absolute;inset:-8px;z-index:9;pointer-events:none;border-radius:inherit}
+.fog i{position:absolute;border-radius:50%;transform:translate(-50%,-50%);-webkit-mask-image:radial-gradient(closest-side,#000 35%,transparent 100%);mask-image:radial-gradient(closest-side,#000 35%,transparent 100%);background:radial-gradient(closest-side,rgba(255,255,255,.4),rgba(255,255,255,0));animation:drift 7s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(-44%,-56%) scale(1.18)}}
+.tstage{background:#16213a;border-radius:10px;overflow:hidden;margin:6px 0}.tstage svg{width:100%;display:block}.tstage svg *{vector-effect:none}
+@keyframes sway{0%,100%{transform:rotate(0)}30%{transform:rotate(7deg)}70%{transform:rotate(-7deg)}}
+#ph2.sway{transform-origin:120px 70px;animation:sway 1.2s ease-in-out 2}
+@keyframes kite{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
+@keyframes spin2{to{transform:rotate(360deg)}}
+#scr .piano{display:flex;gap:2px}#scr .piano button{flex:1;height:64px;background:#f8fafc;color:#111;border-radius:0 0 6px 6px}
+.thm{height:90px;background:linear-gradient(90deg,#1e293b,#6d28d9);border-radius:8px;touch-action:none}
+.reels svg{width:64px;height:44px}.reels.spin svg{animation:spin 2s linear infinite}
+
+#stage{background-color:#2b2f36;background-image:radial-gradient(ellipse at 50% 38%,rgba(255,255,255,.14),transparent 62%),linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:100% 100%,22px 22px,22px 22px}
+#sidelbl{color:#9aa5b1}
+#body{box-shadow:inset 0 0 0 2px rgba(255,255,255,.38),inset 0 0 0 5px rgba(0,0,0,.42),inset 0 0 0 7px rgba(255,255,255,.07),0 16px 30px rgba(0,0,0,.5),0 2px 0 rgba(255,255,255,.1)}
+.gr{position:absolute;top:1.6%;left:50%;width:22%;height:.9%;margin-left:-11%;border-radius:99px;background:linear-gradient(#000,#1c1c1c);box-shadow:inset 0 1px 2px #000,0 0 0 1px rgba(255,255,255,.08);z-index:1}
+.pt{position:absolute;bottom:1.3%;left:50%;width:14%;height:1.1%;margin-left:-7%;border-radius:99px;background:#000;box-shadow:inset 0 1px 3px #000,0 0 0 1px rgba(255,255,255,.14);z-index:1}
+.an{position:absolute;left:0;width:100%;height:2px;background:rgba(0,0,0,.4);box-shadow:0 1px 0 rgba(255,255,255,.12)}.an1{top:8.5%}.an2{bottom:8.5%}
+.lg{display:none}#body.back .lg{display:block;position:absolute;left:50%;top:62%;width:11%;aspect-ratio:1;margin-left:-5.5%;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),rgba(255,255,255,.05));box-shadow:0 0 0 1px rgba(255,255,255,.15)}
+#ph{transition:transform .12s ease-out;transform-style:preserve-3d}
+#scr{box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),inset 0 0 16px rgba(0,0,0,.65)}
+.app i{border-radius:22%;text-shadow:0 1px 2px rgba(0,0,0,.5)}.app svg{filter:drop-shadow(0 1px 1px rgba(0,0,0,.45))}
+#sb{font-weight:600;letter-spacing:.02em}
+
+/* flat 2D look (like the original version) */
+#stage{background-color:var(--card);background-image:radial-gradient(var(--bd) 1px,transparent 1px);background-size:20px 20px}
+#sidelbl{color:var(--mut)}
+#body{background:var(--case);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+#body::before,#body::after{display:none}
+#body.back{background:repeating-linear-gradient(45deg,var(--case),var(--case) 10px,rgba(255,255,255,.07) 10px,rgba(255,255,255,.07) 20px)}
+.sb,.gr,.pt,.an,.lg{display:none}
+#ph{background:var(--case);box-shadow:0 10px 28px rgba(0,0,0,.35);transition:none}
+#ph::before,#ph::after{display:none}
+#scr{box-shadow:none}
+.app i{box-shadow:none;text-shadow:none;border-radius:12px}.app svg{filter:none}
+#slots{font-size:.78rem;margin:0 0 8px;padding:6px 8px;background:var(--card);border:1px solid var(--bd);border-radius:10px;line-height:2}
+.chip{display:inline-block;border:2px solid;border-radius:999px;padding:0 7px;margin-right:3px;white-space:nowrap}
+.chip.over{background:rgba(220,38,38,.2)}
+.bp svg,.pp svg{filter:drop-shadow(0 0 .6px rgba(0,0,0,.55))}
+#scr.k-hologram{filter:hue-rotate(150deg) saturate(1.7) brightness(1.1)}
+#scr.k-hz240{filter:saturate(1.35) contrast(1.15)}
+#scr.k-vfd{filter:hue-rotate(95deg) saturate(1.5) brightness(1.05)}
+#scr.k-watch{filter:saturate(1.2)}
 </style></head>
 <body><main>
 <h1>Build Your Dream Phone</h1>
-<div class="hint">Pick parts from the bin and put them on your phone: screens, ports, lenses, rotors, rockets, toasters. A phone needs a screen, a battery and a CPU (any chip, even a snail) to power on. Its OS depends on your CPU, RAM and storage, so a trash CPU with 1 MB of RAM runs a very different phone than a super chip with 16 GB.</div>
+<div class="hint">Start with a motherboard (it decides how many CPUs, RAM sticks, cameras and so on fit), then pick parts from the bin and put them on your phone: screens, ports, lenses, rotors, rockets, toasters. A phone needs a motherboard, a screen, a battery and a CPU (any chip, even a snail) to power on. Its OS depends on your CPU, RAM and storage, so a trash CPU with 1 MB of RAM runs a very different phone than a super chip with 16 GB. A phone holds 50 parts, and each expansion slot (up to 5) adds 5 more.</div>
 <div class="bar">
  <input type="text" id="pname" value="My Dream Phone" maxlength="24" aria-label="Phone name">
  <label>Case <select id="col"><option value="#1d1f24">Black</option><option value="#c9ced6">Silver</option><option value="#2563eb">Blue</option><option value="#ec6aa5">Pink</option><option value="#16a34a">Green</option><option value="#d6b25e">Gold</option><option value="#7c3aed">Purple</option><option value="#f3f4f6">White</option><option value="#dc2626">Red</option><option value="#0f172a">Midnight</option></select></label>
@@ -159,17 +214,17 @@ svg *{vector-effect:non-scaling-stroke}
 <div id="stats"></div>
 <div class="game">
  <div id="sw">
-  <div id="stage"><div id="sidelbl">FRONT</div><div id="body"><i class="sb sb1"></i><i class="sb sb2"></i><div id="bname"></div></div></div>
+  <div id="stage"><div id="sidelbl">FRONT</div><div id="body"><div id="bname"></div></div></div>
   <div class="tool"><button id="flip">Flip phone: front</button><button id="rot" disabled>Rotate</button><button id="big" disabled>Bigger</button><button id="sml" disabled>Smaller</button><button id="cpy" disabled>Copy</button><button id="del" disabled>Remove</button></div>
  </div>
- <div id="bw"><div id="tabs"></div><div id="bin"></div></div>
+ <div id="bw"><div id="slots"></div><div id="tabs"></div><div id="bin"></div></div>
 </div>
 <div id="result"></div>
 <section id="sim"><h2>Your phone</h2><div id="ph"></div><div id="scap" class="hint"></div><div class="row" style="justify-content:center"><button id="fl">Flip phone: front</button><button id="chg">Plug in charger</button><button id="pwr">Power off</button></div></section>
 <p class="hint">Desktop: drag a part onto the phone, drag placed parts to move them, and drag one off the stage to remove it. Mobile: tap a part to add it, then drag it into place. Select a placed part to rotate, resize, copy or remove it (keys: R, + , −, Delete). Use Flip phone to build the back too (for example a telescope on the front and another on the back). Then press Power on and use your phone: the apps depend on the parts you built.</p>
 </main>
 <script>
-const $=id=>document.getElementById(id),F='fill="currentColor" fill-opacity=".45"';
+const $=id=>document.getElementById(id),F='fill="currentColor" fill-opacity=".4"';
 const IC={
 screen:`<rect x="1" y="1" width="40" height="98" rx="7" ${F}/><path d="M15 7h12M15 93h12"/><circle cx="32" cy="7" r="1.2"/>`,
 battery:`<rect x="1" y="1" width="32" height="20" rx="3" ${F}/><path d="M35 8v6M19 5l-4 7h5l-4 6"/>`,
@@ -232,8 +287,8 @@ polish:`<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" ${F}
 splitter:`<path d="M12 3v6M12 9l-5 6M12 9l5 6"/><rect x="3" y="15" width="8" height="6" rx="1.5" ${F}/><rect x="13" y="15" width="8" height="6" rx="1.5" ${F}/>`};
 const VB={screen:[42,100],battery:[36,22],ram:[48,18],storage:[36,22],usbc:[40,14],usba:[36,18],lightning:[40,14],hdmi:[40,18],vga:[44,22],serial:[40,24],jack:[48,12],sd:[24,30],speaker:[28,40],keyboard:[60,32],buttons:[14,40],toaster:[44,32],knife:[60,22],solar:[48,30],projector:[44,28],haptic:[36,22],paste:[14,36],defrag:[48,22],bt12:[40,22],modem9g:[40,22]};
 const svg=id=>{const[w,h]=VB[id]||[24,24];return `<svg viewBox="0 0 ${w} ${h}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${IC[id]}</svg>`};
-const CATS=[["cpu","CPUs"],["mem","Memory"],["pwr","Batteries"],["scr","Screens"],["port","Ports"],["optic","Optics"],["sound","Sound"],["fly","Flight"],["gad","Gadgets"],["sens","Sensors"],["net","Comms"],["toy","Toys"],["dummy","Dummy"]];
-const COL={sens:"#06b6d4",net:"#8b5cf6",toy:"#f43f5e",cpu:"#3b82f6",mem:"#6366f1",pwr:"#10b981",scr:"#0ea5e9",core:"#3b82f6",port:"#14b8a6",optic:"#a855f7",sound:"#f59e0b",fly:"#ef4444",gad:"#22c55e",dummy:"#8b9bb0"};
+const CATS=[["board","Boards"],["cpu","CPUs"],["mem","Memory"],["pwr","Batteries"],["scr","Screens"],["port","Ports"],["optic","Optics"],["sound","Sound"],["fly","Flight"],["gad","Gadgets"],["sens","Sensors"],["net","Comms"],["toy","Toys"],["dummy","Dummy"]];
+const COL={sens:"#06b6d4",net:"#8b5cf6",toy:"#f43f5e",cpu:"#3b82f6",mem:"#6366f1",pwr:"#10b981",scr:"#0ea5e9",core:"#3b82f6",port:"#14b8a6",optic:"#a855f7",sound:"#f59e0b",fly:"#ef4444",gad:"#22c55e",dummy:"#8b9bb0",board:"#f59e0b"};
 // id, name, category, size(%), grams, price($), draw(mA), battery(mAh), chaos
 const T=[
 ["screen","OLED screen","scr",42,70,90,250,0,0],["battery","Battery 4000 mAh","pwr",30,45,20,0,4000,0],["chip","Super chip","cpu",14,5,60,400,0,0],["snail","Snail CPU","cpu",18,8,1,5,0,2],["ram","RAM 8 GB","mem",20,4,25,60,0,0],["storage","Storage 128 GB","mem",16,6,30,40,0,0],
@@ -254,6 +309,11 @@ const T=[
 ["horn","Air horn","sound",14,60,8,30,0,2],["megaphone","Megaphone","sound",18,150,12,200,0,2],["vinyl","Record player","sound",22,500,40,150,0,3],["bone","Bone-conduction speaker","sound",8,5,25,15,0,0],
 ["magnet","Magnet","toy",10,40,3,0,0,1],["tesla","Tesla coil","toy",14,80,50,300,0,3],["confetti","Confetti cannon","toy",12,60,10,20,0,2],["bubble","Bubble blower","toy",10,30,6,40,0,2],["watergun","Water gun","toy",14,90,8,0,0,2],["grapple","Grappling hook","toy",14,200,40,0,0,3],["balloon","Hot air balloon","toy",26,100,60,0,0,3],
 ["coffee","Coffee machine","gad",18,800,40,900,0,3],["fridge","Mini fridge","gad",16,1500,60,200,0,3],["popcorn","Popcorn maker","gad",16,600,25,700,0,3],["hairdryer","Hair dryer","gad",18,400,15,1000,0,3],["mirror","Pocket mirror","gad",10,10,3,0,0,0],["pen","Pen","gad",18,15,2,0,0,0],["mouse","Mouse","gad",12,80,10,10,0,1],["vr","VR headset","gad",22,500,200,600,0,2],
+["ultrawide","Ultra-wide lens","optic",9,8,40,40,0,0],["telephoto","Telephoto zoom lens","optic",12,60,120,40,0,0],["microscope","Microscope lens","optic",10,30,150,60,0,1],["xray","X-ray camera","optic",14,200,900,300,0,3],["underwater","Underwater camera","optic",12,90,200,60,0,1],["drone","Drone camera","optic",12,40,300,100,0,1],["satellite","Satellite camera","optic",16,150,5000,200,0,3],["instant","Instant film camera","optic",16,180,70,0,0,1],["expslot","Expansion slot (+5 parts)","port",12,15,25,5,0,0],
+["gamer","Gaming beast chip","cpu",15,8,300,1100,0,2],["eff","Efficiency chip","cpu",13,3,90,80,0,0],["server","Server chip","cpu",20,60,2500,2500,0,3],["riscv","RISC-V chip","cpu",13,3,40,100,0,0],["tiny4","4-bit micro chip","cpu",9,1,1,5,0,1],["tube","Vacuum-tube CPU","cpu",24,500,200,3000,0,3],["gears","Mechanical gear CPU","cpu",26,900,150,0,0,3],["neuro","Neuromorphic chip","cpu",15,5,1500,300,0,2],
+["quad","Quadcopter rotors","fly",36,200,120,1500,0,3],["ducted","Ducted fan","fly",20,150,70,800,0,2],["ion","Ion thruster","fly",14,60,300,200,0,3],["jetpack","Jetpack","fly",26,2000,800,2800,0,5],["warp","Warp drive","fly",18,100,50000,6000,0,5],["antigrav","Anti-gravity module","fly",18,50,9999,400,0,5],
+["surround","Surround speakers","sound",18,200,120,150,0,1],["boombox","Boombox","sound",24,800,60,400,0,2],["cassette","Cassette deck","sound",20,150,40,100,0,2],["piano","Piano keys","sound",30,400,150,10,0,2],["drums","Drum pad","sound",16,120,40,20,0,1],["theremin","Theremin","sound",18,300,200,60,0,3],["whistle","Whistle","sound",8,10,2,0,0,0],
+["snow","Snow machine","toy",16,150,40,300,0,2],["kite","Kite","toy",18,30,10,0,0,2],["pinwheel","Pinwheel","toy",12,20,3,0,0,1],["slingshot","Slingshot","toy",14,40,8,0,0,2],["dashcam","Dashcam","optic",14,35,50,50,0,0],["webcam","Webcam","optic",12,25,30,50,0,0],["security","Security camera","optic",13,60,60,60,0,0],["pinhole","Spy pinhole camera","optic",5,2,20,10,0,1],["endoscope","Endoscope camera","optic",8,15,90,50,0,1],
 ["microb","USB Micro-B port","port",8,2,1,0,0,0],["minib","USB Mini-B port","port",9,3,1,0,0,0],["displayport","DisplayPort","port",11,6,6,5,0,0],["dvi","DVI port","port",14,30,5,10,0,1],["scart","SCART port","port",18,60,5,15,0,2],["rca","RCA jacks","port",14,15,3,5,0,1],["firewire","FireWire port","port",10,6,3,0,0,1],["ps2","PS/2 port","port",10,8,2,0,0,1],["xlr","XLR mic port","port",11,20,12,5,0,1],["toslink","Optical audio port","port",9,4,5,5,0,1],
 ["oc","Overclocked chip","cpu",14,6,120,900,0,2],["arm","ARM Lite chip","cpu",13,3,15,120,0,0],["i8086","Ancient 8086","cpu",13,12,3,300,0,2],
 ["ram8m","8 MB RAM","mem",14,1,2,3,0,0],["ram32g","32 GB ECC RAM","mem",18,6,120,120,0,0],["ram128k","128 KB toaster RAM","mem",12,40,1,1,0,2],
@@ -261,12 +321,29 @@ const T=[
 ["supercap","Supercapacitor","pwr",20,25,30,0,1500,0],["liair","Lithium-air battery","pwr",24,38,120,0,8000,0],["jar","Lightning in a jar","pwr",16,200,500,0,10000,4],
 ["pled","PLED screen","scr",42,55,110,230,0,0],["qled","QLED screen","scr",42,85,200,450,0,0],["fold","Foldable screen","scr",42,110,600,320,0,1],["transp","Transparent screen","scr",42,60,300,200,0,2],
 ["printer","Photo printer","gad",20,300,80,500,0,2],["scale","Pocket scale","gad",18,60,10,10,0,1],["smoke","Fog machine","toy",14,120,20,300,0,2]];
+
+/* ----- motherboards: they decide how many of each kind of part fit ----- */
+const GK=["cpu","ram","sto","pwr","scr","port","optic","sound","fly","gad","sens","net","toy","dummy"];
+const GN={cpu:"CPU",ram:"RAM",sto:"storage",pwr:"battery",scr:"screen",port:"port",optic:"lens/camera",sound:"sound",fly:"flight",gad:"gadget",sens:"sensor",net:"comms",toy:"toy",dummy:"dummy"};
+const BRD={};
+const bd=(id,n,k,arr)=>BRD[id]={n,k,c:Object.fromEntries(GK.map((g,i)=>[g,arr[i]]))};
+//    id        name                     look  cpu ram sto pwr scr port optic sound fly gad sens net toy dummy
+bd("mb_old","Old motherboard",1,[1,1,1,1,1,1,0,0,0,0,0,0,0,0]);
+bd("mb_basic","Basic motherboard",2,[1,2,2,2,1,3,2,2,0,2,2,2,0,0]);
+bd("mb_std","Standard motherboard",3,[2,2,2,3,2,5,3,3,1,4,5,4,2,2]);
+bd("mb_pro","Pro motherboard",4,[3,3,3,4,2,8,5,4,3,6,8,6,4,4]);
+bd("mb_over","Overkill motherboard",5,[5,6,6,8,4,16,10,8,8,12,12,10,8,10]);
+bd("mb_god","God-tier motherboard",6,[0,0,0,0,0,0,0,0,0,0,0,0,0,0]);BRD.mb_god.all=1;
+T.push(["mb_old","Old motherboard","board",26,30,5,20,0,0],["mb_basic","Basic motherboard","board",28,28,20,30,0,0],["mb_std","Standard motherboard","board",30,26,60,45,0,0],["mb_pro","Pro motherboard","board",32,25,200,60,0,0],["mb_over","Overkill motherboard","board",34,40,1500,90,0,1],["mb_god","God-tier motherboard","board",36,120,99999,150,0,3]);
+const boardI=k=>`<rect x="1" y="1" width="30" height="42" rx="3" ${F}/><rect x="5" y="5" width="10" height="10" rx="1.5"/><path d="M19 6h8M19 10h8M19 14h8M5 19h22${Array.from({length:k},(_,i)=>`M5 ${24+i*3.4}h${22-i*2}`).join("")}"/><circle cx="26" cy="38" r="1.6" fill="currentColor" stroke="none"/>`;
+Object.keys(BRD).forEach(id=>{VB[id]=[32,44];IC[id]=boardI(BRD[id].k)});
 const P=Object.fromEntries(T.map(t=>[t[0],{id:t[0],name:t[1],cat:t[2],size:t[3],g:t[4],$:t[5],mA:t[6],mAh:t[7],ch:t[8]}]));
 const FEAT={rotor:"Rotor: it hovers when you answer calls, badly.",propeller:"Propeller: fast charging for your hair, not the battery.",helicopter:"Helicopter: texts are delivered by air.",rocket:"Rocket: orbital notifications.",jet:"Jet engine: unlocks the phone and the sound barrier.",wings:"Wings: technically a glider with a screen.",parachute:"Parachute: survives drops from planes.",wheel:"Wheel: rolls away whenever you look the other way.",laser:"Laser pointer: the cat now owns this phone.",telescope:"Telescope lens: 900x zoom on the Moon, 0x on your own notifications.",binoculars:"Binoculars: you can read tomorrow’s texts today.",projector:"Projector: every wall is now a screen.",vga:"VGA port: plugs into 1997.",serial:"Serial port: plugs into 1985.",ethernet:"Ethernet port: finally, a stable connection.",hdmi:"HDMI port: your phone is the TV.",toaster:"Toaster: tasty notifications, with butter.",disco:"Disco ball: instant party mode.",umbrella:"Umbrella: IP99 weather protection.",knife:"Pocket knife: opens boxes and, eventually, the phone.",subwoofer:"Subwoofer: ringtones felt in the next town.",dish:"Satellite dish: signal everywhere, including space.",nightvision:"Night vision: selfies in the dark.",solar:"Solar panel: charges while you ignore it.",keyboard:"Keyboard: texting, but with clicking.",gamepad:"Game controls: every app is now a game.",joystick:"Joystick: scrolling with style.",jack:"3.5mm jack: the legend returns.",fisheye:"Fisheye lens: everything looks like a bubble.",snail:"Snail CPU: opens apps in 3 to 5 business days. Do not salt.",neural:"Neural bezel engine: makes the bezels 3% smarter.",bt12:"Bluetooth 12: connects to devices that don’t exist yet.",modem9g:"9G modem: four bars in places with no towers.",haptic:"Haptic flux regulator: your phone purrs politely.",paste:"Thermal paste tube: totally essential, mostly cosmetic.",defrag:"RAM defragmenter: tidies memory that was never messy.",polish:"Pixel polish unit: shinier pixels, same pixels.",splitter:"Battery splitter: two half-batteries, same total."};
-let items=[],sel=null,uid=1,zc=1,drag=null,tab="cpu",powered=false,view_="f";
+let items=[],sel=null,uid=1,zc=1,drag=null,tab="board",powered=false,view_="f";
 const els=new Map(),stage=$("stage");
 const msg=t=>$("status").textContent=t;
 const find=u=>items.find(i=>i.u===u);
+const pc=()=>items.filter(i=>i.id!=="expslot").length,nslot=()=>items.filter(i=>i.id==="expslot").length,maxP=()=>board()&&BRD[board().id].all?999:50+5*nslot();
 const rect=()=>stage.getBoundingClientRect();
 const inStage=(x,y)=>{const r=rect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom};
 const toPct=(x,y)=>{const r=rect();return[Math.min(97,Math.max(3,(x-r.left)/r.width*100)),Math.min(97,Math.max(3,(y-r.top)/r.height*100))]};
@@ -285,16 +362,17 @@ function stats(){
   let g=120,pr=0,dr=0,bat=0,ch=0;
   for(const it of items){const p=P[it.id];g+=p.g*it.s;pr+=p.$;dr+=p.mA;bat+=p.mAh;ch+=p.ch}
   let life;if(!bat)life="No battery";else if(dr<=0)life="Unlimited";else{const h=bat/dr;life=h<1?Math.max(1,Math.round(h*60))+" min":h.toFixed(1)+" h"}
-  $("stats").innerHTML=[["Parts",items.length+"/40"],["Weight",Math.round(g)+" g"],["Price","$"+pr],["Battery life",life],["Chaos",ch]].map(([k,v])=>`<div><b>${v}</b>${k}</div>`).join("");
-  return{g,pr,dr,bat,ch}}
+  $("stats").innerHTML=[["Parts",pc()+"/"+maxP()],["Expansion",nslot()+"/5"],["Weight",Math.round(g)+" g"],["Price","$"+pr],["Battery life",life],["Chaos",ch]].map(([k,v])=>`<div><b>${v}</b>${k}</div>`).join("");
+  slotsUI();return{g,pr,dr,bat,ch}}
 function off(){if(powered){powered=false;$("body").classList.remove("on");$("result").style.display="none"}if(typeof stopSim==="function")stopSim()}
 function add(id,x,y){
-  if(items.length>=40){msg("The phone is full (40 parts). Remove something first.");return}
+  {const sm=slotMsg(id);if(sm){msg(sm);return}}
+  if(id==="expslot"){if(nslot()>=5){msg("A phone can have at most 5 expansion slots.");return}}else if(pc()>=maxP()){msg(`The phone is full (${maxP()} parts). Add an expansion slot (up to 5) or remove something.`);return}
   off();const it={u:uid++,id,x,y,s:1,r:0,z:++zc,side:view_};items.push(it);sel=it.u;sync();msg(`Added ${P[id].name.toLowerCase()}. Drag it into place.`)}
-function remove(u){off();items=items.filter(i=>i.u!==u);if(sel===u)sel=null;sync()}
+function remove(u){const it=find(u);if(it&&it.id==="expslot"&&pc()>maxP()-5){msg("Remove some parts first: this slot holds 5 of them.");sync();return false}off();items=items.filter(i=>i.u!==u);if(sel===u)sel=null;sync();return true}
 function drawBin(){
   $("tabs").innerHTML=CATS.map(([k,n])=>`<button data-t="${k}" class="${k===tab?"on":""}">${n}</button>`).join("");
-  $("bin").innerHTML=T.filter(t=>t[2]===tab).map(t=>`<div class="bp" data-id="${t[0]}" style="color:${tint(t[0])}">${svg(t[0])}<span style="color:var(--tx)">${t[1]}</span><small>$${t[5]} · ${t[4]} g</small></div>`).join("")}
+  $("bin").innerHTML=T.filter(t=>t[2]===tab).sort((a,b)=>tab==="board"?a[5]-b[5]:0).map(t=>`<div class="bp" data-id="${t[0]}" style="color:${tint(t[0])}">${svg(t[0])}<span style="color:var(--tx)">${t[1]}</span><small>$${t[5]} · ${t[4]} g</small>${BRD[t[0]]?`<small>${bsum(t[0])}</small>`:""}</div>`).join("")}
 $("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b){tab=b.dataset.t;drawBin()}});
 /* ---------- Drag: from the bin, and on the stage ---------- */
 $("bin").addEventListener("pointerdown",e=>{const el=e.target.closest(".bp");if(el)drag={mode:"new",id:el.dataset.id,x:e.clientX,y:e.clientY,moved:false}});
@@ -321,7 +399,7 @@ function endDrag(e,cancel){
     else msg("Dropped outside the phone, so nothing was added.")}
   else if(d.moved){
     d.el.classList.remove("out");
-    if(!cancel&&!inStage(e.clientX,e.clientY)){msg(`Removed ${P[d.it.id].name.toLowerCase()}.`);remove(d.it.u)}else off()}}
+    if(!cancel&&!inStage(e.clientX,e.clientY)){if(remove(d.it.u))msg(`Removed ${P[d.it.id].name.toLowerCase()}.`)}else off()}}
 window.addEventListener("pointerup",e=>endDrag(e,false));
 window.addEventListener("pointercancel",e=>endDrag(e,true));
 /* ---------- Tools ---------- */
@@ -329,7 +407,7 @@ const cur=()=>find(sel);
 $("rot").onclick=()=>{const i=cur();if(i){i.r=(i.r+45)%360;off();sync()}};
 $("big").onclick=()=>{const i=cur();if(i){i.s=Math.min(3,i.s*1.2);off();sync()}};
 $("sml").onclick=()=>{const i=cur();if(i){i.s=Math.max(.4,i.s/1.2);off();sync()}};
-$("cpy").onclick=()=>{const i=cur();if(i&&items.length<40){off();const n={...i,u:uid++,x:Math.min(97,i.x+6),y:Math.min(97,i.y+6),z:++zc};items.push(n);sel=n.u;sync()}};
+$("cpy").onclick=()=>{const i=cur();if(!i)return;{const sm=slotMsg(i.id);if(sm){msg(sm);return}}if(i.id==="expslot"?nslot()<5:pc()<maxP()){off();const n={...i,u:uid++,x:Math.min(97,i.x+6),y:Math.min(97,i.y+6),z:++zc};items.push(n);sel=n.u;sync()}};
 $("del").onclick=()=>{if(sel!==null)remove(sel)};
 $("clr").onclick=()=>{items=[];sel=null;off();sync();msg("Cleared. Start fresh.")};
 document.addEventListener("keydown",e=>{
@@ -342,8 +420,9 @@ $("col").onchange=()=>document.documentElement.style.setProperty("--case",$("col
 /* ---------- Power on ---------- */
 function power(){
   const has=id=>items.some(i=>i.id===id);
-  const miss=[[hasScr(),"a screen"],[batMah()>0,"a battery"],[!!cpuInfo(),"a CPU (any chip, even a snail)"]].filter(x=>!x[0]).map(x=>x[1]);
+  const miss=[[!!board(),"a motherboard"],[hasScr(),"a screen"],[batMah()>0,"a battery"],[!!cpuInfo(),"a CPU (any chip, even a snail)"]].filter(x=>!x[0]).map(x=>x[1]);
   if(miss.length){msg("Can’t power on yet. Your phone needs "+miss.join(" and ")+".");return}
+  {const oc_=overCap();if(oc_){msg(oc_);return}}
   const s=stats(),name=$("pname").value.trim()||"My Dream Phone",hrs=s.dr>0?s.bat/s.dr:99;
   powered=true;$("body").classList.add("on");$("bname").textContent=name;
   const ids=[...new Set(items.map(i=>i.id))],feats=ids.filter(id=>FEAT[id]).map(id=>FEAT[id]);
@@ -364,6 +443,7 @@ a_phone:`<path d="M6 3h4l2 5-2.5 1.5a11 11 0 005 5L16 12l5 2v4a2 2 0 01-2 2A16 1
 a_msg:`<path d="M4 5h16v11H9l-5 4z"/>`,
 a_notes:`<path d="M6 3h9l3 3v15H6zM9 10h6M9 14h6"/>`,
 a_calc:`<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M9 11h.01M12 11h.01M15 11h.01M9 15h.01M12 15h.01M15 15h.01" stroke-width="2.4"/>`,
+a_photo:`<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M4 18l5-5 4 4 3-3 4 4"/>`,
 a_clock:`<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>`,
 a_set:`<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>`});
 /* ----- more parts, tints, extras ----- */
@@ -412,11 +492,14 @@ pen:`<path d="M5 19L18 6l2 2L7 21H5zM16 4l2-2 4 4-2 2" ${F}/>`,
 mouse:`<rect x="6" y="3" width="12" height="18" rx="6" ${F}/><path d="M12 3v7M6 10h12"/>`,
 vr:`<rect x="2" y="7" width="20" height="10" rx="3" ${F}/><circle cx="8" cy="12" r="2.2"/><circle cx="16" cy="12" r="2.2"/><path d="M11 12h2"/>`});
 const TINT={chip:"#64748b",mid:"#64748b",i486:"#64748b",trash:"#78716c",quantum:"#8b5cf6",ram:"#16a34a",ram64k:"#16a34a",ram1m:"#16a34a",ram512:"#16a34a",ram4g:"#16a34a",ram16g:"#16a34a",ram64g:"#16a34a",battery:"#22c55e",sibat:"#38bdf8",ssbat:"#38bdf8",coin:"#a3a3a3",aa:"#f59e0b",carbat:"#6b7280",nuke:"#84cc16",screen:"#1e3a8a",lcd:"#1e3a8a",eink:"#6b7280",crt:"#475569",mono:"#3f6212",tiny:"#1e3a8a",amoled:"#1e3a8a",camera:"#475569",telescope:"#a16207",toaster:"#a8a29e",coffee:"#92400e",balloon:"#ef4444",vinyl:"#111827"};
-const tint=id=>TINT[id]||COL[P[id].cat];
+const AUTOH={cpu:215,mem:255,pwr:140,scr:200,port:170,optic:285,sound:35,fly:5,gad:95,sens:185,net:265,toy:335,dummy:215,board:40};
+const hh=x=>{let h=7;for(const c of x)h=(h*31+c.charCodeAt(0))>>>0;return h};
+const tint=id=>TINT[id]||`hsl(${(AUTOH[P[id].cat]+hh(id)%70-35+360)%360} 78% 56%)`;
 const canCharge=()=>has("usbc")||has("lightning")||has("thunderbolt")||has("coil")||has("microb")||has("minib")||has("firewire");
 const SENS=["gyro","accel","baro","compass","light","heart","gps","geiger","metal","aq","lidar"];
 const ANT=`<rect width="200" height="200" fill="#4d7c0f"/><path d="M0 200L200 0" stroke="#3f6212" stroke-width="30" fill="none"/><ellipse cx="100" cy="103" rx="6" ry="4.5" fill="#1c1917"/><ellipse cx="108" cy="102" rx="4.5" ry="3.5" fill="#292524"/><circle cx="94" cy="100" r="3.2" fill="#1c1917"/><ellipse cx="116" cy="105" rx="6" ry="4.2" fill="#1c1917"/><path d="M98 105l-4 5M102 105l-1 6M106 104l3 6M110 105l5 5M94 98l-6-4M92 100l-7 1" stroke="#1c1917" stroke-width=".6" fill="none"/>`;
 Object.assign(FEAT,{periscope:"Periscope lens: you can see around corners.",macro:"Macro lens: a very close look at ants.",thermal:"Thermal camera: finds warm cats in the dark.",lidar:"LiDAR scanner: measures the room, and your doubts.",ringlight:"Ring light: flattering selfies.",cam360:"360 camera: pan around the scene.",gyro:"Gyroscope: knows when you flip it.",gps:"GPS chip: you are definitely somewhere.",geiger:"Geiger counter: clicks when the battery gets spicy.",metal:"Metal detector: finds your keys, and your fork.",wifi:"Wi-Fi 7 chip: connected to the fanciest router.",ir:"Infrared blaster: remote control for every TV.",coil:"Wireless charging coil: charge without cables.",lora:"Walkie-talkie radio: over and out.",fm:"FM radio tuner: static as a feature.",horn:"Air horn: very loud, no regrets.",megaphone:"Megaphone: announcements, whether wanted or not.",vinyl:"Record player: your phone now has a needle.",magnet:"Magnet: paperclips love it.",tesla:"Tesla coil: sparks, safely behind glass.",confetti:"Confetti cannon: every call is a party.",bubble:"Bubble blower: soap bubbles on demand.",watergun:"Water gun: sneak attack.",grapple:"Grappling hook: swings between shelves.",balloon:"Hot air balloon: the slowest, calmest lift.",coffee:"Coffee machine: espresso on the go.",fridge:"Mini fridge: cold drinks in your pocket.",popcorn:"Popcorn maker: movie night anywhere.",hairdryer:"Hair dryer: warm air, loud phone.",vr:"VR headset: the phone sits in your face.",mouse:"Mouse: it is a tiny mouse. For clicking.",mirror:"Pocket mirror: always check your hair.",pen:"Pen: for the old-fashioned notes."});
+Object.assign(IC,{expslot:`<rect x="3" y="7" width="18" height="10" rx="1.5" ${F}/><path d="M6 10h12M6 14h12" stroke="#fbbf24" stroke-width="2.4" stroke-dasharray="1.4 1.1"/>`});
 /* ----- core part variants ----- */
 const SPEC={chip:{perf:100,boot:3},mid:{perf:40,boot:8},i486:{perf:4,boot:45},trash:{perf:5,boot:60},potato:{perf:3,boot:90},calcchip:{perf:2,boot:20},hamster:{perf:8,boot:45},snail:{perf:1,boot:240},abacus:{perf:.5,boot:600},quantum:{perf:400,boot:1}};
 const RAMMB={ram:8192,ram64k:.0625,ram1m:1,ram512:512,ram4g:4096,ram16g:16384,ram64g:65536};
@@ -452,17 +535,51 @@ const ramMB=()=>items.reduce((a,i)=>a+(RAMMB[i.id]||0),0),stoMB=()=>items.reduce
 const fm=mb=>mb>=1073741824?+(mb/1073741824).toFixed(1)+" PB":mb>=1048576?+(mb/1048576).toFixed(1)+" TB":mb>=1024?+(mb/1024).toFixed(1)+" GB":mb>=1?+mb.toFixed(2)+" MB":Math.max(1,Math.round(mb*1024))+" KB";
 const bootText=s=>s<60?s+" second"+(s===1?"":"s"):+(s/60).toFixed(1)+" minutes";
 const OSES=[
+{id:"server",name:"ServerOS 20",perf:500,ram:65536,sto:1048576,mb:65536,blurb:"Enterprise-grade. Your phone now has opinions about uptime."},
 {id:"quantum",name:"QuantumOS 12",perf:300,ram:16384,sto:524288,mb:16384,blurb:"It knows what you want before you do."},
 {id:"full",name:"PhoneOS 15",perf:60,ram:4096,sto:65536,mb:8192,blurb:"Smooth, modern and full of features."},
+{id:"p13",name:"PhoneOS 13",perf:40,ram:2048,sto:16384,mb:4096,deny:["proj"],blurb:"Solid and a little dated."},
 {id:"lite",name:"PhoneOS Lite 9",perf:20,ram:512,sto:4096,mb:2048,deny:["fly","proj","sat"],blurb:"Fine for everyday use. Heavy apps are locked."},
 {id:"go",name:"PhoneOS Go 3",perf:5,ram:64,sto:512,mb:512,deny:["fly","proj","sat","cast","draw","cam","music","maps","web"],blurb:"The basics only. Many apps are locked."},
+{id:"flip",name:"FlipOS 4",perf:3,ram:8,sto:8,mb:4,list:1,only:["phone","msg","clock","calc","notes","games","music","cam","photos"],blurb:"A flip-phone classic with a camera."},
 {id:"feature",name:"T9 Classic 1.0",perf:2,ram:1,sto:1,mb:.5,list:1,only:["phone","msg","clock","calc","notes","games"],blurb:"Calls, texts and a little game. Pure bliss."},
-{id:"calc",name:"CalcOS 0.1",perf:.5,ram:.0625,sto:0,mb:0,list:1,only:["calc","clock"],blurb:"It adds numbers. That is all it does."},
+{id:"calc",name:"CalcOS 0.1",perf:.2,ram:.0625,sto:0,mb:0,list:1,only:["calc","clock"],blurb:"It adds numbers. That is all it does."},
 {id:"rom",name:"ROM Monitor 0.1",perf:0,ram:0,sto:0,mb:0,list:1,only:["term"],blurb:"A blinking cursor and nothing else."}];
-const os=()=>{const c=cpuInfo(),p=c?c.perf:0,r=ramMB(),s=stoMB();return OSES.find(o=>p>=o.perf&&r>=o.ram&&s>=o.sto)};
-const NEED={sens:8,maps:64,web:128,remote:2,radio:8,kitchen:8,toys:8,cam:256,fly:512,proj:256,music:64,laser:32,draw:32,games:32,toast:8,disco:8,wx:4,sat:16,cast:64,pay:4,term:0,files:8,drive:16,torch:2,set:2,msg:.5,phone:.25,notes:.25,calc:.05,clock:.05,tools:1};
+const osTier=()=>{const c=cpuInfo(),p=c?c.perf:0,r=ramMB(),s=stoMB();return OSES.find(o=>p>=o.perf&&r>=o.ram&&s>=o.sto)};
+const OSV=[
+[()=>has("nuke"),"AtomOS 7","Powered by something that definitely glows."],
+[()=>has("toaster"),"ToastOS 1.0","Boots golden brown."],
+[()=>cpuInfo().id==="hamster","HamsterOS 1.0","Runs exactly as fast as the hamster."],
+[()=>cpuInfo().id==="potato","PotatoOS 2.0","Fries gracefully under pressure."],
+[()=>cpuInfo().id==="trash","BinOS 0.9","Recycled code from the bin."],
+[()=>cpuInfo().id==="abacus","BeadOS 0.1","Every click is a bead."],
+[()=>cpuInfo().id==="tube","VacuumOS 1952","Needs a few minutes to warm up."],
+[()=>cpuInfo().id==="gears","ClockworkOS","Wind it up before you use it."],
+[()=>cpuInfo().id==="tiny4","NibbleOS","Four bits of pure confidence."],
+[()=>cpuInfo().id==="snail","SnailOS 0.1","Slow and steady wins nothing."],
+[()=>has("eink"),"InkOS 5","Reads like a book, updates like one too."],
+[()=>has("crt"),"RetroOS 98","Beige forever."],
+[()=>has("transp"),"GlassOS","See-through, in every way."],
+[()=>has("fold"),"FoldOS 2","Everything is better in two halves."],
+[()=>Object.keys(ENG).some(has)&&["full","p13","quantum","server"].includes(osTier().id),"SkyOS 15","Built for takeoff."],
+[()=>has("vinyl")||has("piano")||has("drums"),"GrooveOS 3","Always has a beat."],
+[()=>has("gamepad")&&["full","quantum","server","p13"].includes(osTier().id),"ArcadeOS 8","Every app is a high score."],
+[()=>has("telescope")||has("satellite"),"StarOS 4","Always looking up."]];
+const os=()=>{const t=osTier(),v=OSV.find(x=>x[0]());return v?Object.assign({},t,{name:v[1],blurb:v[2]}):t};
+const NEED={photos:16,sens:8,maps:64,web:128,remote:2,radio:8,kitchen:8,toys:8,cam:256,fly:512,proj:256,music:64,laser:32,draw:32,games:32,toast:8,disco:8,wx:4,sat:16,cast:64,pay:4,term:0,files:8,drive:16,torch:2,set:2,msg:.5,phone:.25,notes:.25,calc:.05,clock:.05,tools:1};
 const openDelay=()=>{const p=cpuInfo().perf;return p>=100?0:Math.min(3000,Math.round(6000/p-60))};
 const freeMB=()=>stoMB()-os().mb-S.photos*5;
+
+Object.assign(IC,{
+ultrawide:`<rect x="2" y="7" width="20" height="10" rx="3" ${F}/><ellipse cx="12" cy="12" rx="6" ry="3.2"/>`,
+telephoto:`<rect x="3" y="8" width="12" height="8" rx="2" ${F}/><rect x="15" y="9.5" width="7" height="5" rx="1"/><circle cx="9" cy="12" r="2.4"/>`,
+microscope:`<rect x="9" y="3" width="5" height="10" rx="1" ${F}/><path d="M8 21h10M11 13l-3 8M14 13a5 5 0 014 5"/>`,
+xray:`<rect x="4" y="3" width="16" height="18" rx="2" ${F}/><path d="M12 7v10M8 10h8M9 14h6"/>`,
+underwater:`<path d="M3 12c3-5 9-5 13 0-4 5-10 5-13 0zM16 12l5-4v8z" ${F}/><circle cx="8" cy="11" r=".9" fill="currentColor"/>`,
+drone:`<circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><rect x="9" y="9" width="6" height="6" rx="1" ${F}/>`,
+satellite:`<rect x="9" y="9" width="6" height="6" ${F}/><path d="M3 10h5v4H3zM16 10h5v4h-5zM12 9V5M12 15v4"/>`,
+instant:`<rect x="4" y="3" width="16" height="18" rx="2" ${F}/><rect x="7" y="6" width="10" height="8"/><path d="M8 18h8"/>`});
+Object.assign(FEAT,{ringlight:"Ring light: flattering selfies. Only works on the front.",ultrawide:"Ultra-wide lens: sees the whole room.",telephoto:"Telephoto lens: zooms in on birds.",microscope:"Microscope lens: pond water is full of life.",xray:"X-ray camera: bones, rings and regrets.",underwater:"Underwater camera: fish selfies.",drone:"Drone camera: a bird’s-eye view.",satellite:"Satellite camera: Earth from orbit.",instant:"Instant film camera: vintage photos in a flash."});
 /* ----- round 4: ports, screens, more parts ----- */
 Object.assign(IC,{
 microb:`<path d="M3 9h18l-2.5 6h-13z" ${F}/><path d="M8 12h8"/>`,
@@ -490,18 +607,18 @@ Object.assign(SPEC,{oc:{perf:160,boot:2},arm:{perf:25,boot:6},i8086:{perf:1.5,bo
 Object.assign(RAMMB,{ram8m:8,ram32g:32768,ram128k:.125});
 Object.assign(STOMB,{zip:100,bluray:25600,crystal:1073741824});
 SCRS.push("pled","qled","fold","transp");CPUS.push("oc","arm","i8086");
-Object.assign(TINT,{pled:"#1e3a8a",qled:"#1e3a8a",fold:"#1e3a8a",transp:"#7dd3fc",oc:"#dc2626",arm:"#64748b",i8086:"#78716c",zip:"#6366f1",bluray:"#2563eb",crystal:"#a78bfa",jar:"#facc15",supercap:"#22c55e",liair:"#38bdf8",printer:"#94a3b8"});
-Object.assign(FEAT,{microb:"USB Micro-B port: the classic. Charges slowly, very nostalgic.",minib:"USB Mini-B port: from the camera era.",displayport:"DisplayPort: 8K video out.",dvi:"DVI port: crisp digital video from 2002.",scart:"SCART port: plugs into 1985.",rca:"RCA jacks: yellow, red and white. You know the ones.",firewire:"FireWire port: fast in its day, powers things too.",ps2:"PS/2 port: for the keyboard from your dad's PC.",xlr:"XLR mic port: studio-grade confidence.",toslink:"Optical audio port: sound by laser light.",oc:"Overclocked chip: fast and hot. Very hot.",arm:"ARM Lite chip: efficient, quiet, sensible.",i8086:"Ancient 8086: ran a PC in 1978.",ram8m:"8 MB RAM: a respectable amount, in 1996.",ram32g:"32 GB ECC RAM: fixes its own mistakes.",ram128k:"128 KB toaster RAM: salvaged, still toasty.",zip:"ZIP disk: 100 MB of satisfying clicking.",bluray:"Blu-ray disc: 25 GB, spins loudly.",crystal:"Holographic crystal: 1 PB of storage that glows.",supercap:"Supercapacitor: charges in no time, drains just as fast.",liair:"Lithium-air battery: breathes for power.",jar:"Lightning in a jar: free power, one jar per storm.",pled:"PLED screen: plastic OLED, crisp and slightly flexible.",qled:"QLED screen: quantum-dot colors that glow.",fold:"Foldable screen: with a crease right down the middle.",transp:"Transparent screen: you can see right through it.",printer:"Photo printer: prints your photos on the spot.",scale:"Pocket scale: weighs things, including your phone.",smoke:"Fog machine: surprise atmosphere."});
+Object.assign(TINT,{expslot:"#475569",pled:"#1e3a8a",qled:"#1e3a8a",fold:"#1e3a8a",transp:"#7dd3fc",oc:"#dc2626",arm:"#64748b",i8086:"#78716c",zip:"#6366f1",bluray:"#2563eb",crystal:"#a78bfa",jar:"#facc15",supercap:"#22c55e",liair:"#38bdf8",printer:"#94a3b8"});
+Object.assign(FEAT,{expslot:"Expansion slot: each one adds room for 5 more parts (up to 5 slots).",microb:"USB Micro-B port: the classic. Charges slowly, very nostalgic.",minib:"USB Mini-B port: from the camera era.",displayport:"DisplayPort: 8K video out.",dvi:"DVI port: crisp digital video from 2002.",scart:"SCART port: plugs into 1985.",rca:"RCA jacks: yellow, red and white. You know the ones.",firewire:"FireWire port: fast in its day, powers things too.",ps2:"PS/2 port: for the keyboard from your dad's PC.",xlr:"XLR mic port: studio-grade confidence.",toslink:"Optical audio port: sound by laser light.",oc:"Overclocked chip: fast and hot. Very hot.",arm:"ARM Lite chip: efficient, quiet, sensible.",i8086:"Ancient 8086: ran a PC in 1978.",ram8m:"8 MB RAM: a respectable amount, in 1996.",ram32g:"32 GB ECC RAM: fixes its own mistakes.",ram128k:"128 KB toaster RAM: salvaged, still toasty.",zip:"ZIP disk: 100 MB of satisfying clicking.",bluray:"Blu-ray disc: 25 GB, spins loudly.",crystal:"Holographic crystal: 1 PB of storage that glows.",supercap:"Supercapacitor: charges in no time, drains just as fast.",liair:"Lithium-air battery: breathes for power.",jar:"Lightning in a jar: free power, one jar per storm.",pled:"PLED screen: plastic OLED, crisp and slightly flexible.",qled:"QLED screen: quantum-dot colors that glow.",fold:"Foldable screen: with a crease right down the middle.",transp:"Transparent screen: you can see right through it.",printer:"Photo printer: prints your photos on the spot.",scale:"Pocket scale: weighs things, including your phone.",smoke:"Fog machine: surprise atmosphere."});
 const SCRPX={tiny:105,mono:150,screen:270,pled:272,lcd:276,eink:285,amoled:285,qled:285,fold:285,transp:270,crt:340};
 const chargeRate=()=>has("usbc")||has("lightning")||has("thunderbolt")?6:has("coil")?3:2;
 const efx=()=>{if(S&&S.vw&&S.vw.closest&&S.vw.closest(".k-eink")){S.vw.classList.remove("ef");void S.vw.offsetWidth;S.vw.classList.add("ef")}};
 const has=id=>items.some(i=>i.id===id),hasS=(id,s)=>items.some(i=>i.id===id&&i.side===s),cnt=id=>items.filter(i=>i.id===id).length;
 const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const q=(r,s)=>r.querySelector(s),pick=a=>a[Math.floor(Math.random()*a.length)];
-const ENG={rotor:60,propeller:50,helicopter:120,rocket:400,jet:300};
-const ACT=new Set(["printer","smoke","rotor","propeller","helicopter","rocket","jet","laser","projector","toaster","disco","flash","subwoofer"]);["coffee","popcorn","hairdryer","tesla","vinyl","megaphone","ringlight","thermal","lidar","horn"].forEach(x=>ACT.add(x));
-const LENSES=["camera","telescope","fisheye","nightvision","binoculars","periscope","macro","thermal","cam360"],PORTS=["usbc","usba","lightning","hdmi","vga","ethernet","jack","sd","serial"];
-const hasSignal=()=>has("antenna")||has("modem9g")||has("dish");
+const ENG={rotor:60,propeller:50,helicopter:120,rocket:400,jet:300,quad:160,ducted:90,ion:30,jetpack:500,warp:3000};
+const ACT=new Set(["printer","smoke","rotor","propeller","helicopter","rocket","jet","laser","projector","toaster","disco","flash","subwoofer"]);["coffee","popcorn","hairdryer","tesla","vinyl","megaphone","ringlight","thermal","lidar","horn"].forEach(x=>ACT.add(x));Object.keys(ENG).forEach(k=>ACT.add(k));["snow","boombox","surround","cassette","theremin"].forEach(x=>ACT.add(x));
+const LENSES=["camera","telescope","fisheye","nightvision","binoculars","periscope","macro","thermal","cam360","ultrawide","telephoto","microscope","xray","underwater","drone","satellite","instant","dashcam","webcam","security","pinhole","endoscope"],PORTS=["usbc","usba","lightning","hdmi","vga","ethernet","jack","sd","serial"];
+const hasSignal=()=>has("antenna")||has("modem9g")||has("dish")||has("esim")||has("ham")||has("tincan")||has("pigeon");
 const totalG=()=>120+items.reduce((a,i)=>a+P[i.id].g*i.s,0);
 const batMah=()=>items.reduce((a,i)=>a+P[i.id].mAh,0);
 const baseDraw=()=>items.filter(i=>!ACT.has(i.id)).reduce((a,i)=>a+P[i.id].mA,0);
@@ -514,16 +631,23 @@ const clk=()=>{const m=Math.floor(S.min%1440);return String(Math.floor(m/60)).pa
 const toast=t=>{const s=$("scr");if(!s)return;const d=document.createElement("div");d.className="toast";d.textContent=t;s.appendChild(d);setTimeout(()=>d.remove(),2200)};
 const ANY=(...a)=>()=>a.some(has);
 const APPS=[["phone","Phone","a_phone","#22c55e",()=>1],["msg","Messages","a_msg","#3b82f6",()=>1],["cam","Camera","camera","#64748b",()=>1],["music","Music","speaker","#ec4899",()=>1],["notes","Notes","a_notes","#f59e0b",()=>1],["calc","Calculator","a_calc","#475569",()=>1],["clock","Clock","a_clock","#0ea5e9",()=>1],
-["files","Files","sd","#8b5cf6",()=>stoMB()>0],["fly","Flight","rotor","#ef4444",ANY(...Object.keys(ENG),"wings","parachute","balloon")],["drive","Drive","wheel","#f97316",ANY("wheel")],["torch","Torch","flash","#eab308",ANY("flash")],["laser","Laser","laser","#dc2626",ANY("laser")],["proj","Projector","projector","#6366f1",ANY("projector")],["wx","Weather","thermometer","#06b6d4",ANY("thermometer")],["toast","Toaster","toaster","#b45309",ANY("toaster")],["disco","Disco","disco","#d946ef",ANY("disco")],["pay","Pay","nfc","#16a34a",ANY("nfc")],["draw","Draw","stylus","#14b8a6",ANY("stylus")],["games","Games","gamepad","#7c3aed",ANY("gamepad","joystick","trackball")],["term","Terminal","serial","#334155",ANY("serial")],["cast","Cast","hdmi","#0891b2",ANY("hdmi","vga","displayport","dvi","scart","rca")],["sat","Satellite","dish","#2563eb",ANY("dish")],["tools","Tools","knife","#65a30d",ANY("knife","umbrella","scale")],["sens","Sensors","gyro","#14b8a6",()=>SENS.some(has)],["maps","Maps","gps","#ef4444",ANY("gps")],["web","Browser","wifi","#2563eb",ANY("wifi","ethernet","modem9g","antenna")],["remote","Remote","ir","#a855f7",ANY("ir")],["radio","Audio+","fm","#f97316",ANY("fm","lora","vinyl","horn","megaphone","bone")],["kitchen","Kitchen","coffee","#92400e",ANY("coffee","fridge","popcorn","hairdryer")],["toys","Toys","confetti","#ec4899",ANY("magnet","tesla","confetti","bubble","watergun","grapple","smoke")],["set","Settings","a_set","#6b7280",()=>1]];
+["files","Files","sd","#8b5cf6",()=>stoMB()>0],["fly","Flight","rotor","#ef4444",ANY(...Object.keys(ENG),"wings","parachute","balloon","antigrav")],["drive","Drive","wheel","#f97316",ANY("wheel")],["torch","Torch","flash","#eab308",ANY("flash")],["laser","Laser","laser","#dc2626",ANY("laser")],["proj","Projector","projector","#6366f1",ANY("projector")],["wx","Weather","thermometer","#06b6d4",ANY("thermometer")],["toast","Toaster","toaster","#b45309",ANY("toaster")],["disco","Disco","disco","#d946ef",ANY("disco")],["pay","Pay","nfc","#16a34a",ANY("nfc")],["draw","Draw","stylus","#14b8a6",ANY("stylus")],["games","Games","gamepad","#7c3aed",ANY("gamepad","joystick","trackball")],["term","Terminal","serial","#334155",ANY("serial")],["cast","Cast","hdmi","#0891b2",ANY("hdmi","vga","displayport","dvi","scart","rca")],["sat","Satellite","dish","#2563eb",ANY("dish")],["tools","Tools","knife","#65a30d",ANY("scale")],["sens","Sensors","gyro","#14b8a6",()=>SENS.some(has)],["maps","Maps","gps","#ef4444",ANY("gps")],["web","Browser","wifi","#2563eb",ANY("wifi","ethernet","modem9g","antenna","wifi4","uwb")],["remote","Remote","ir","#a855f7",ANY("ir")],["radio","Audio+","fm","#f97316",ANY("fm","lora","vinyl","horn","megaphone","bone","piano","drums","theremin","cassette","boombox","surround","whistle")],["kitchen","Kitchen","coffee","#92400e",ANY("coffee","fridge","popcorn","hairdryer")],["toys","Toys","confetti","#ec4899",ANY("magnet","tesla","confetti","bubble","watergun","grapple","smoke","knife","umbrella","snow","kite","pinwheel","slingshot","yoyo","duck","spinner")],["photos","Photos","a_photo","#f43f5e",()=>stoMB()>0],["set","Settings","a_set","#6b7280",()=>1]];
 function partsView(sd){
   return `<div class="pv">`+items.filter(i=>i.side===sd).sort((a,b)=>a.z-b.z).map(it=>{
     const p=P[it.id],[vw,vh]=VB[it.id]||[24,24];
     return `<div style="position:absolute;left:${(it.x-27)/46*100}%;top:${(it.y-7)/86*100}%;width:${p.size*it.s/46*100}%;aspect-ratio:${vw}/${vh};transform:translate(-50%,-50%) rotate(${it.r}deg);color:${tint(it.id)}">${svg(it.id)}</div>`}).join("")+`</div>`}
+function applyFog(){
+  const ph=$("ph");if(!ph)return;
+  const old=ph.querySelector(".fog");if(old)old.remove();
+  if(!S||!S.fog)return;
+  const f=document.createElement("div");f.className="fog";let h="";
+  for(let i=0;i<8;i++){const x=Math.random()*110-5,y=Math.random()*110-5,w=35+Math.random()*45,bl=(1.5+Math.random()*8).toFixed(1);h+=`<i style="left:${x.toFixed(0)}%;top:${y.toFixed(0)}%;width:${w.toFixed(0)}%;height:${(w*1.4).toFixed(0)}%;backdrop-filter:blur(${bl}px);-webkit-backdrop-filter:blur(${bl}px);animation-delay:-${(Math.random()*6).toFixed(1)}s"></i>`}
+  f.innerHTML=h;ph.appendChild(f)}
 function stopApp(){if(S){if(S.stop){const f=S.stop;S.stop=null;try{f()}catch(e){}}S.extra=0}}
 function stopSim(){clearInterval(tickT);tickT=null;if(S)stopApp();S=null;$("sim").style.display="none"}
 function startSim(){
   stopSim();
-  S={phase:"boot",bootT:0,bootTotal:3,speed:1,bat:100,min:540,side:hasScr("f")?"f":"b",photos:0,extra:0,charging:false,dead:false,cracked:false,msgs:[],cam:{},app:null,vw:null};
+  S={phase:"boot",bootT:0,bootTotal:3,speed:1,bat:100,min:540,side:hasScr("f")?"f":"b",photos:0,shots:[],extra:0,charging:false,dead:false,cracked:false,msgs:[],cam:{},app:null,vw:null};
   $("sim").style.display="block";$("chg").textContent="Plug in charger";
   boot();tickT=setInterval(tick,500);
   if($("sim").scrollIntoView)$("sim").scrollIntoView({behavior:"smooth",block:"start"})}
@@ -533,10 +657,10 @@ function render(){
   const ph=$("ph"),sd=S.side,nm=sd==="f"?"front":"back";
   stopApp();clearTimeout(S.tm);if(S.phase==="app")S.phase="home";
   $("fl").textContent="Flip phone: "+nm;const kd=scrKind(sd).slice(2);ph.className=hasScr(sd)&&kd?"k-"+kd:"";ph.style.width="min(100%,"+(hasScr(sd)?(SCRPX[kd]||270):270)+"px)";
-  if(!hasScr(sd)){S.vw=null;ph.innerHTML=partsView(sd);$("scap").textContent=`This is the ${nm} of your phone. There is no screen here. Flip it to find the screen.`;return}
+  if(!hasScr(sd)){S.vw=null;ph.innerHTML=partsView(sd);$("scap").textContent=`This is the ${nm} of your phone. There is no screen here. Flip it to find the screen.`;applyFog();return}
   $("scap").textContent=S.cracked?"The screen is cracked. Very authentic.":"";const hole=sd==="f"&&items.some(i=>i.side==="f"&&LENSES.includes(i.id))?'<i class="hole"></i>':"";
   ph.innerHTML=`<div id="scr" class="${scrKind(sd)}${S.cracked?" cracked":""}">${hole}<div id="sb"></div><div id="vw"></div><div id="nv"><button id="hm" aria-label="Home"></button></div></div>`;
-  S.vw=$("vw");$("hm").onclick=goHome;statusbar();view()}
+  S.vw=$("vw");$("hm").onclick=goHome;statusbar();applyFog();view()}
 function statusbar(){
   const sb=$("sb");if(!sb||!S)return;
   const sig=has("modem9g")?"9G":has("antenna")?"4 bars":has("dish")?"SAT":"No signal",b=Math.max(0,Math.round(S.bat));
@@ -577,7 +701,7 @@ function tick(){
   if(S.phase==="boot"){S.bootT+=dt*S.speed;updateBoot();if(S.bootT>=S.bootTotal){S.phase="lock";S.side=S.side;if(S.vw)view();statusbar()}return}
   if(S.dead){if(S.charging){S.bat+=chargeRate()*1.3*dt;if(S.bat>=5){boot();return}}statusbar();return}
   S.min+=RATE*dt;
-  const b=batMah(),d=b>0?(baseDraw()+S.extra)/b*(RATE*dt/60)*100:0;
+  const b=batMah(),d=b>0?(baseDraw()+S.extra+(S.fog?P.smoke.mA:0))/b*(RATE*dt/60)*100:0;
   S.bat=Math.min(100,S.bat-d+(S.charging?chargeRate()*dt:0));
   if(S.bat<=0){S.bat=0;S.dead=true;S.phase="dead";stopApp();if(S.vw)view();toast("Battery empty")}
   statusbar()}
@@ -608,22 +732,229 @@ AP.msg=r=>{
 AP.cam=r=>{
   const st=S.cam;if(!st.side)st.side="b";
   const draw=()=>{
-    const sd=st.side,nm=sd==="b"?"back":"front",L=items.filter(i=>i.side===sd&&LENSES.includes(i.id)).map(i=>i.id),n=id=>L.filter(x=>x===id).length;
-    const other=`<button id="sw">Use ${sd==="b"?"front":"back"} lens</button>`;
-    if(!L.length){r.innerHTML=`<div class="ap">No lens on the ${nm} of this phone.<br>Flip the phone in the builder and add a camera, telescope, binoculars or fisheye lens.<br>${other}</div>`;q(r,"#sw").onclick=()=>{st.side=sd==="b"?"f":"b";draw()};return}
-    const tel=n("telescope"),max=tel?1000+500*(tel-1):n("binoculars")?50:n("periscope")?10:n("camera")?5:n("macro")?4:n("thermal")?2:1,lens=tel?"Telescope":n("binoculars")?"Binoculars":n("periscope")?"Periscope":n("camera")?"Camera":n("macro")?"Macro":n("thermal")?"Thermal":n("cam360")?"360":"Fisheye";
-    st.z=Math.min(st.z||1,max);
-    r.innerHTML=`<div class="vf${n("fisheye")?" fe":""}" id="vf"><svg id="sc" viewBox="0 0 200 200">${scene(sd,n("macro")&&!tel&&!n("camera"))}</svg></div><div class="ap"><div>${lens} lens on the ${nm}${tel>1?" ("+tel+" telescopes stacked)":""}. Max zoom ${max}x.</div>${max>1?`<input type="range" id="zm" min="0" max="100" value="${Math.round(Math.log(st.z)/Math.log(max)*100)}">`:""}<div id="zl" class="big">${fz(st.z)}</div>${n("nightvision")?`<label><input type="checkbox" id="nv"> Night vision</label>`:""}${hasS("ringlight",sd)?`<label><input type="checkbox" id="rl"> Ring light</label>`:""}${n("cam360")?`<label>Pan <input type="range" id="pn" min="0" max="100" value="50"></label>`:""}<div class="row"><button id="sh">Shutter</button>${other}${has("printer")?`<button id="pr">Print</button>`:""}</div></div>`;
-    const sc=q(r,"#sc"),ap=()=>{sc.style.transform=`scale(${st.z})`;q(r,"#zl").textContent=fz(st.z)};ap();
-    const zm=q(r,"#zm");if(zm)zm.oninput=()=>{st.z=Math.pow(max,zm.value/100);ap()};
-    const nv=q(r,"#nv");if(nv)nv.onchange=()=>{q(r,"#vf").style.filter=nv.checked?"hue-rotate(90deg) saturate(2.5) brightness(1.5)":""};const rl=q(r,"#rl");if(rl)rl.onchange=()=>{q(r,"#vf").style.filter=rl.checked?"brightness(1.4) contrast(1.05)":""};const pn=q(r,"#pn");if(pn)pn.oninput=()=>{sc.style.transformOrigin=pn.value+"% 50%"};if(n("thermal"))q(r,"#vf").style.filter="grayscale(1) contrast(1.5) sepia(1) hue-rotate(-35deg) saturate(6)";
-    q(r,"#sw").onclick=()=>{st.side=sd==="b"?"f":"b";st.z=1;draw()};
-    {const pr=q(r,"#pr");if(pr)pr.onclick=()=>toast("Printed. It smells like fresh ink.")}q(r,"#sh").onclick=()=>{if(freeMB()>=5){S.photos++;toast("Photo saved at "+fz(st.z))}else toast(stoMB()?"Storage full: photo not saved":"No storage: photo not saved")}};
+    const sd=st.side,nm=sd==="b"?"back":"front";
+    const L=[...new Set(items.filter(i=>i.side===sd&&LENSES.includes(i.id)).map(i=>i.id))];
+    const other=`<button id="sw">Use ${sd==="b"?"front":"back"} cameras</button>`;
+    const reset=()=>{st.z=1;st.cx=st.cy=200};
+    if(!L.length){r.innerHTML=`<div class="ap">No camera on the ${nm} of this phone.<br>Flip the phone in the builder and add a lens (camera, telescope, binoculars...).<br>${other}</div>`;q(r,"#sw").onclick=()=>{st.side=sd==="b"?"f":"b";st.lens=null;reset();draw()};return}
+    if(!L.includes(st.lens))st.lens=L[0];
+    const cn=k=>items.filter(i=>i.side===sd&&i.id===k).length,kind=st.lens,n=cn(kind),max=ZM(kind,n),works=sd==="b"||kind==="camera";
+    const nvPart=hasS("nightvision",sd)||kind==="nightvision",ringPart=sd==="f"&&hasS("ringlight","f"),zmin=ZMIN[kind]||1;
+    if(st.cx===undefined)reset();st.z=Math.max(zmin,Math.min(st.z||1,max));
+    r.innerHTML=`<div class="vf${kind==="fisheye"?" fe":""}${kind==="instant"?" pol":""}${kind==="pinhole"?" pin":""}" id="vf"><svg id="sc" viewBox="0 0 200 200"></svg></div><div class="ap">${L.length>1?`<div class="row" id="lt">${L.map(k=>`<button data-l="${k}" class="${k===kind?"sel":""}">${LNAME[k]}${cn(k)>1?" x"+cn(k):""}</button>`).join("")}</div>`:`<div>${LNAME[kind]}${n>1?" x"+n+" (stacked)":""} on the ${nm}.</div>`}<div id="cap" class="cap"></div>${max>1?`<input type="range" id="zm" min="0" max="100" value="${Math.round(Math.log(st.z/zmin)/Math.log(max/zmin)*100)}" style="width:100%">`:""}<div id="zl" class="big"></div><div class="row"><button id="dn">${st.night?"Switch to day":"Switch to night"}</button>${nvPart&&kind!=="nightvision"?`<label><input type="checkbox" id="nv"${st.nv?" checked":""}> Night vision</label>`:""}${ringPart?`<label><input type="checkbox" id="rl"${st.rl?" checked":""}> Ring light</label>`:""}</div><div class="row"><button id="sh">Shutter</button>${has("printer")?`<button id="pr">Print</button>`:""}${other}</div></div>`;
+    const vf=q(r,"#vf"),sv=q(r,"#sc");
+    const nvMode=st.nv&&nvPart&&kind!=="nightvision",nvOn=st.night&&(kind==="nightvision"||nvMode),lit=st.night&&st.rl&&ringPart&&kind==="camera";
+    let sc,cap="",flt="";
+    const dark={svg:'<rect width="400" height="400" fill="#000"/>',f:null};
+    if(!works){sc=dark;cap="This lens doesn’t work on the front. Only a normal camera works for selfies."}
+    else if(nvMode&&BREAK.includes(kind)){sc={svg:sErr(LNAME[kind].toUpperCase()+" + NIGHT VISION"),f:null};cap="Camera error: the "+LNAME[kind].toLowerCase()+" breaks when night vision is on. Turn night vision off."}
+    else if(!st.night||SELF.includes(kind)||nvOn||lit){
+      sc=camScene(kind,sd,st.night);cap=capFor(kind,sd,st.night);
+      if(kind==="thermal")flt="grayscale(1) contrast(1.5) sepia(1) hue-rotate(-35deg) saturate(6)";
+      else if(nvOn)flt="grayscale(1) sepia(1) hue-rotate(50deg) saturate(4) brightness(1.5) contrast(1.2)";
+      else if(lit)flt="brightness(.55)";
+      else if(kind==="nightvision"&&!st.night)flt="brightness(2.2) contrast(.8)";
+      if(kind==="instant")flt=(flt+" sepia(.45) saturate(1.3) contrast(1.05)").trim()}
+    else{sc=dark;cap="Pitch black. It’s night and there is no night vision."}
+    sv.innerHTML=sc.svg;vf.style.filter=flt;q(r,"#cap").textContent=cap;
+    const upd=()=>{const vb=400/st.z,h=vb/2;if(sc.wrap)st.cx=((st.cx%400)+400)%400;else st.cx=Math.min(400-h,Math.max(h,st.cx));st.cy=Math.min(400-h,Math.max(h,st.cy));sv.setAttribute("viewBox",`${(st.cx-h).toFixed(5)} ${(st.cy-h).toFixed(5)} ${vb.toFixed(5)} ${vb.toFixed(5)}`);q(r,"#zl").textContent=fz(st.z)};upd();
+    const zm=q(r,"#zm");
+    if(zm)zm.oninput=()=>{const t=zm.value/100;st.z=zmin*Math.pow(max/zmin,t);const f=sc.f;if(f){const k=Math.pow(t,3);st.cx+=(f[0]-st.cx)*k;st.cy+=(f[1]-st.cy)*k}upd()};
+    vf.onwheel=e=>{if(!zm)return;e.preventDefault();zm.value=Math.max(0,Math.min(100,+zm.value-Math.sign(e.deltaY)*4));zm.oninput()};
+    let dg=null;
+    vf.onpointerdown=e=>{dg={x:e.clientX,y:e.clientY,cx:st.cx,cy:st.cy};if(vf.setPointerCapture)try{vf.setPointerCapture(e.pointerId)}catch(x){}};
+    vf.onpointermove=e=>{if(!dg)return;const k=(400/st.z)/(vf.clientWidth||270);st.cx=dg.cx-(e.clientX-dg.x)*k;st.cy=dg.cy-(e.clientY-dg.y)*k;upd()};
+    vf.onpointerup=vf.onpointercancel=()=>{dg=null};
+    r.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{st.lens=b.dataset.l;reset();draw()});
+    q(r,"#dn").onclick=()=>{st.night=!st.night;reset();draw()};
+    const nv=q(r,"#nv");if(nv)nv.onchange=()=>{st.nv=nv.checked;draw()};
+    const rl=q(r,"#rl");if(rl)rl.onchange=()=>{st.rl=rl.checked;draw()};
+    q(r,"#sw").onclick=()=>{st.side=sd==="b"?"f":"b";st.lens=null;reset();draw()};
+    const pr=q(r,"#pr");if(pr)pr.onclick=()=>toast("Printed. It smells like fresh ink.");
+    q(r,"#sh").onclick=()=>{
+      if(freeMB()>=5){S.shots.push({svg:sc.svg,vb:sv.getAttribute("viewBox"),flt:flt,kind:kind,z:st.z,side:sd,night:!!st.night,cls:vf.className.replace(/^vf\s*/,""),cap:cap,t:clk()});S.photos=S.shots.length;toast("Photo saved: "+LNAME[kind]+" "+fz(st.z)+". See it in Photos.")}
+      else toast(stoMB()?"Storage full: photo not saved":"No storage: photo not saved")}};
   draw()};
-function scene(sd,mac){
-  if(mac)return ANT;
-  if(sd==="f")return `<rect width="200" height="200" fill="#c99a7b"/><path d="M70 88q30-14 60 0" fill="none" stroke="#5a3a2a" stroke-width="3"/><ellipse cx="100" cy="102" rx="24" ry="12" fill="#fff"/><circle cx="100" cy="102" r="10" fill="#4a7d4a"/><circle cx="100" cy="102" r="4.5" fill="#111"/><circle cx="96.5" cy="98.5" r="1.8" fill="#fff"/><path d="M78 96l-5-6M88 92l-3-7M100 90v-8M112 92l3-7M122 96l5-6" stroke="#222" stroke-width="1.5" fill="none"/>`;
-  return `<defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1b4a"/><stop offset="1" stop-color="#3b5fb5"/></linearGradient></defs><rect width="200" height="200" fill="url(#sk)"/><circle cx="30" cy="30" r="1" fill="#fff"/><circle cx="160" cy="45" r="1" fill="#fff"/><circle cx="60" cy="70" r="1" fill="#fff"/><circle cx="100" cy="100" r="14" fill="#e9e6d8"/><circle cx="95" cy="96" r="3" fill="#cfcbb8"/><circle cx="106" cy="104" r="2.2" fill="#cfcbb8"/><circle cx="101" cy="93" r="1.2" fill="#cfcbb8"/><path d="M99.6 100.2v-3" stroke="#444" stroke-width=".25" fill="none"/><path d="M99.6 97.2h1.5v1h-1.5z" fill="#e11"/><path d="M0 200v-45l40-25 35 22 30-30 35 28 60-32v82z" fill="#0a1020"/>`}
+const ZM=(k,n)=>({telescope:1000+500*(n-1),binoculars:50,periscope:10,camera:5,macro:20,thermal:2,nightvision:3,fisheye:1,cam360:6,ultrawide:3,telephoto:20,microscope:100,xray:3,underwater:3,drone:20,satellite:200,instant:2,dashcam:2,webcam:2,security:4,pinhole:1,endoscope:2}[k]);
+const LNAME={camera:"Camera",telescope:"Telescope",binoculars:"Binoculars",periscope:"Periscope",macro:"Macro lens",thermal:"Thermal",nightvision:"Night-vision cam",fisheye:"Fisheye",cam360:"360 camera",ultrawide:"Ultra-wide",telephoto:"Telephoto",microscope:"Microscope",xray:"X-ray",underwater:"Underwater",drone:"Drone cam",satellite:"Satellite",instant:"Instant film",dashcam:"Dashcam",webcam:"Webcam",security:"Security cam",pinhole:"Spy pinhole",endoscope:"Endoscope"};
+const SCN={},scn=(k,f)=>SCN[k]||(SCN[k]=f());
+let _sd=1;const seed=n=>{_sd=n},rr=()=>(_sd=_sd*16807%2147483647)/2147483647;
+const f1=v=>v.toFixed(1);
+function starsSvg(n){let o="";for(let i=0;i<n;i++)o+=`<circle cx="${f1(rr()*400)}" cy="${f1(rr()*400)}" r="${rr()<.1?.9:.4}" fill="#fff" opacity="${(.4+rr()*.6).toFixed(2)}"/>`;return o}
+function sMoon(){
+  seed(11);let c="";
+  for(let i=0;i<40;i++){const a=rr()*6.283,d=Math.sqrt(rr())*62,r=1+rr()*6;c+=`<circle cx="${(200+Math.cos(a)*d).toFixed(2)}" cy="${(200+Math.sin(a)*d).toFixed(2)}" r="${r.toFixed(2)}" fill="#bdb9a6" opacity=".7"/>`}
+  for(let i=0;i<90;i++){const r=Math.pow(10,-1.7+rr()*2.1),x=214+(rr()-.5)*6,y=188+(rr()-.5)*6;c+=`<circle cx="${x.toFixed(3)}" cy="${y.toFixed(3)}" r="${r.toFixed(3)}" fill="#c9c5b2" stroke="#a8a491" stroke-width="${(r*.15).toFixed(3)}" opacity=".8"/>`}
+  return `<defs><radialGradient id="mg" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#f2efe2"/><stop offset="1" stop-color="#9c9886"/></radialGradient></defs><rect width="400" height="400" fill="#050a1a"/>${starsSvg(160)}<circle cx="200" cy="200" r="70" fill="url(#mg)"/><ellipse cx="185" cy="185" rx="20" ry="14" fill="#b5b19e" opacity=".5"/>${c}<path d="M214 188V187.8" stroke="#ddd" stroke-width=".012"/><rect x="214" y="187.8" width=".14" height=".09" fill="#e11"/><rect x="214" y="187.82" width=".14" height=".012" fill="#fff"/><rect x="214" y="187.85" width=".14" height=".012" fill="#fff"/><rect x="214" y="187.8" width=".055" height=".048" fill="#1d4ed8"/>`}
+function sHiker(){
+  return `<defs><linearGradient id="hk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5aa9ff"/><stop offset="1" stop-color="#cfe8ff"/></linearGradient></defs><rect width="400" height="400" fill="url(#hk)"/><circle cx="70" cy="60" r="20" fill="#fff3b0"/><ellipse cx="300" cy="70" rx="40" ry="10" fill="#fff" opacity=".8"/><ellipse cx="140" cy="110" rx="30" ry="8" fill="#fff" opacity=".7"/><path d="M0 260L60 200 110 240 170 170 230 245 300 190 360 240 400 215V400H0z" fill="#8aa0b8"/><path d="M0 300L80 230 150 280 230 200 320 285 400 250V400H0z" fill="#5b7a62"/><path d="M110 400L250 150 390 400z" fill="#3e5f43"/><path d="M250 150l-24 42 16-8 8 10 8-10 16 8z" fill="#fff"/><path d="M180 400Q235 300 262 214" stroke="#a98c63" stroke-width="4" fill="none"/><g transform="translate(262 212) scale(.06)"><path d="M-14 -56L-22 0" stroke="#8b5e3c" stroke-width="3"/><path d="M-6 -40L-10 0M6 -40L10 0" stroke="#2b3a67" stroke-width="7" stroke-linecap="round"/><rect x="-16" y="-4" width="14" height="6" fill="#4a2c17"/><rect x="2" y="-4" width="14" height="6" fill="#4a2c17"/><rect x="-24" y="-70" width="14" height="30" rx="4" fill="#f59e0b"/><rect x="-12" y="-72" width="24" height="34" rx="6" fill="#d94f3d"/><path d="M10 -66L26 -84" stroke="#d94f3d" stroke-width="6" stroke-linecap="round"/><circle cx="27" cy="-86" r="4" fill="#f1c9a5"/><circle cx="0" cy="-82" r="10" fill="#f1c9a5"/><path d="M-12 -86h24l-4-10h-16z" fill="#2f4f2f"/><rect x="-14" y="-87" width="28" height="3" fill="#2f4f2f"/><circle cx="-3.5" cy="-82" r="1.2" fill="#222"/><circle cx="3.5" cy="-82" r="1.2" fill="#222"/><path d="M-4 -77q4 3 8 0" stroke="#222" fill="none" stroke-width="1"/></g>`}
+function sCity(){
+  seed(5);let b="",x=-10;
+  while(x<410){const w=24+rr()*20,h=90+rr()*170,col=["#64748b","#475569","#7c8aa5","#94a3b8"][Math.floor(rr()*4)];
+    b+=`<rect x="${f1(x)}" y="${f1(330-h)}" width="${f1(w)}" height="${f1(h)}" fill="${col}"/>`;
+    for(let wy=330-h+8;wy<320;wy+=14)for(let wx=x+4;wx<x+w-6;wx+=9)b+=`<rect x="${f1(wx)}" y="${f1(wy)}" width="4" height="6" fill="${rr()<.3?"#fde68a":"#cbd5e1"}"/>`;
+    x+=w+2}
+  return `<defs><linearGradient id="cy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f9cf7"/><stop offset="1" stop-color="#d6ecff"/></linearGradient></defs><rect width="400" height="400" fill="url(#cy)"/><circle cx="330" cy="60" r="22" fill="#fff6b0"/><ellipse cx="90" cy="70" rx="40" ry="10" fill="#fff" opacity=".85"/>${b}<rect x="150" y="214" width="60" height="30" fill="#f59e0b"/><text x="180" y="234" font-size="12" text-anchor="middle" fill="#111" font-weight="700">TOAST</text><rect y="330" width="400" height="70" fill="#374151"/><path d="M0 365h400" stroke="#facc15" stroke-width="2" stroke-dasharray="14 10"/><rect x="60" y="340" width="34" height="14" rx="4" fill="#ef4444"/><circle cx="68" cy="355" r="4" fill="#111"/><circle cx="86" cy="355" r="4" fill="#111"/><rect x="250" y="372" width="34" height="14" rx="4" fill="#2563eb"/><circle cx="258" cy="387" r="4" fill="#111"/><circle cx="276" cy="387" r="4" fill="#111"/>`}
+function sNight(){
+  seed(21);
+  return `<defs><linearGradient id="nsg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#02030a"/><stop offset="1" stop-color="#0b1233"/></linearGradient><linearGradient id="sb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6d5a8"/><stop offset=".3" stop-color="#b08d57"/><stop offset=".6" stop-color="#d9c08a"/><stop offset="1" stop-color="#8a6a3a"/></linearGradient></defs><rect width="400" height="400" fill="url(#nsg)"/><ellipse cx="200" cy="200" rx="280" ry="38" transform="rotate(-32 200 200)" fill="#8ea0ff" opacity=".13"/><ellipse cx="200" cy="200" rx="220" ry="18" transform="rotate(-32 200 200)" fill="#c4b5fd" opacity=".12"/>${starsSvg(320)}<path d="M70 90L95 100 120 95 135 115 170 120 165 90 135 85" stroke="#9fb4ff" stroke-width=".6" fill="none" opacity=".7"/>${[[70,90],[95,100],[120,95],[135,115],[170,120],[165,90],[135,85]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="1.6" fill="#fff"/>`).join("")}<path d="M330 40L290 70" stroke="#fff" stroke-width="1" opacity=".8"/><circle cx="200" cy="200" r="9" fill="url(#sb)"/><ellipse cx="200" cy="200" rx="22" ry="5.5" transform="rotate(-20 200 200)" fill="none" stroke="#e6d5a8" stroke-width="2.4"/><circle cx="232" cy="190" r="1.2" fill="#ddd"/><circle cx="171" cy="211" r=".8" fill="#ccc"/>`}
+function sCave(){
+  seed(3);let o="";
+  for(let i=0;i<18;i++){const x=i*24+rr()*10,h=30+rr()*60;o+=`<path d="M${f1(x)} 0L${f1(x+14)} 0L${f1(x+7)} ${f1(h)}z" fill="#2a2f3a"/>`}
+  for(let i=0;i<14;i++){const x=i*30+rr()*14,h=20+rr()*50;o+=`<path d="M${f1(x)} 400L${f1(x+16)} 400L${f1(x+8)} ${f1(400-h)}z" fill="#232733"/>`}
+  for(let i=0;i<30;i++){const x=20+rr()*360,y=50+rr()*290,s=.5+rr()*.9;o+=`<use href="#bat" transform="translate(${f1(x)} ${f1(y)}) scale(${(rr()<.5?-s:s).toFixed(2)} ${s.toFixed(2)})"/>`}
+  return `<defs><linearGradient id="cv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#586174"/><stop offset="1" stop-color="#2a3040"/></linearGradient><g id="bat"><path d="M0 0C-4-6-14-8-20-2-16-2-14 2-10 4-8 1-4 3 0 6 4 3 8 1 10 4 14 2 16-2 20-2 14-8 4-6 0 0z" fill="#0b0b0e"/><ellipse cx="0" cy="3" rx="3.5" ry="5" fill="#15151a"/><path d="M-3-1L-4-6-1-2zM3-1L4-6 1-2z" fill="#0b0b0e"/><circle cx="-1.5" cy="2" r=".9" fill="#fff"/><circle cx="1.5" cy="2" r=".9" fill="#fff"/></g></defs><rect width="400" height="400" fill="url(#cv)"/>${o}<use href="#bat" transform="translate(205 140) scale(.35)"/>`}
+function sBed(){
+  return `<rect width="400" height="400" fill="#7a6f99"/><rect y="320" width="400" height="80" fill="#5a4632"/><rect x="250" y="70" width="90" height="120" fill="#1c2a55"/><circle cx="300" cy="110" r="14" fill="#f5f3d8"/><path d="M295 70v120M250 130h90" stroke="#e5e7eb" stroke-width="3"/><rect x="240" y="64" width="18" height="132" fill="#9b4b5a"/><rect x="332" y="64" width="18" height="132" fill="#9b4b5a"/><rect x="60" y="70" width="60" height="80" fill="#2f4f4f"/><text x="90" y="116" font-size="10" text-anchor="middle" fill="#e5e7eb">DREAM</text><rect x="30" y="170" width="20" height="150" fill="#5a3b25"/><rect x="40" y="210" width="230" height="110" rx="10" fill="#3b4a7a"/><rect x="55" y="220" width="70" height="32" rx="12" fill="#e5e7eb"/><rect x="95" y="240" width="170" height="80" rx="10" fill="#6d7fb8"/><path d="M110 240v80M140 240v80M170 240v80M200 240v80M230 240v80" stroke="#8798cc" stroke-width="3"/><ellipse cx="150" cy="238" rx="52" ry="18" fill="#5568a0"/><circle cx="105" cy="232" r="11" fill="#f1c9a5"/><ellipse cx="225" cy="250" rx="16" ry="10" fill="#d1a36a"/><circle cx="212" cy="244" r="7" fill="#d1a36a"/><path d="M207 239l1-6 4 4zM216 238l2-6 3 6z" fill="#d1a36a"/><circle cx="210" cy="243" r="1.4" fill="#7cfc00"/><circle cx="214" cy="243" r="1.4" fill="#7cfc00"/><rect x="290" y="250" width="50" height="70" fill="#5a3b25"/><rect x="300" y="226" width="30" height="22" rx="3" fill="#111"/><text x="315" y="241" font-size="9" text-anchor="middle" fill="#ff3b3b" font-family="monospace">03:07</text><circle cx="120" cy="350" r="12" fill="#a0693c"/><circle cx="112" cy="340" r="5" fill="#a0693c"/><circle cx="128" cy="340" r="5" fill="#a0693c"/><ellipse cx="120" cy="368" rx="14" ry="10" fill="#a0693c"/>`}
+function sEye(dark){
+  seed(9);let l="",p="",f="";
+  for(let i=0;i<24;i++){const a=Math.PI*(1.1+i*.036),x1=200+Math.cos(a)*62,y1=200+Math.sin(a)*(31),x2=200+Math.cos(a)*78,y2=200+Math.sin(a)*52;l+=`<path d="M${f1(x1)} ${f1(y1)}L${f1(x2)} ${f1(y2)}" stroke="#1a1210" stroke-width="1.4"/>`}
+  for(let i=0;i<60;i++){const a=rr()*6.283;f+=`<path d="M200 200L${f1(200+Math.cos(a)*28)} ${f1(200+Math.sin(a)*28)}" stroke="#2d5a2d" stroke-width=".5" opacity=".7"/>`}
+  for(let i=0;i<250;i++)p+=`<circle cx="${f1(rr()*400)}" cy="${f1(rr()*400)}" r=".6" fill="${dark?"#222":"#a97c5e"}" opacity=".6"/>`;
+  return `<defs><radialGradient id="ir" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7fb77f"/><stop offset=".7" stop-color="#3f7a3f"/><stop offset="1" stop-color="#1f3d1f"/></radialGradient></defs><rect width="400" height="400" fill="${dark?"#06080a":"#c99a7b"}"/>${p}<path d="M120 150Q200 120 280 150" stroke="${dark?"#2a2018":"#5a3a2a"}" stroke-width="7" fill="none"/><ellipse cx="200" cy="200" rx="70" ry="34" fill="${dark?"#b9bec0":"#f3f0ee"}"/><path d="M150 205l-16 4M255 195l14-6M165 215l-10 8" stroke="#d9857f" stroke-width=".7" opacity=".6"/><circle cx="200" cy="200" r="28" fill="url(#ir)"/>${f}<circle cx="200" cy="200" r="11" fill="${dark?"#f4f4f4":"#050505"}"/><circle cx="190" cy="190" r="4" fill="#fff"/><path d="M130 200Q200 150 270 200" stroke="${dark?"#2a2018":"#8a5a3a"}" stroke-width="5" fill="none"/>${l}`}
+
+Object.assign(IC,{
+endoscope:`<path d="M3 6c6 0 4 10 10 10h4"/><circle cx="19" cy="16" r="2.4" ${F}/>`,
+dashcam:`<rect x="4" y="5" width="16" height="9" rx="2" ${F}/><circle cx="12" cy="9.5" r="2.5"/><path d="M12 14v5M8 19h8"/>`,
+webcam:`<circle cx="12" cy="10" r="6" ${F}/><circle cx="12" cy="10" r="2.5"/><path d="M8 19h8M12 16v3"/>`,
+security:`<path d="M3 8l15-3 3 7-15 3z" ${F}/><circle cx="17" cy="9" r="2"/><path d="M5 15v6M3 21h6"/>`,
+pinhole:`<circle cx="12" cy="12" r="8" ${F}/><circle cx="12" cy="12" r="1.3" fill="currentColor"/>`});
+Object.assign(FEAT,{endoscope:"Endoscope camera: a tiny explorer.",dashcam:"Dashcam: records every drive.",webcam:"Webcam: ready for video calls.",security:"Security camera: watches the hallway.",pinhole:"Spy pinhole camera: sees through a keyhole."});
+
+[["gamer","G"],["eff","ECO"],["server","SRV"],["riscv","RV"],["tiny4","4b"],["neuro","NN"]].forEach(([id,t])=>mk(id,[24,24],cpuI(t)));
+Object.assign(SPEC,{gamer:{perf:220,boot:2},eff:{perf:60,boot:4},server:{perf:520,boot:40},riscv:{perf:45,boot:7},tiny4:{perf:.8,boot:120},tube:{perf:.3,boot:300},gears:{perf:.2,boot:900},neuro:{perf:180,boot:1}});
+CPUS.push("gamer","eff","server","riscv","tiny4","tube","gears","neuro");
+Object.assign(IC,{
+tube:`<path d="M8 8a4 6 0 018 0v8a4 4 0 01-8 0z" ${F}/><path d="M10 12h4M10 15h4M9 21h6M12 18v3"/>`,
+gears:`<circle cx="12" cy="12" r="4" ${F}/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" stroke-width="3"/>`,
+quad:`<circle cx="5" cy="5" r="3.5"/><circle cx="19" cy="5" r="3.5"/><circle cx="5" cy="19" r="3.5"/><circle cx="19" cy="19" r="3.5"/><path d="M8 8l8 8M16 8l-8 8"/><rect x="9" y="9" width="6" height="6" ${F}/>`,
+ducted:`<circle cx="12" cy="12" r="9" ${F}/><circle cx="12" cy="12" r="2"/><path d="M12 3v7M12 14v7M3 12h7M14 12h7"/>`,
+ion:`<path d="M3 10h10v4H3z" ${F}/><path d="M13 12h8M15 9l5 3-5 3" stroke="#7dd3fc"/>`,
+jetpack:`<rect x="5" y="4" width="5" height="12" rx="2" ${F}/><rect x="14" y="4" width="5" height="12" rx="2" ${F}/><path d="M7.5 16l-1 5 2-2M16.5 16l1 5-2-2"/>`,
+warp:`<circle cx="12" cy="12" r="3" ${F}/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="4" ry="10"/>`,
+antigrav:`<path d="M12 3v18M7 8l5-5 5 5M7 16l5 5 5-5"/>`,
+surround:`<path d="M5 8a8 8 0 000 8M19 8a8 8 0 010 8M8 10a4 4 0 000 4M16 10a4 4 0 010 4"/><circle cx="12" cy="12" r="2" ${F}/>`,
+boombox:`<rect x="2" y="7" width="20" height="12" rx="2" ${F}/><circle cx="7" cy="13" r="3"/><circle cx="17" cy="13" r="3"/><path d="M6 7l2-3h8l2 3M10 13h4"/>`,
+cassette:`<rect x="3" y="6" width="18" height="12" rx="2" ${F}/><circle cx="8" cy="12" r="2.5"/><circle cx="16" cy="12" r="2.5"/>`,
+piano:`<rect x="2" y="6" width="20" height="12" rx="1" ${F}/><path d="M7 6v12M12 6v12M17 6v12"/><path d="M5.5 6v6M9.5 6v6M14.5 6v6M18.5 6v6" stroke-width="3"/>`,
+drums:`<ellipse cx="12" cy="9" rx="8" ry="3" ${F}/><path d="M4 9v7c0 2 4 3 8 3s8-1 8-3V9M8 3l5 5M16 3l-5 5"/>`,
+theremin:`<path d="M5 20V8M5 8a5 5 0 0110 0M15 14h6"/><circle cx="18" cy="14" r="2" ${F}/>`,
+whistle:`<path d="M4 10h9a5 5 0 110 10 5 5 0 01-5-5" ${F}/><circle cx="14" cy="15" r="2"/>`,
+snow:`<path d="M12 3v18M4 7l16 10M20 7L4 17"/>`,
+kite:`<path d="M12 3l7 8-7 10-7-10z" ${F}/><path d="M12 3v18M5 11h14"/>`,
+pinwheel:`<path d="M12 12L4 8 8 4zM12 12l4-8 4 4zM12 12l8 4-4 4zM12 12l-4 8-4-4z" ${F}/>`,
+slingshot:`<path d="M12 21v-8M12 13L6 4M12 13l6-9M6 4q6 6 12 0"/>`});
+Object.assign(FEAT,{gamer:"Gaming beast chip: 240 fps, 12 minutes of battery.",eff:"Efficiency chip: sips power, never complains.",server:"Server chip: uptime is a lifestyle.",riscv:"RISC-V chip: open, fast and friendly.",tiny4:"4-bit micro chip: every number is under 16.",tube:"Vacuum-tube CPU: glows and needs warm-up.",gears:"Mechanical gear CPU: ticks very quietly.",neuro:"Neuromorphic chip: thinks a bit like you.",quad:"Quadcopter rotors: four spinning reasons to fly.",ducted:"Ducted fan: quiet, steady thrust.",ion:"Ion thruster: tiny push, endless patience.",jetpack:"Jetpack: you are the passenger now.",warp:"Warp drive: faster than your own battery warnings.",antigrav:"Anti-gravity module: floats the phone gently upward.",surround:"Surround speakers: sound from every side.",boombox:"Boombox: the bass drops on request.",cassette:"Cassette deck: lo-fi vibes, warbly tape.",piano:"Piano keys: play a scale, or a masterpiece.",drums:"Drum pad: kick, snare, hat and tom.",theremin:"Theremin: spooky sounds by waving your hand.",whistle:"Whistle: a tiny, shrill sound.",snow:"Snow machine: a winter in your pocket.",kite:"Kite: flies from the phone on a string.",pinwheel:"Pinwheel: spins in the breeze.",slingshot:"Slingshot: fires pebbles at a target."});
+const BREAK=["thermal","xray","microscope","satellite"],SELF=["endoscope","xray","microscope","thermal","satellite"];
+const ZMIN={};
+const sErr=t=>`<rect width="400" height="400" fill="#0a0000"/>${[0,1,2,3,4,5,6,7].map(i=>`<rect x="${(i*53)%300}" y="${i*49}" width="${80+(i*37)%160}" height="6" fill="#ef4444" opacity=".5"/>`).join("")}<path d="M200 90L290 250H110z" fill="none" stroke="#ef4444" stroke-width="10"/><text x="200" y="230" font-size="90" text-anchor="middle" fill="#ef4444" font-weight="700">!</text><text x="200" y="300" font-size="18" text-anchor="middle" fill="#fca5a5" font-family="monospace">ERR 0x4E56</text><text x="200" y="326" font-size="13" text-anchor="middle" fill="#fca5a5" font-family="monospace">${t}</text>`;
+function capFor(kind,sd,n){
+  if(sd==="f")return n?"An eye in the dark.":"Your own eye, up close.";
+  const C={telescope:["The Moon. Zoom all the way in to find the flag.","The night sky. Is that Saturn?"],binoculars:["A hiker on a mountain. Wave back!","Bats in a cave. Do not wake them."],macro:["An ant, very close up.","Ants on a cake. A midnight snack."],fisheye:["A fisheye drone’s-eye view of fields and a house with a pool.","A fisheye aerial view at night. Streetlights and a glowing pool."],drone:["A drone’s-eye view of fields and a house with a pool. Zoom in on the pool.","An aerial view at night. Streetlights and a glowing pool."],cam360:["A jungle photosphere. Drag to look all the way around.","A jungle at night. Fireflies and watching eyes."],telephoto:["A small bird on a branch.","An owl, wide awake."],microscope:["A drop of pond water. Is that a tardigrade?"],xray:["A hand in X-ray. Nice ring."],underwater:["A coral reef with clownfish.","The deep sea. Something with teeth is watching."],satellite:["Earth from orbit. Find the space station.","Earth at night. City lights from space."],thermal:["A heat map of a busy city.","A heat map of a bedroom. The cat is warm."],ultrawide:["A wide view of a busy city.","A wide view of a bedroom."],nightvision:["Washed out: the night-vision camera is too bright in daylight.","A bedroom in the middle of the night."],instant:["An instant photo of a busy city.","An instant photo of a bedroom."],endoscope:["A tunnel of pink. Is that a rubber duck?"],dashcam:["A highway drive.","A night drive. Something on the roadside has glowing eyes."],webcam:["A desk with a cat on the keyboard."],pinhole:["A keyhole view of a desk."],security:["An empty hallway.","A hallway at night. Something is walking by."]};
+  const c=C[kind]||["A busy city.","A bedroom in the middle of the night."];return c[n?1:0]||c[0]}
+function camScene(kind,sd,night){
+  const N=night?1:0,m2=(k,fn,f,w)=>scn(k+N,()=>({svg:fn(),f:f||null,wrap:w}));
+  if(sd==="f")return m2("eye",()=>sEye(N),[200,200]);
+  switch(kind){
+    case "telescope":return N?m2("sky",sNight,[200,200]):m2("moon",sMoon,[214.07,187.845]);
+    case "binoculars":return N?m2("cave",sCave,[205,140]):m2("hike",sHiker,[262,212]);
+    case "macro":return N?m2("cake",sCake):m2("ant",()=>`<g transform="scale(2)">${ANT}</g>`,[200,206]);
+    case "fisheye":case "drone":return m2("air",()=>sAir(N),[307,170]);
+    case "cam360":return m2("jg",()=>sJungle(N),null,true);
+    case "telephoto":return m2("bird",()=>sBird(N),[230,205]);
+    case "microscope":return m2("cells",sCells,[210,190]);
+    case "xray":return m2("xray",sXray,[200,182]);
+    case "underwater":return m2("reef",()=>sReef(N));
+    case "satellite":return m2("earth",()=>sEarth(N),[330,90]);
+    case "endoscope":return m2("gut",sGut,[212,222]);
+    case "dashcam":return m2("road",()=>sRoad(N));
+    case "webcam":case "pinhole":return m2("desk",sDesk);
+    case "security":return m2("hall",()=>sHall(N));
+    default:return N?m2("bed",sBed,[315,238]):m2("city",sCity)}}
+function sJungle(N){
+  seed(31);let g="";const leaf=N?["#0d2a14","#12351b","#0a2010"]:["#2f9e44","#237a35","#3fb950","#1b6b2d"];
+  for(let i=0;i<70;i++)g+=`<circle cx="${f1(rr()*400)}" cy="${f1(40+rr()*110)}" r="${f1(14+rr()*22)}" fill="${leaf[Math.floor(rr()*leaf.length)]}"/>`;
+  for(let i=0;i<9;i++)g+=`<rect x="${f1(20+i*44+rr()*14)}" y="120" width="${f1(8+rr()*8)}" height="150" fill="${N?"#1a1208":"#6b4423"}"/>`;
+  for(let i=0;i<16;i++){const x=rr()*400,l=40+rr()*90;g+=`<path d="M${f1(x)} 100q${f1(rr()*12-6)} ${f1(l/2)} 0 ${f1(l)}" stroke="${N?"#124018":"#2f7d32"}" stroke-width="2" fill="none"/>`}
+  g+=`<rect y="262" width="400" height="140" fill="${N?"#08140a":"#3d5a2b"}"/><path d="M0 300Q100 280 200 310T400 300V330H0z" fill="${N?"#0a2a4a":"#3b82c4"}"/>`;
+  for(let i=0;i<45;i++){const x=rr()*400,y=265+rr()*130;g+=`<path d="M${f1(x)} ${f1(y)}l5-14 5 14z" fill="${N?"#0e3a1a":"#4caf50"}"/>`}
+  g+=`<path d="M80 214H200" stroke="#5c3d1e" stroke-width="5"/><g transform="translate(120 205)"><ellipse rx="8" ry="12" fill="${N?"#401010":"#e11d48"}"/><circle cy="-14" r="6" fill="${N?"#401010":"#e11d48"}"/><path d="M5 -15l7 3-7 3z" fill="#f59e0b"/><circle cx="2" cy="-15" r="1" fill="#fff"/><path d="M-8 -2l-14 18 8-4z" fill="${N?"#102a60":"#2563eb"}"/></g>`;
+  if(N){for(let i=0;i<30;i++)g+=`<circle cx="${f1(rr()*400)}" cy="${f1(150+rr()*200)}" r="1.4" fill="#fde047"/>`;for(let i=0;i<4;i++){const x=40+rr()*320;g+=`<circle cx="${f1(x)}" cy="250" r="2" fill="#7cfc00"/><circle cx="${f1(x+8)}" cy="250" r="2" fill="#7cfc00"/>`}}
+  return `<defs><g id="jg"><rect width="400" height="400" fill="${N?"#0a1530":"#8fd3ff"}"/>${g}</g></defs><use href="#jg" x="-400"/><use href="#jg"/><use href="#jg" x="400"/>`}
+function sAir(N){
+  seed(41);let o="";const cols=N?["#0f2a14","#12301a","#1a2a10","#0e2418"]:["#5aa64a","#7fbf5a","#c8b44a","#4f9142","#8bc34a"];
+  for(let r=0;r<8;r++)for(let c=0;c<8;c++)o+=`<rect x="${c*50}" y="${r*50}" width="50" height="50" fill="${cols[Math.floor(rr()*cols.length)]}"/>`;
+  o+=`<path d="M0 90C120 130 140 40 260 80S360 170 400 150" stroke="${N?"#0b2a55":"#3b82c4"}" stroke-width="16" fill="none"/><path d="M0 250H400M250 0V400" stroke="${N?"#2a2a2a":"#6b7280"}" stroke-width="10"/>`;
+  for(let i=0;i<14;i++)o+=`<circle cx="${f1(rr()*400)}" cy="250" r="3" fill="${N?"#fde047":"#ef4444"}"/>`;
+  for(let i=0;i<40;i++)o+=`<circle cx="${f1(rr()*400)}" cy="${f1(rr()*400)}" r="${f1(3+rr()*4)}" fill="${N?"#0a2010":"#2e7d32"}" opacity=".9"/>`;
+  o+=`<rect x="240" y="150" width="46" height="34" fill="${N?"#4a3a20":"#b45309"}"/><path d="M236 150l27-18 27 18z" fill="${N?"#3a1a10":"#dc2626"}"/><rect x="296" y="160" width="26" height="18" fill="${N?"#22d3ee":"#38bdf8"}"/>${N?'<rect x="246" y="160" width="8" height="8" fill="#fde047"/><rect x="266" y="160" width="8" height="8" fill="#fde047"/>':""}<circle cx="307" cy="169" r="2" fill="#f1c9a5"/><path d="M307 171v3M305 172l-3-3M309 172l3-3" stroke="#f1c9a5" stroke-width=".6"/>`;
+  return o}
+function sBird(N){
+  return `<rect width="400" height="400" fill="${N?"#0a1228":"#9ed7ff"}"/><circle cx="60" cy="60" r="${N?18:26}" fill="${N?"#f5f3d8":"#fff3b0"}"/><path d="M0 330C120 300 260 250 400 230" stroke="#5c3d1e" stroke-width="16" fill="none"/><path d="M180 270l-20-40M300 230l20-30" stroke="#5c3d1e" stroke-width="5"/>`+(N?`<g transform="translate(230 200)"><ellipse rx="17" ry="24" fill="#7a6a54"/><circle cx="-8" cy="-14" r="9" fill="#f3efe2"/><circle cx="8" cy="-14" r="9" fill="#f3efe2"/><circle cx="-8" cy="-14" r="5" fill="#f5b700"/><circle cx="8" cy="-14" r="5" fill="#f5b700"/><circle cx="-8" cy="-14" r="2.4" fill="#000"/><circle cx="8" cy="-14" r="2.4" fill="#000"/><path d="M-3 -8l3 6 3-6z" fill="#d97706"/><path d="M-14 -30l4 8M14 -30l-4 8" stroke="#5a4a38" stroke-width="3"/></g>`:`<g transform="translate(230 212)"><ellipse rx="10" ry="8" fill="#6b4a2f"/><ellipse cx="3" cy="3" rx="6" ry="5" fill="#e4572e"/><circle cx="-8" cy="-6" r="5" fill="#6b4a2f"/><path d="M-13 -6l-5 1 5 2z" fill="#f59e0b"/><circle cx="-9" cy="-7" r="1" fill="#000"/><path d="M8 4l12 6" stroke="#6b4a2f" stroke-width="3"/><path d="M-3 8v8M3 8v8" stroke="#a05a2c" stroke-width="1.2"/></g>`)}
+function sCells(){
+  seed(51);let o="";
+  for(let i=0;i<40;i++){const x=rr()*400,y=rr()*400,r=14+rr()*26;o+=`<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(r)}" fill="#9bd7c4" opacity=".35" stroke="#2f8f7a" stroke-width=".8"/><circle cx="${f1(x+rr()*6-3)}" cy="${f1(y+rr()*6-3)}" r="${f1(r*.35)}" fill="#6a4fb3" opacity=".6"/>`}
+  for(let i=0;i<60;i++){const x=rr()*400,y=rr()*400;o+=`<rect x="${f1(x)}" y="${f1(y)}" width="8" height="2.4" rx="1.2" fill="#b45309" transform="rotate(${f1(rr()*180)} ${f1(x)} ${f1(y)})"/>`}
+  o+=`<g transform="translate(210 190)"><ellipse rx="3.2" ry="2" fill="#e5c9a8" stroke="#8a6a4a" stroke-width=".15"/>${[-2,-.8,.8,2].map(x=>`<path d="M${x} 1.5l-.4 1.4M${x} -1.5l-.4 -1.4" stroke="#8a6a4a" stroke-width=".35"/>`).join("")}<circle cx="3" cy="-.3" r=".15" fill="#000"/></g>`;
+  return `<rect width="400" height="400" fill="#e8f4ef"/>${o}`}
+function sXray(){
+  let o=`<rect width="400" height="400" fill="#06121f"/><path d="M140 330Q130 250 150 225H250Q275 250 262 330z" fill="#aee6ff" opacity=".12"/>`;
+  for(const[x,y,a,len]of[[150,250,-70,60],[175,230,-92,90],[200,225,-90,100],[225,230,-85,92],[248,245,-72,76]]){let px=x,py=y;const r=a*Math.PI/180;for(let i=0;i<3;i++){const l=len/3,nx=px+Math.cos(r)*l*.92,ny=py+Math.sin(r)*l*.92;o+=`<line x1="${f1(px)}" y1="${f1(py)}" x2="${f1(nx)}" y2="${f1(ny)}" stroke="#e8f6ff" stroke-width="7" stroke-linecap="round" opacity=".9"/><circle cx="${f1(px)}" cy="${f1(py)}" r="5.5" fill="#e8f6ff"/>`;px+=Math.cos(r)*l;py+=Math.sin(r)*l}}
+  for(let i=0;i<5;i++)o+=`<rect x="${150+i*25}" y="235" width="6" height="60" rx="3" fill="#cfeeff" opacity=".7"/>`;
+  for(let i=0;i<8;i++)o+=`<circle cx="${160+(i%4)*24}" cy="${305+(i>3?14:0)}" r="9" fill="#d7f0ff" opacity=".8"/>`;
+  return o+`<ellipse cx="200" cy="182" rx="8" ry="3" fill="none" stroke="#fff7b0" stroke-width="3"/>`}
+function sReef(N){
+  seed(61);let o="";
+  if(N){o=`<rect width="400" height="400" fill="#020b1a"/>`;for(let i=0;i<25;i++)o+=`<circle cx="${f1(rr()*400)}" cy="${f1(rr()*400)}" r="${f1(1+rr()*2)}" fill="#7dd3fc" opacity=".4"/>`;
+    return o+`<g transform="translate(200 200)"><path d="M-40 0C-40-30 20-40 40-10 50 10 30 30 0 30-30 30-40 20-40 0z" fill="#2a2f3a"/><path d="M-40 6l-20-6v20z" fill="#2a2f3a"/><path d="M40-5l20-10v30z" fill="#2a2f3a"/><path d="M-30 14L-10 10-22 24M-10 14L8 10-4 26M10 14L26 10 14 26" fill="#fff"/><path d="M-30-30Q-40-60-10-62" stroke="#2a2f3a" stroke-width="3" fill="none"/><circle cx="-10" cy="-62" r="6" fill="#fde047"/><circle cx="-22" cy="-12" r="5" fill="#fff"/><circle cx="-22" cy="-12" r="2.4" fill="#000"/></g>`}
+  o=`<defs><linearGradient id="rf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4cc3f0"/><stop offset="1" stop-color="#0b4f8a"/></linearGradient></defs><rect width="400" height="400" fill="url(#rf)"/><path d="M80 0L140 400M200 0L240 400M300 0L330 400" stroke="#fff" stroke-width="8" opacity=".08"/>`;
+  for(let i=0;i<20;i++)o+=`<path d="M${f1(rr()*400)} 400q-10-40 4-80t-6-70" stroke="#2f9e44" stroke-width="5" fill="none"/>`;
+  for(let i=0;i<18;i++)o+=`<circle cx="${f1(rr()*400)}" cy="${f1(330+rr()*70)}" r="${f1(10+rr()*18)}" fill="${["#f472b6","#fb923c","#c084fc","#f87171"][Math.floor(rr()*4)]}"/>`;
+  for(let i=0;i<8;i++)o+=`<g transform="translate(${f1(rr()*400)} ${f1(60+rr()*220)})"><ellipse rx="12" ry="7" fill="#fb923c"/><path d="M12 0l9-7v14z" fill="#fb923c"/><path d="M-3-7v14M4-7v14" stroke="#fff" stroke-width="2"/><circle cx="-7" cy="-2" r="1.3" fill="#000"/></g>`;
+  return o}
+function sEarth(N){
+  seed(71);let o=`<rect width="400" height="400" fill="#000"/>${starsSvg(200)}<defs><radialGradient id="eg" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="${N?"#0b1a33":"#5aa9f0"}"/><stop offset="1" stop-color="${N?"#02060f":"#0d3f8f"}"/></radialGradient></defs><circle cx="200" cy="200" r="145" fill="#4aa3ff" opacity=".18"/><circle cx="200" cy="200" r="140" fill="url(#eg)"/>`;
+  for(const[x,y,rx,ry]of[[170,170,40,30],[240,210,34,46],[150,250,26,20],[220,130,28,16]])o+=`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${N?"#06120a":"#3f9b4a"}"/>`;
+  if(N)for(let i=0;i<220;i++){const a=rr()*6.283,d=Math.sqrt(rr())*130;o+=`<circle cx="${f1(200+Math.cos(a)*d)}" cy="${f1(200+Math.sin(a)*d)}" r="${(.1+rr()*.5).toFixed(2)}" fill="#fde68a" opacity="${(.4+rr()*.6).toFixed(2)}"/>`}
+  else for(let i=0;i<14;i++)o+=`<ellipse cx="${f1(120+rr()*160)}" cy="${f1(100+rr()*200)}" rx="${f1(14+rr()*24)}" ry="${f1(4+rr()*6)}" fill="#fff" opacity=".7"/>`;
+  return o+`<g transform="translate(330 90) scale(.5)"><rect x="-.4" y="-.12" width=".8" height=".24" fill="#cbd5e1"/><rect x="-1.6" y="-.4" width=".9" height=".8" fill="#fbbf24"/><rect x=".7" y="-.4" width=".9" height=".8" fill="#fbbf24"/></g>`}
+function sCake(){
+  seed(91);let o=`<rect width="400" height="400" fill="#3a2a22"/><ellipse cx="200" cy="300" rx="190" ry="60" fill="#e5e7eb"/><rect x="40" y="190" width="320" height="110" fill="#b45309"/><ellipse cx="200" cy="190" rx="160" ry="48" fill="#f9a8d4"/><path d="M40 190q20 40 40 8t40 10 40-8 40 10 40-8 40 10 40-6 40 8V300H40z" fill="#fbcfe8" opacity=".9"/>`;
+  for(let i=0;i<7;i++)o+=`<circle cx="${70+i*44}" cy="${185+(i%2)*14}" r="9" fill="#dc2626"/>`;
+  o+=`<defs><g id="an"><ellipse rx="2.2" ry="1.4" fill="#111"/><ellipse cx="3.2" rx="1.4" ry="1.1" fill="#111"/><circle cx="-2.8" r="1.6" fill="#111"/><path d="M-1 0l-2-3M1 0l-2 3M2 0l1-3M3 0l1 3M-3-1l-3-1M-3 1l-3 1" stroke="#111" stroke-width=".35"/></g></defs>`;
+  for(let i=0;i<36;i++){const t=i/36;o+=`<use href="#an" transform="translate(${f1(40+t*320+rr()*10)} ${f1(170+Math.sin(t*9)*25+rr()*18)}) rotate(${f1(rr()*360)}) scale(${(1.4+rr()*.8).toFixed(2)})"/>`}
+  return o}
+
+function sGut(){
+  let o="";for(let i=0;i<14;i++){const r=190-i*13;o+=`<ellipse cx="200" cy="200" rx="${r}" ry="${r*.9}" fill="${i%2?"#d8707a":"#e6838c"}" opacity=".9"/>`}
+  o+=`<ellipse cx="200" cy="200" rx="14" ry="12" fill="#2a0a10"/>`;
+  for(let i=0;i<20;i++){const a=i*.314;o+=`<path d="M${f1(200+Math.cos(a)*30)} ${f1(200+Math.sin(a)*27)}L${f1(200+Math.cos(a)*190)} ${f1(200+Math.sin(a)*170)}" stroke="#b5505c" stroke-width="2" opacity=".6"/>`}
+  return `<rect width="400" height="400" fill="#7a2a33"/>${o}<g transform="translate(212 222)"><ellipse rx="9" ry="6" fill="#facc15"/><circle cx="-6" cy="-6" r="4.5" fill="#facc15"/><path d="M-11 -6l-5 1 5 2z" fill="#f97316"/><circle cx="-7" cy="-7" r=".9" fill="#000"/></g><circle cx="120" cy="140" r="6" fill="#fff" opacity=".4"/><circle cx="300" cy="260" r="9" fill="#fff" opacity=".35"/>`}
+function sRoad(N){
+  seed(81);let o=`<rect width="400" height="400" fill="${N?"#050a18":"#8fd0ff"}"/><rect y="200" width="400" height="200" fill="${N?"#0a1a0a":"#4c8a3c"}"/><path d="M190 200L-20 400H420L210 200z" fill="${N?"#1a1a1a":"#4b5563"}"/><path d="M200 205V400" stroke="#facc15" stroke-width="4" stroke-dasharray="16 14"/>`;
+  for(let i=0;i<8;i++)o+=`<rect x="${f1(30+i*4)}" y="${150+i*6}" width="${14+i*2}" height="${70-i*2}" fill="${N?"#0d1a0d":"#2f6b2f"}"/>`;
+  o+=`<rect x="180" y="215" width="40" height="22" rx="4" fill="${N?"#1a1a22":"#2563eb"}"/><rect x="184" y="228" width="8" height="5" fill="#ef4444"/><rect x="208" y="228" width="8" height="5" fill="#ef4444"/>`;
+  return o+(N?`<path d="M170 400L190 230H210L230 400z" fill="#fde68a" opacity=".12"/><circle cx="60" cy="260" r="3" fill="#7cfc00"/><circle cx="72" cy="260" r="3" fill="#7cfc00"/><path d="M52 275h30" stroke="#222" stroke-width="10"/>`:`<circle cx="330" cy="60" r="22" fill="#fff6b0"/>`)}
+function sDesk(){return `<rect width="400" height="400" fill="#c8b79a"/><rect y="250" width="400" height="150" fill="#8a5a33"/><rect x="110" y="90" width="180" height="120" rx="6" fill="#111"/><rect x="118" y="98" width="164" height="104" fill="#3b82f6"/><circle cx="200" cy="140" r="22" fill="#f1c9a5"/><path d="M170 202q30-40 60 0z" fill="#e11d48"/><rect x="190" y="210" width="20" height="40" fill="#555"/><rect x="150" y="248" width="100" height="10" fill="#444"/><rect x="100" y="270" width="200" height="22" rx="4" fill="#d1d5db"/><rect x="305" y="232" width="30" height="30" rx="4" fill="#e5e7eb"/><path d="M335 242a8 8 0 010 14" stroke="#e5e7eb" stroke-width="4" fill="none"/><g transform="translate(170 262)"><ellipse rx="30" ry="14" fill="#f59e0b"/><circle cx="-26" cy="-6" r="10" fill="#f59e0b"/><path d="M-32-14l2-8 5 6zM-22-14l4-7 3 8z" fill="#f59e0b"/><circle cx="-29" cy="-7" r="1.6" fill="#000"/><circle cx="-23" cy="-7" r="1.6" fill="#000"/></g>`}
+function sHall(N){
+  return `<rect width="400" height="400" fill="${N?"#10131a":"#d8d4c8"}"/><path d="M0 0L150 120V300L0 400zM400 0L250 120V300L400 400z" fill="${N?"#1a1f2a":"#bfb8a8"}"/><rect x="150" y="120" width="100" height="180" fill="${N?"#0a0c12":"#8d8672"}"/><path d="M0 400L150 300H250L400 400z" fill="${N?"#171a22":"#a39b88"}"/><path d="M150 120H250L400 0H0z" fill="${N?"#20242e":"#e8e4d8"}"/><rect x="185" y="150" width="30" height="60" fill="#2d6a4f"/><text x="200" y="145" font-size="8" text-anchor="middle" fill="#22c55e" font-weight="700">EXIT</text><rect x="170" y="10" width="60" height="6" fill="#fff" opacity="${N?.3:.9}"/><text x="14" y="388" font-size="12" fill="#fff" font-family="monospace">CAM 04  03:07:22</text><g transform="translate(240 290)"><ellipse rx="22" ry="10" fill="#555"/><circle cx="-20" cy="-8" r="8" fill="#555"/><circle cx="-23" cy="-9" r="2" fill="#7cfc00"/><circle cx="-17" cy="-9" r="2" fill="#7cfc00"/><path d="M26 0q14-4 12-20" stroke="#555" stroke-width="4" fill="none"/></g>`}
+AP.photos=r=>{
+  const L=S.shots;
+  const thumb=(p,i)=>`<div class="th ${p.cls}" data-i="${i}" style="filter:${p.flt}"><svg viewBox="${p.vb}" preserveAspectRatio="xMidYMid slice">${p.svg}</svg></div>`;
+  const grid=()=>{
+    if(!L.length){r.innerHTML=`<div class="ap">No photos yet. Take some with the Camera app.</div>`;return}
+    r.innerHTML=`<div class="ap">${L.length} photo${L.length>1?"s":""} <button id="pc">Delete all</button></div><div class="pgrid">${L.map(thumb).join("")}</div>`;
+    r.querySelectorAll(".th").forEach(t=>t.onclick=()=>show(+t.dataset.i));
+    q(r,"#pc").onclick=()=>{L.length=0;S.photos=0;grid()}};
+  const show=i=>{
+    const p=L[i];
+    r.innerHTML=`<div class="vf ${p.cls}" style="filter:${p.flt};touch-action:auto;cursor:default"><svg viewBox="${p.vb}">${p.svg}</svg></div><div class="ap"><b>${LNAME[p.kind]}</b> ${fz(p.z)} · ${p.side==="f"?"front":"back"} camera · ${p.night?"night":"day"} · ${p.t}<div class="cap">${p.cap}</div><div class="row"><button id="pb">All photos</button><button id="pp">Previous</button><button id="pn">Next</button>${has("printer")?`<button id="pr2">Print</button>`:""}<button id="pd">Delete</button></div></div>`;
+    q(r,"#pb").onclick=grid;
+    q(r,"#pp").onclick=()=>show((i+L.length-1)%L.length);
+    q(r,"#pn").onclick=()=>show((i+1)%L.length);
+    const pr=q(r,"#pr2");if(pr)pr.onclick=()=>toast("Printed. It smells like fresh ink.");
+    q(r,"#pd").onclick=()=>{L.splice(i,1);S.photos=L.length;grid()}};
+  grid()};
 AP.music=r=>{
   if(!(has("speaker")||has("subwoofer")||has("jack"))){r.innerHTML=`<div class="ap">No speaker, subwoofer or headphone jack. Nothing to play music with.</div>`;return}
   const out=has("subwoofer")?"Subwoofer":has("speaker")?"Speaker":"Headphone jack",tr=["Song of the Snail","Rocket Rain","Toaster Blues"];let k=0,ac=null,iv=0;
@@ -650,12 +981,12 @@ AP.files=r=>{
   r.innerHTML=`<div class="ap">Storage: ${fm(cap)}${cnt("sd")?" (including SD card)":""}<div class="pbar"><i style="width:${Math.min(100,mb/cap*100)}%"></i></div>Used: ${fm(mb)} (system ${fm(os().mb)})<br>Photos: ${S.photos}<br>Notes: ${S.note?S.note.length+" characters":"empty"}</div>`};
 AP.set=r=>{
   const L=ids=>ids.filter(has).map(id=>P[id].name+(cnt(id)>1?" x"+cnt(id):"")).join(", ")||"none",gb=cnt("ram")*8,sc=["f","b"].filter(s=>hasScr(s)).map(s=>s==="f"?"front":"back").join(" and ");
-  const rows=[["Model",pname()],["OS",os().name],["Processor",L(CPUS)+" (power "+cpuInfo().perf+")"],["Boot time",bootText(S.bootTotal)],["Memory",ramMB()?fm(ramMB()):"No RAM"],["Storage",stoMB()?fm(stoMB()):"none"],["Battery",batMah()+" mAh"],["Screen",L(SCRS)+" ("+(sc||"none")+")"],["Cameras",L(LENSES)],["Ports",L(PORTS)],["Sound",L(["speaker","mic","subwoofer"])],["Sensors",L(["fingerprint","nfc","thermometer",...SENS])],["Signal",L(["antenna","modem9g","bt12","dish","wifi","sim","bt","ir","fm","lora"])],["Movement",L([...Object.keys(ENG),"wheel","wings","parachute"])],["Extras",L(["neural","haptic","paste","defrag","polish","splitter","fan","solar"])],["Weight",Math.round(totalG())+" g"]];
+  const rows=[["Model",pname()],["Motherboard",board()?BRD[board().id].n:"none"],["OS",os().name],["Processor",L(CPUS)+" (power "+cpuInfo().perf+")"],["Boot time",bootText(S.bootTotal)],["Memory",ramMB()?fm(ramMB()):"No RAM"],["Storage",stoMB()?fm(stoMB()):"none"],["Battery",batMah()+" mAh"],["Screen",L(SCRS)+" ("+(sc||"none")+")"],["Cameras",L(LENSES)],["Ports",L(PORTS)],["Sound",L(["speaker","mic","subwoofer"])],["Sensors",L(["fingerprint","nfc","thermometer",...SENS])],["Signal",L(["antenna","modem9g","bt12","dish","wifi","sim","bt","ir","fm","lora"])],["Movement",L([...Object.keys(ENG),"wheel","wings","parachute"])],["Extras",L(["neural","haptic","paste","defrag","polish","splitter","fan","solar"])],["Weight",Math.round(totalG())+" g"]];
   const ex=["neural","bt12","modem9g","haptic","paste","defrag","polish","splitter"].filter(has).map(id=>`<p>${FEAT[id]}</p>`).join("");
   r.innerHTML=`<div class="ap">${rows.map(([k,v])=>`<div class="kv"><b>${k}</b><span>${v}</span></div>`).join("")}${ex}${has("defrag")?`<button id="df">Defragment RAM</button> <span id="dr"></span>`:""}</div>`;
   const d=q(r,"#df");if(d)d.onclick=()=>{q(r,"#dr").textContent="Done. 0 bytes freed.";};};
 AP.fly=r=>{
-  const eng=items.filter(i=>ENG[i.id]),T=eng.reduce((a,i)=>a+ENG[i.id],0),m=totalG()/100,W=m*10,chute=has("parachute"),wing=has("wings"),jetty=has("rocket")||has("jet"),LIFT=cnt("balloon")*70;
+  const eng=items.filter(i=>ENG[i.id]),T=eng.reduce((a,i)=>a+ENG[i.id],0),m=totalG()/100,W=m*10,chute=has("parachute"),wing=has("wings"),jetty=has("rocket")||has("jet")||has("jetpack")||has("warp"),LIFT=cnt("balloon")*70+cnt("antigrav")*300;
   let alt=0,vy=0,x=100,th=0,boost=0,open=0,last=performance.now();
   r.innerHTML=`<svg id="fs" class="fs" viewBox="0 0 200 160"><rect id="sk" width="200" height="160" fill="#7dd3fc"/><rect y="148" width="200" height="12" fill="#166534"/><g id="fg"><rect x="-5" y="-9" width="10" height="18" rx="2" fill="#111" stroke="#fff"/>${wing?'<path d="M-5 0l-12 6v-10zM5 0l12 6v-10z" fill="#cbd5e1"/>':""}<path id="pc" d="M-12 -12a12 10 0 0124 0z" fill="#f43f5e" opacity="0"/>${T?'<path d="M-3 9l3 8 3-8" fill="#fb923c"/>':""}</g></svg><div class="ap"><div id="frd"></div><div>Thrust ${T} vs weight ${Math.round(W)}${T+LIFT<W?" (too heavy to take off)":""}${LIFT?" + balloon lift "+LIFT:""}</div>${T?`<label>Throttle <input type="range" id="th" min="0" max="100" value="0"></label>`:`<div>No engine. Add a rotor, propeller, helicopter, rocket or jet to take off.</div>`}<div class="row"><button id="lf">Left</button><button id="rt">Right</button>${jetty?`<button id="bo">Boost</button>`:""}${chute?`<button id="pa">Parachute</button>`:""}<button id="dp">Drop from 200 m</button></div></div>`;
   const e=s=>q(r,s);
@@ -740,13 +1071,10 @@ AP.cast=r=>{
   r.innerHTML=`<div class="ap">${C.map(x=>`<p>${x[1]}: <button data-c="${x[0]}">${x[2]}</button></p>`).join("")}<div id="cs" class="tv">No display connected</div></div>`;
   r.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{q(r,"#cs").textContent=C.find(x=>x[0]===b.dataset.c)[3]})};
 AP.sat=r=>{r.innerHTML=`<div class="ap">Satellite link<br>Found ${12+Math.floor(Math.random()*8)} satellites<br>Lat ${(Math.random()*180-90).toFixed(3)}, Lon ${(Math.random()*360-180).toFixed(3)}<br>Signal: ${has("antenna")?"Excellent (dish and antenna)":"Good"}</div>`};
-AP.tools=r=>{
-  r.innerHTML=`<div class="ap">${has("knife")?`<p>Pocket knife: <button id="kb">Open blade</button> <span id="ks">closed</span></p>`:""}${has("umbrella")?`<p>Umbrella: <button id="ub">Deploy</button> <span id="us">closed</span></p>`:""}${has("scale")?`<p>Pocket scale: your phone weighs <b>${Math.round(totalG())} g</b>.</p>`:""}</div>`;
-  const tg=(b,s,a,c)=>{const B=q(r,b);if(B)B.onclick=()=>{const S2=q(r,s);const o=S2.textContent==="closed";S2.textContent=o?a:"closed";B.textContent=o?c:b==="#kb"?"Open blade":"Deploy"}};
-  tg("#kb","#ks","open (careful)","Close blade");tg("#ub","#us","open (it is raining)","Close umbrella")};
+AP.tools=r=>{r.innerHTML=`<div class="ap">${has("scale")?`<p>Pocket scale: your phone weighs <b>${Math.round(totalG())} g</b>.</p>`:""}</div>`};
 AP.sens=r=>{
   const D={gyro:["Gyroscope",()=>`${(Math.random()*2-1).toFixed(2)} / ${(Math.random()*2-1).toFixed(2)} rad/s`],accel:["Accelerometer",()=>(9.8+Math.random()*.3-.15).toFixed(2)+" m/s²"],baro:["Barometer",()=>(1013+Math.random()*4-2).toFixed(1)+" hPa"],compass:["Compass",()=>Math.round(40+Math.random()*10)+"° NE"],light:["Light sensor",()=>Math.round(300+Math.random()*60)+" lux"],heart:["Heart rate",()=>Math.round(64+Math.random()*10)+" bpm"],gps:["GPS",()=>(10.77+Math.random()*.01).toFixed(4)+", "+(106.69+Math.random()*.01).toFixed(4)],geiger:["Geiger counter",()=>Math.round(has("nuke")?9000+Math.random()*500:15+Math.random()*10)+" CPM"],metal:["Metal detector",()=>has("carbat")||has("knife")||has("nuke")?"Metal found: your own phone":"No metal nearby"],aq:["Air quality",()=>has("toaster")?"AQI 120: toast smoke":"AQI "+Math.round(35+Math.random()*10)],lidar:["LiDAR",()=>(.5+Math.random()*3.5).toFixed(2)+" m to the nearest object"]};
-  const ids=SENS.filter(has);
+  Object.assign(D,SENSX);const ids=SENS.filter(has);
   r.innerHTML=`<div class="ap">${ids.map(id=>`<div class="kv"><b>${D[id][0]}</b><span id="s_${id}"></span></div>`).join("")}</div>`;
   const up=()=>ids.forEach(id=>{const e=q(r,"#s_"+id);if(e)e.textContent=D[id][1]()});up();
   const iv=setInterval(up,700);S.stop=()=>clearInterval(iv)};
@@ -763,16 +1091,29 @@ AP.remote=r=>{
   r.innerHTML=`<div class="ap">Infrared remote<div class="row"><button>Power</button><button>Vol +</button><button>Vol -</button><button>Channel +</button></div><p id="rm"></p></div>`;
   r.querySelectorAll(".row button").forEach(b=>b.onclick=()=>{q(r,"#rm").textContent=`Sent "${b.textContent}". The TV ${pick(["obeyed.","ignored you.","turned on the toaster.","changed to a cat channel."])}`})};
 AP.radio=r=>{
-  let ac=null;
-  const tone=(f,d,t)=>{try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=t||"sine";o.frequency.value=f;g.gain.value=.08;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){toast("Audio is not available here")}};
-  r.innerHTML=`<div class="ap">${has("fm")?`FM radio<input type="range" id="fq" min="880" max="1080" value="1000" style="width:100%"><div id="fs2" class="big">100.0 MHz</div><div id="fm2">Static</div>`:""}${has("lora")?`<p>Walkie-talkie: <button id="wk">Push to talk</button> <span id="wm"></span></p>`:""}${has("vinyl")?`<p>Record player: <button id="vn">Spin record</button></p><div id="vd" class="disc"></div>`:""}${has("horn")?`<p><button id="ho">Air horn</button></p>`:""}${has("megaphone")?`<p><button id="mg">Megaphone</button> <span id="mm"></span></p>`:""}${has("bone")?`<p>Bone-conduction speaker: sound goes straight to your skull.</p>`:""}</div>`;
+  let ac=null,th=null;
+  const AC=()=>{try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();return ac}catch(e){toast("Audio is not available here");return null}};
+  const tone=(f,d,t,v)=>{const a=AC();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.type=t||"sine";o.frequency.value=f;g.gain.value=v||.08;o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d)};
+  const KEYS=[262,294,330,349,392,440,494,523],DR=[["Kick",60,"sine",.22],["Snare",200,"square",.09],["Hat",900,"sawtooth",.05],["Tom",120,"sine",.25]];
+  r.innerHTML=`<div class="ap">${has("fm")?`FM radio<input type="range" id="fq" min="880" max="1080" value="1000" style="width:100%"><div id="fs2" class="big">100.0 MHz</div><div id="fm2">Static</div>`:""}${has("lora")?`<p>Walkie-talkie: <button id="wk">Push to talk</button> <span id="wm"></span></p>`:""}${has("vinyl")?`<p>Record player: <button id="vn">Spin record</button></p><div id="vd" class="disc"></div>`:""}${has("horn")?`<p><button id="ho">Air horn</button></p>`:""}${has("megaphone")?`<p><button id="mg">Megaphone</button> <span id="mm"></span></p>`:""}${has("bone")?`<p>Bone-conduction speaker: sound goes straight to your skull.</p>`:""}${has("piano")?`<p>Piano</p><div class="piano">${KEYS.map((f,i)=>`<button data-k="${f}">${"CDEFGABC"[i]}</button>`).join("")}</div>`:""}${has("drums")?`<p>Drum pad</p><div class="row">${DR.map((d,i)=>`<button data-d="${i}">${d[0]}</button>`).join("")}</div>`:""}${has("theremin")?`<p>Theremin: move in the box</p><div id="thm" class="thm"></div>`:""}${has("cassette")?`<p>Cassette deck: <button id="ct">Play tape</button></p><div id="cs2" class="reels">${svg("tape")}</div>`:""}${has("boombox")?`<p><button id="bb">Bass drop</button></p>`:""}${has("surround")?`<p><button id="sr">Surround sweep</button></p>`:""}${has("whistle")?`<p><button id="wh">Whistle</button></p>`:""}</div>`;
+  const on=(s,f)=>{const b=q(r,s);if(b)b.onclick=f};
   const fq=q(r,"#fq");
   if(fq)fq.oninput=()=>{const f=+fq.value,st={885:"Snail FM",945:"Rocket Radio",1000:"Toast 100",1055:"Disco 105.5"};q(r,"#fs2").textContent=(f/10).toFixed(1)+" MHz";const k=Object.keys(st).find(x=>Math.abs(x-f)<4);q(r,"#fm2").textContent=k?"Now playing: "+st[k]:"Static";if(k)tone(200+k%300,.15,"triangle")};
-  const wk=q(r,"#wk");if(wk)wk.onclick=()=>{q(r,"#wm").textContent=pick(["Over.","Copy that.","Say again?","Roger, toast is ready."])};
-  const vn=q(r,"#vn");if(vn)vn.onclick=()=>{q(r,"#vd").classList.toggle("spin")};
-  const ho=q(r,"#ho");if(ho)ho.onclick=()=>tone(220,.7,"sawtooth");
-  const mg=q(r,"#mg");if(mg)mg.onclick=()=>{q(r,"#mm").textContent=pick(["ATTENTION PLEASE!","YOUR TOAST IS READY!","GOOD MORNING!"]);tone(330,.4,"square")};
-  S.stop=()=>{if(ac){try{ac.close()}catch(e){}ac=null}}};
+  on("#wk",()=>{q(r,"#wm").textContent=pick(["Over.","Copy that.","Say again?","Roger, toast is ready."])});
+  on("#vn",()=>q(r,"#vd").classList.toggle("spin"));
+  on("#ho",()=>tone(220,.7,"sawtooth"));
+  on("#mg",()=>{q(r,"#mm").textContent=pick(["ATTENTION PLEASE!","YOUR TOAST IS READY!","GOOD MORNING!"]);tone(330,.4,"square")});
+  r.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>tone(+b.dataset.k,.4,"triangle",.1));
+  r.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{const d=DR[+b.dataset.d];tone(d[1],d[3],d[2],.12)});
+  on("#ct",()=>{const s=q(r,"#cs2");s.classList.toggle("spin");q(r,"#ct").textContent=s.classList.contains("spin")?"Stop tape":"Play tape";if(s.classList.contains("spin"))tone(180,.5,"triangle",.04)});
+  on("#bb",()=>tone(45,.9,"sine",.2));
+  on("#wh",()=>tone(2000,.35,"sine",.06));
+  on("#sr",()=>{const a=AC();if(!a)return;const o=a.createOscillator(),g=a.createGain(),p=a.createStereoPanner?a.createStereoPanner():null;o.frequency.value=330;g.gain.value=.06;o.connect(g);if(p){g.connect(p);p.connect(a.destination);let t=0;const iv=setInterval(()=>{t+=.1;p.pan.value=Math.sin(t*3)},50);setTimeout(()=>clearInterval(iv),2000)}else g.connect(a.destination);o.start();o.stop(a.currentTime+2)});
+  const tm=q(r,"#thm");
+  if(tm){const mv=e=>{const b=tm.getBoundingClientRect();if(th){th.o.frequency.value=200+(e.clientX-b.left)/(b.width||1)*800;th.g.gain.value=Math.max(0,.15*(1-(e.clientY-b.top)/(b.height||1)))}};
+    tm.onpointerdown=e=>{const a=AC();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.start();th={o,g};mv(e)};
+    tm.onpointermove=mv;tm.onpointerup=tm.onpointerleave=()=>{if(th){try{th.o.stop()}catch(x){}th=null}}}
+  S.stop=()=>{if(th){try{th.o.stop()}catch(x){}th=null}if(ac){try{ac.close()}catch(x){}ac=null}}};
 AP.kitchen=r=>{
   const K=[["coffee","Coffee machine","Brew",["Espresso brewed. The phone smells great.","A latte. It is mostly phone."]],["fridge","Mini fridge","Open",["Inside: one yoghurt and a tiny light.","Cold drinks, ready."]],["popcorn","Popcorn maker","Pop",["Pop pop pop! Your screen is buttery.","Popcorn is ready."]],["hairdryer","Hair dryer","Blow",["Whoosh. Hair dry, battery not.","Warm air, loud noise."]]].filter(x=>has(x[0]));
   let tm=0;
@@ -780,14 +1121,43 @@ AP.kitchen=r=>{
   r.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const x=K.find(y=>y[0]===b.dataset.k);S.extra=P[x[0]].mA;q(r,"#ko").textContent=pick(x[3]);clearTimeout(tm);tm=setTimeout(()=>{if(S)S.extra=0},1500)});
   S.stop=()=>clearTimeout(tm)};
 AP.toys=r=>{
-  const T2=[["magnet","Magnet","Attract","Paperclips jump onto your phone. 14 clips."],["tesla","Tesla coil","Zap","ZAP! Blue sparks. Do not touch."],["confetti","Confetti cannon","Fire","BOOM! Confetti everywhere."],["bubble","Bubble blower","Blow","Bubbles float up and pop. Wonderful."],["watergun","Water gun","Squirt","Splash! The screen is waterproof. Mostly."],["grapple","Grappling hook","Launch","The hook catches the ceiling lamp. Hold on!"],["smoke","Fog machine","Fog","Thick fog fills the room. You can’t see the phone."]].filter(x=>has(x[0]));
-  r.innerHTML=`<div class="ap">${T2.map(x=>`<p>${x[1]}: <button data-t="${x[0]}">${x[2]}</button></p>`).join("")}<div id="to2" class="toyarea"></div><div id="tt2"></div></div>`;
-  r.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{
-    const x=T2.find(y=>y[0]===b.dataset.t);q(r,"#tt2").textContent=x[3];
-    const a=q(r,"#to2");a.innerHTML="";
-    for(let i=0;i<24;i++){const d=document.createElement("i");d.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;background:hsl(${Math.floor(Math.random()*360)} 90% 55%)`;a.appendChild(d)}
-    if(x[0]==="tesla"){S.extra=P.tesla.mA;setTimeout(()=>{if(S)S.extra=0},1200)}})};
-
+  const col=$("col").value,NS="http://www.w3.org/2000/svg",tms=[],ivs=[],P2=[];let raf=0;
+  const D=[["knife","Knife"],["umbrella","Umbrella"],["magnet","Magnet"],["tesla","Tesla"],["confetti","Confetti"],["bubble","Bubbles"],["watergun","Water"],["grapple","Grapple"],["smoke","Fog"],["snow","Snow"],["kite","Kite"],["pinwheel","Pinwheel"],["slingshot","Sling"],["yoyo","Yo-yo"],["duck","Duck"],["spinner","Spinner"]].filter(x=>has(x[0]));
+  const clips=[[22,30],[200,40],[30,120],[205,150],[25,200],[205,215],[60,28],[170,22]],tgt=[[74,100,-90],[166,112,90],[74,160,-80],[166,172,85],[100,66,0],[132,66,10],[100,214,180],[134,214,175]];
+  const clipSvg=clips.map((c,i)=>`<g class="clip" style="transform:translate(${c[0]}px,${c[1]}px) rotate(${i*40}deg);transition:transform 1s"><path d="M-2 -6v11a3 3 0 006 0V-4a2 2 0 00-4 0v9" fill="none" stroke="#cbd5e1" stroke-width="1.2"/></g>`).join("");
+  r.innerHTML=`<div class="ap">Toys and tools<div class="tstage"><svg id="tv" viewBox="0 0 240 240"><defs><filter id="glw"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><linearGradient id="bl" x1="0" x2="1"><stop offset="0" stop-color="#e5e7eb"/><stop offset=".5" stop-color="#94a3b8"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs><rect width="240" height="240" fill="#16213a"/>
+<g id="kn" style="transform-origin:150px 78px;transition:transform .6s cubic-bezier(.3,1.4,.5,1)"><path d="M146 78h8v58q-4 10-8 0z" fill="url(#bl)" stroke="#6b7280" stroke-width=".6"/><path d="M148.5 82v48" stroke="#fff" stroke-width="1" opacity=".7"/></g>
+<g id="um" style="transform-origin:120px 70px;transition:transform .5s,opacity .5s;transform:scale(.06,1);opacity:0"><path d="M30 64Q120 -14 210 64Q188 50 165 64Q142 50 120 64Q98 50 75 64Q52 50 30 64z" fill="#ef4444"/><path d="M75 64Q90 20 120 6M165 64Q150 20 120 6M120 64V6" stroke="#fff" stroke-width="1.2" fill="none" opacity=".7"/><path d="M120 6V72" stroke="#e5e7eb" stroke-width="2"/></g>
+<g id="kt" style="opacity:0;transition:opacity .4s"><path d="M150 70Q185 58 205 40" stroke="#e5e7eb" fill="none" stroke-width="1"/><g style="transform-origin:205px 40px;animation:kite 2s ease-in-out infinite alternate"><path d="M205 14l12 16-12 20-12-20z" fill="#f59e0b"/><path d="M205 14v36M193 30h24" stroke="#7c2d12" stroke-width=".8"/><path d="M205 50q-6 8 0 14t-6 12" stroke="#ef4444" fill="none"/></g></g>
+<g id="tg" style="opacity:${has("slingshot")?1:0}"><circle cx="214" cy="110" r="14" fill="#fff"/><circle cx="214" cy="110" r="9" fill="#ef4444"/><circle cx="214" cy="110" r="4" fill="#fff"/><circle cx="214" cy="110" r="1.6" fill="#ef4444"/></g>
+<path id="rp" d="M120 70Q150 30 180 12" stroke="#cbd5e1" stroke-width="1.6" fill="none" stroke-dasharray="130" stroke-dashoffset="130" style="transition:stroke-dashoffset .6s"/><path id="hk" d="M174 12a6 6 0 1112 0l-3-5" stroke="#cbd5e1" stroke-width="2" fill="none" style="opacity:0;transition:opacity .2s"/>
+<g id="ph2"><rect x="80" y="70" width="80" height="140" rx="14" fill="${col}" stroke="#000" stroke-opacity=".3"/><rect x="86" y="78" width="68" height="124" rx="9" fill="#0b1020"/><path d="M96 96h48M96 108h36M96 120h42" stroke="#334a73" stroke-width="3"/><circle cx="150" cy="78" r="2.6" fill="#cbd5e1"/><g id="sfx"></g><path id="mound" d="M80 70q40 0 80 0z" fill="#fff"/><g id="tc" style="opacity:${has("tesla")?1:0}"><rect x="116" y="54" width="8" height="16" fill="#9ca3af"/><circle cx="120" cy="50" r="6" fill="#cbd5e1"/></g></g>
+<g id="pw" style="opacity:0;transition:opacity .4s"><path d="M88 66V54" stroke="#94a3b8" stroke-width="1.4"/><g style="transform-origin:88px 50px;animation:spin2 .8s linear infinite"><path d="M88 50L78 44 84 38z" fill="#f43f5e"/><path d="M88 50l6-12 6 6z" fill="#22c55e"/><path d="M88 50l10 6-6 6z" fill="#3b82f6"/><path d="M88 50l-6 12-6-6z" fill="#facc15"/></g></g>
+${clipSvg}<g id="fx"></g></svg></div><div class="row">${D.map(x=>`<button data-t="${x[0]}">${x[1]}</button>`).join("")}</div><div id="tn" class="cap">Pick a toy.</div></div>`;
+  const e=s=>q(r,s),note=t=>{e("#tn").textContent=t},fx=e("#fx");
+  const T=(f,ms)=>{tms.push(setTimeout(f,ms))},I=(f,ms)=>{const i=setInterval(f,ms);ivs.push(i);return i};
+  const mk=(tag,at)=>{const x=document.createElementNS(NS,tag);for(const k in at)x.setAttribute(k,at[k]);fx.appendChild(x);return x};
+  const pwr=(id,ms)=>{S.extra=P[id].mA;T(()=>{if(S)S.extra=0},ms)};
+  const spawn=(x,o)=>{P2.push(Object.assign({e:x,x:0,y:0,vx:0,vy:0,g:.12,dr:.99,life:100,age:0,rot:0,vr:0,sw:0},o));if(!raf)raf=requestAnimationFrame(loop)};
+  const step=p=>{p.vx*=p.dr;p.vy+=p.g;p.x+=p.vx+(p.sw?Math.sin(p.age*.15)*p.sw:0);p.y+=p.vy;p.rot+=p.vr;p.age++;p.e.setAttribute("transform",`translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${p.rot.toFixed(0)})`);p.e.setAttribute("opacity",Math.max(0,1-p.age/p.life).toFixed(2));return p.age<p.life};
+  const loop=()=>{raf=0;for(let i=P2.length-1;i>=0;i--)if(!step(P2[i])){P2[i].e.remove();P2.splice(i,1)}if(P2.length)raf=requestAnimationFrame(loop)};
+  const flip=id=>{const n=e("#"+id);n.dataset.o=n.dataset.o==="1"?"0":"1";return n.dataset.o==="1"};
+  const E={
+    knife(){const o=flip("kn");e("#kn").style.transform=o?"rotate(180deg)":"rotate(0deg)";note(o?"The blade swings out of the phone.":"The blade folds back into the phone.")},
+    umbrella(){const o=flip("um"),u=e("#um");u.style.transform=o?"scale(1,1)":"scale(.06,1)";u.style.opacity=o?1:0;note(o?"The umbrella pops open on top. It is raining, probably.":"The umbrella folds away.")},
+    magnet(){const o=flip("ph2");r.querySelectorAll(".clip").forEach((c,i)=>{const t=o?tgt[i]:[clips[i][0],clips[i][1],i*40];c.style.transform=`translate(${t[0]}px,${t[1]}px) rotate(${t[2]}deg)`});note(o?"Paperclips fly onto the phone and stick to it.":"The paperclips drop away.")},
+    tesla(){pwr("tesla",1500);let n=0;const iv=I(()=>{fx.querySelectorAll(".bolt").forEach(b=>b.remove());if(++n>14){clearInterval(iv);return}for(let k=0;k<4;k++){const a=Math.random()*6.283,d=70+Math.random()*50,tx=120+Math.cos(a)*d,ty=50+Math.sin(a)*d*.8;let pts="M120 50";for(let s=1;s<=7;s++)pts+=`L${(120+(tx-120)*s/7+(Math.random()-.5)*14).toFixed(1)} ${(50+(ty-50)*s/7+(Math.random()-.5)*14).toFixed(1)}`;mk("path",{d:pts,class:"bolt",stroke:"#9be7ff","stroke-width":1.6,fill:"none",filter:"url(#glw)"})}},90);note("ZAP! Blue lightning arcs off the coil.")},
+    confetti(){for(let i=0;i<46;i++){const a=-Math.PI/2+(Math.random()-.3)*1.2,v=2+Math.random()*3.5;spawn(mk("rect",{width:3,height:5,fill:`hsl(${Math.floor(Math.random()*360)} 90% 55%)`}),{x:92,y:200,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:110,vr:Math.random()*14-7})}note("BOOM! Confetti everywhere.")},
+    bubble(){let n=0;const iv=I(()=>{if(++n>14){clearInterval(iv);return}spawn(mk("circle",{r:3+Math.random()*5,fill:"#bae6fd","fill-opacity":.25,stroke:"#e0f2fe","stroke-width":.8}),{x:95+Math.random()*30,y:70,vx:-.2+Math.random()*.6,vy:-.7,g:-.01,sw:.4,life:170})},140);note("Soap bubbles drift up from the phone.")},
+    watergun(){let n=0;const iv=I(()=>{if(++n>20){clearInterval(iv);return}for(let k=0;k<3;k++)spawn(mk("circle",{r:1.8,fill:"#38bdf8"}),{x:160,y:135,vx:3.2+Math.random(),vy:-1.8+Math.random()*.8,g:.12,life:75})},40);const s=e("#sfx");for(let i=0;i<6;i++){const d=document.createElementNS(NS,"circle");d.setAttribute("cx",92+Math.random()*56);d.setAttribute("cy",90+Math.random()*100);d.setAttribute("r",1.5+Math.random()*2);d.setAttribute("fill","#38bdf8");d.setAttribute("opacity",".6");s.appendChild(d);T(()=>d.remove(),6000)}note("Splash! The screen gets a little wet.")},
+    grapple(){const o=flip("rp");e("#rp").style.strokeDashoffset=o?0:130;T(()=>{e("#hk").style.opacity=o?1:0},o?600:0);if(o){e("#ph2").classList.add("sway");T(()=>e("#ph2").classList.remove("sway"),2600)}note(o?"The hook catches the ceiling. The phone swings.":"The rope winds back in.")},
+    smoke(){S.fog=!S.fog;applyFog();note(S.fog?"Fog fills the room. The screen and the phone body blur, unevenly.":"The fog clears.")},
+    snow(){let n=0,h=0;const iv=I(()=>{if(++n>34){clearInterval(iv);return}for(let k=0;k<3;k++)spawn(mk("circle",{r:1+Math.random()*1.6,fill:"#fff"}),{x:Math.random()*240,y:-4,vx:0,vy:.7,g:.004,sw:.3,life:260});h=Math.min(8,h+.25);e("#mound").setAttribute("d",`M80 70q40 ${-h*2} 80 0z`)},120);pwr("snow",4500);note("Snow falls and piles up on the phone.")},
+    kite(){const o=flip("kt");e("#kt").style.opacity=o?1:0;note(o?"A kite flies from the phone on a string.":"The kite comes down.")},
+    pinwheel(){const o=flip("pw");e("#pw").style.opacity=o?1:0;note(o?"The pinwheel spins.":"The pinwheel stops.")},
+    slingshot(){spawn(mk("circle",{r:2.6,fill:"#9ca3af"}),{x:160,y:150,vx:4.6,vy:-2,g:.06,dr:1,life:46});T(()=>note(pick(["Bullseye!","Just missed the target.","The pebble flew into the next room."])),700)}};
+  r.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{const f=E[b.dataset.t];if(f)f();else note(pick(TOYX[b.dataset.t]))});
+  S.stop=()=>{cancelAnimationFrame(raf);tms.forEach(clearTimeout);ivs.forEach(clearInterval)}};
 
 $("pow").onclick=power;
 const MODES=["auto","light","dark"],LBL={auto:"Auto",light:"Light",dark:"Dark"};
@@ -795,5 +1165,94 @@ let mode="auto";
 try{const m=localStorage.getItem("bp-theme");if(MODES.includes(m))mode=m}catch(e){}
 function applyTheme(){const r=document.documentElement;if(mode==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",mode);$("theme").textContent="Theme: "+LBL[mode]}
 $("theme").onclick=()=>{mode=MODES[(MODES.indexOf(mode)+1)%3];applyTheme();try{localStorage.setItem("bp-theme",mode)}catch(e){}};
-applyTheme();drawBin();sync();msg("Pick parts from the bin. Start with a screen, a battery and a chip.");
+
+/* ---------- motherboard rules ---------- */
+const grp=id=>{const c=P[id].cat;return c==="mem"?(id in RAMMB?"ram":"sto"):c};
+const board=()=>items.find(i=>BRD[i.id]);
+const capOf=g=>{const b=board();return b?(BRD[b.id].all?Infinity:BRD[b.id].c[g]||0):0};
+const used=g=>items.filter(i=>!BRD[i.id]&&i.id!=="expslot"&&grp(i.id)===g).length;
+const bsum=id=>{const B=BRD[id];return B.all?"Every part fits, no limits":`${B.c.cpu} CPU · ${B.c.ram} RAM · ${B.c.sto} disk · ${B.c.optic} lens`};
+function slotMsg(id){
+  if(id==="expslot")return null;
+  if(BRD[id])return board()?"A phone only has room for one motherboard. Remove the old one first.":null;
+  const b=board();if(!b)return"Place a motherboard first. It decides which parts fit.";
+  const g=grp(id),c=capOf(g),B=BRD[b.id];
+  if(used(g)>=c)return c===0?`The ${B.n.toLowerCase()} has no ${GN[g]} slots. Get a bigger motherboard.`:`The ${B.n.toLowerCase()} only has ${c} ${GN[g]} slot${c>1?"s":""}. Get a bigger motherboard or remove one.`;
+  return null}
+function overCap(){
+  const b=board();if(!b)return null;const B=BRD[b.id];
+  for(const g of GK)if(used(g)>capOf(g))return`The ${B.n.toLowerCase()} only has ${capOf(g)} ${GN[g]} slot${capOf(g)===1?"":"s"}, but your phone has ${used(g)}. Remove some or swap the motherboard.`;
+  if(pc()>maxP())return`Too many parts (${pc()}/${maxP()}). Remove some or add expansion slots.`;
+  return null}
+const GCOL=g=>g==="ram"?"#22c55e":g==="sto"?"#6366f1":COL[g]||"#8b9bb0";
+function slotsUI(){
+  const b=board(),el=$("slots");if(!el)return;
+  const bc=n=>`<span class="chip" style="border-color:#f59e0b"><b>Motherboard ${n}/1</b></span> `;
+  if(!b){el.innerHTML=bc(0)+" Pick one from the Boards tab first. Once it is on, this splits into slots for CPU, RAM and everything else.";return}
+  const B=BRD[b.id];
+  el.innerHTML=bc(1)+"<b>"+B.n+"</b><br>"+GK.map(g=>{const c=B.all?Infinity:B.c[g],u=used(g);return `<span class="chip${u>c?" over":""}" style="border-color:${GCOL(g)};${c===0?"opacity:.45":""}">${GN[g]} ${u}/${c===Infinity?"∞":c}</span>`}).join("")}
+Object.assign(FEAT,{mb_old:"Old motherboard: one CPU, one RAM, one disk and not a slot more.",mb_basic:"Basic motherboard: room for a couple of cameras and a few ports.",mb_std:"Standard motherboard: a sensible amount of everything.",mb_pro:"Pro motherboard: lots of slots, no flight limit worth mentioning.",mb_over:"Overkill motherboard: five CPUs, six RAM sticks and a camera collection.",mb_god:"God-tier motherboard: literally every part fits. Engineers are afraid."});
+
+/* ---------- colours: each part has its own, grouped by family ---------- */
+Object.assign(TINT,{
+/* batteries */battery:"#22c55e",sibat:"#38bdf8",ssbat:"#2563eb",coin:"#a8a29e",aa:"#f97316",potatobat:"#a16207",lemonbat:"#fde047",carbat:"#64748b",nuke:"#84cc16",supercap:"#a855f7",liair:"#14b8a6",jar:"#facc15",
+/* CPUs */chip:"#3b82f6",mid:"#60a5fa",i486:"#c4b5a0",trash:"#78716c",potato:"#a16207",calcchip:"#94a3b8",hamster:"#fb923c",abacus:"#d97706",snail:"#a3e635",quantum:"#a855f7",gamer:"#22d3ee",eff:"#22c55e",server:"#6366f1",riscv:"#ec4899",tiny4:"#a1a1aa",tube:"#f59e0b",gears:"#b45309",neuro:"#e879f9",oc:"#ef4444",arm:"#14b8a6",i8086:"#a39171",
+/* RAM = greens */ram:"#22c55e",ram64k:"#4ade80",ram1m:"#34d399",ram512:"#16a34a",ram4g:"#15803d",ram16g:"#10b981",ram64g:"#059669",ram8m:"#65a30d",ram32g:"#047857",ram128k:"#84cc16",
+/* storage */storage:"#6366f1",floppy:"#3b82f6",tape:"#a16207",punch:"#ca8a04",cd:"#a1a1aa",usbstick:"#f43f5e",ssd1t:"#8b5cf6",hdd:"#64748b",zip:"#a78bfa",bluray:"#2563eb",crystal:"#e879f9",
+/* screens */screen:"#0ea5e9",lcd:"#38bdf8",eink:"#9ca3af",crt:"#22c55e",mono:"#a3e635",tiny:"#67e8f9",amoled:"#f472b6",pled:"#c084fc",qled:"#fb923c",fold:"#2dd4bf",transp:"#7dd3fc",
+/* ports */usbc:"#14b8a6",usba:"#0ea5e9",lightning:"#fb923c",hdmi:"#6366f1",vga:"#3b82f6",ethernet:"#f59e0b",jack:"#ef4444",sd:"#22c55e",serial:"#a1a1aa",microb:"#2dd4bf",minib:"#5eead4",displayport:"#8b5cf6",dvi:"#94a3b8",scart:"#d946ef",rca:"#f43f5e",firewire:"#ea580c",ps2:"#a855f7",xlr:"#64748b",toslink:"#ef4444",expslot:"#fbbf24",
+/* optics */camera:"#8b5cf6",telescope:"#a16207",fisheye:"#06b6d4",flash:"#fde047",laser:"#ef4444",projector:"#d946ef",nightvision:"#22c55e",binoculars:"#6366f1",thermal:"#f97316",xray:"#38bdf8",lidar:"#14b8a6",ringlight:"#f472b6",cam360:"#ec4899",macro:"#84cc16",periscope:"#a78bfa",underwater:"#0ea5e9",drone:"#64748b",satellite:"#94a3b8",instant:"#fb7185",microscope:"#10b981",telephoto:"#7c3aed",ultrawide:"#2563eb",
+/* sound */speaker:"#f59e0b",mic:"#ef4444",subwoofer:"#b45309",antenna:"#94a3b8",dish:"#78716c",horn:"#f97316",megaphone:"#eab308",vinyl:"#a855f7",boombox:"#ec4899",piano:"#6366f1",drums:"#dc2626",theremin:"#2dd4bf",whistle:"#9ca3af",
+/* flight */rocket:"#ef4444",jet:"#f97316",rotor:"#64748b",propeller:"#94a3b8",helicopter:"#22c55e",wheel:"#78716c",wings:"#60a5fa",parachute:"#f472b6",fan:"#38bdf8",quad:"#a855f7",ducted:"#14b8a6",ion:"#8b5cf6",jetpack:"#fb923c",warp:"#d946ef",antigrav:"#2dd4bf",
+/* gadgets */toaster:"#f59e0b",coffee:"#b45309",fridge:"#7dd3fc",popcorn:"#fcd34d",hairdryer:"#f472b6",mouse:"#9ca3af",keyboard:"#64748b",vr:"#6366f1",pen:"#2563eb",mirror:"#67e8f9",printer:"#94a3b8",disco:"#e879f9",knife:"#ef4444",umbrella:"#ec4899",fingerprint:"#22c55e",stylus:"#a78bfa",joystick:"#ef4444",gamepad:"#8b5cf6",buttons:"#9ca3af",
+/* toys */balloon:"#ef4444",magnet:"#dc2626",tesla:"#a78bfa",confetti:"#ec4899",bubble:"#67e8f9",watergun:"#3b82f6",grapple:"#78716c",snow:"#7dd3fc",kite:"#f97316",pinwheel:"#f43f5e",slingshot:"#a16207",smoke:"#9ca3af",
+/* comms + sensors */wifi:"#3b82f6",bt:"#0ea5e9",sim:"#f59e0b",coil:"#22c55e",thunderbolt:"#a855f7",fm:"#f97316",lora:"#84cc16",ir:"#ef4444",heart:"#ef4444",gps:"#22c55e",geiger:"#84cc16",metal:"#f59e0b",compass:"#f43f5e",
+/* dummy */neural:"#e879f9",bt12:"#0ea5e9",modem9g:"#84cc16",haptic:"#f59e0b",paste:"#94a3b8",defrag:"#22c55e",polish:"#fbbf24",splitter:"#14b8a6",
+/* boards */mb_old:"#b45309",mb_basic:"#65a30d",mb_std:"#0ea5e9",mb_pro:"#8b5cf6",mb_over:"#f97316",mb_god:"#e879f9"});
+
+/* ---------- round 5: more boards, batteries, screens, sensors, comms, toys ---------- */
+const NEWP=[
+/* boards */["mb_potato","Potato motherboard","board",24,200,1,10,0,2],["mb_flip","Flip-phone board","board",26,22,12,25,0,0],["mb_photo","Photographer board","board",31,35,90,50,0,0],["mb_dj","DJ board","board",31,60,110,55,0,1],["mb_sci","Scientist board","board",32,40,250,60,0,0],["mb_gamer","Gaming board","board",33,45,400,120,0,1],["mb_aero","Aerospace board","board",33,70,800,110,0,2],["mb_server","Server rack board","board",35,300,2500,300,0,1],["mb_toy","Toy chest board","board",31,90,150,50,0,2],
+/* batteries */["graphene","Graphene battery","pwr",24,28,200,0,12000,0],["solarbat","Solar cell pack","pwr",26,60,40,0,900,1],["banana","Banana battery","pwr",24,120,1,0,70,2],["fusion","Fusion core","pwr",26,3000,90000,0,200000,5],
+/* screens */["hologram","Hologram screen","scr",42,40,900,500,0,2],["hz240","240 Hz gaming screen","scr",42,95,350,700,0,0],["vfd","Retro VFD screen","scr",34,150,30,300,0,1],["watch","Smartwatch screen","scr",16,15,40,40,0,0],
+/* sensors */["proximity","Proximity sensor","sens",7,1,3,2,0,0],["uv","UV sensor","sens",7,1,6,3,0,0],["hygro","Hygrometer","sens",8,2,8,3,0,0],["oxi","Pulse oximeter","sens",9,4,25,12,0,0],["radar","Radar module","sens",14,40,150,100,0,1],
+/* comms */["zigbee","Zigbee radio","net",9,3,6,10,0,0],["ham","Ham radio set","net",18,300,90,80,0,1],["pigeon","Carrier pigeon port","net",16,200,12,0,0,3],["tincan","Tin-can telephone","net",14,50,1,0,0,2],["wifi4","Wi-Fi 4 chip","net",10,3,4,50,0,0],["uwb","UWB chip","net",8,2,35,40,0,0],["esim","eSIM chip","net",7,1,5,2,0,0],
+/* toys */["yoyo","Yo-yo","toy",12,40,3,0,0,1],["duck","Rubber duck","toy",14,60,2,0,0,1],["spinner","Fidget spinner","toy",12,30,4,0,0,1]];
+//    id        name                  look cpu ram sto pwr scr port optic sound fly gad sens net toy dummy
+bd("mb_potato","Potato motherboard",1,[1,1,1,3,1,1,0,0,0,0,0,0,1,0]);
+bd("mb_flip","Flip-phone board",2,[1,1,1,1,2,2,1,2,0,1,0,1,0,0]);
+bd("mb_photo","Photographer board",3,[1,2,2,2,2,3,12,1,0,2,3,1,0,0]);
+bd("mb_dj","DJ board",3,[1,2,2,2,2,4,1,14,0,3,1,2,2,0]);
+bd("mb_sci","Scientist board",4,[2,3,3,3,2,4,4,2,0,3,14,5,0,3]);
+bd("mb_gamer","Gaming board",4,[3,4,3,4,3,8,3,5,1,8,4,4,4,3]);
+bd("mb_aero","Aerospace board",5,[2,3,2,6,2,4,4,2,14,2,6,4,0,2]);
+bd("mb_server","Server rack board",5,[8,10,10,4,1,12,2,2,0,2,2,10,0,6]);
+bd("mb_toy","Toy chest board",3,[1,2,2,3,1,3,1,3,2,8,1,1,12,1]);
+NEWP.forEach(t=>{T.push(t);P[t[0]]={id:t[0],name:t[1],cat:t[2],size:t[3],g:t[4],$:t[5],mA:t[6],mAh:t[7],ch:t[8]}});
+Object.keys(BRD).forEach(id=>{VB[id]=[32,44];IC[id]=boardI(BRD[id].k)});
+[["graphene","GR"],["solarbat","SUN"],["banana","BAN"],["fusion","FUS"]].forEach(([id,t])=>mk(id,[36,22],batI(t)));
+[["hologram","3D",12],["hz240","240",11],["vfd","VFD",11],["watch","W",12]].forEach(([id,t,f])=>mk(id,[42,100],scrI(t,f)));
+SCRS.push("hologram","hz240","vfd","watch");Object.assign(SCRPX,{hologram:280,hz240:285,vfd:300,watch:110});
+SENS.push("proximity","uv","hygro","oxi","radar");
+Object.assign(IC,{
+proximity:`<rect x="4" y="9" width="8" height="6" rx="1.5" ${F}/><path d="M15 8a5 5 0 010 8M18 5a9 9 0 010 14"/>`,
+uv:`<path d="M7 4v8a5 5 0 0010 0V4" ${F}/>${lbl(12,22,6,"UV")}`,
+hygro:`<path d="M12 3C8 9 6 12 6 15a6 6 0 0012 0c0-3-2-6-6-12z" ${F}/>`,
+oxi:`<rect x="5" y="4" width="14" height="16" rx="3" ${F}/>${lbl(12,15,6.5,"O2")}`,
+radar:`<circle cx="12" cy="12" r="9" ${F}/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6"/>`,
+zigbee:`<rect x="3" y="7" width="18" height="10" rx="2" ${F}/>${lbl(12,14.5,6,"ZB")}`,
+ham:`<path d="M12 22V6M8 22h8M7 9l5-3 5 3M5 5l7-3 7 3"/>`,
+pigeon:`<path d="M3 13c3-5 8-6 11-3l5-3-2 5c0 5-5 8-10 7z" ${F}/><circle cx="16" cy="9" r=".9" fill="currentColor"/>`,
+tincan:`<rect x="3" y="8" width="7" height="9" rx="1" ${F}/><rect x="14" y="8" width="7" height="9" rx="1" ${F}/><path d="M10 12q2 2 4 0"/>`,
+wifi4:`<path d="M3 9a13 13 0 0118 0M6 12.5a8.5 8.5 0 0112 0"/><circle cx="12" cy="16" r="1.2" fill="currentColor"/>`,
+uwb:`<circle cx="12" cy="12" r="2" ${F}/><path d="M6 12a6 6 0 0112 0M3 12a9 9 0 0118 0M6 12a6 6 0 0012 0M3 12a9 9 0 0018 0"/>`,
+esim:`<rect x="5" y="3" width="14" height="18" rx="2" ${F}/>${lbl(12,14,5.5,"eSIM")}`,
+yoyo:`<circle cx="12" cy="15" r="6" ${F}/><circle cx="12" cy="15" r="2"/><path d="M12 9V3"/>`,
+duck:`<path d="M4 15c0-4 3-6 6-5 0-3 4-4 5-1l4 1-3 2c1 4-2 7-7 7-3 0-5-2-5-4z" ${F}/><circle cx="14" cy="8.5" r=".8" fill="currentColor"/>`,
+spinner:`<circle cx="12" cy="12" r="2.3" ${F}/><circle cx="12" cy="5" r="3" ${F}/><circle cx="18" cy="15.5" r="3" ${F}/><circle cx="6" cy="15.5" r="3" ${F}/>`});
+const SENSX={proximity:["Proximity sensor",()=>Math.random()>.5?"Something is near":"Clear"],uv:["UV sensor",()=>"UV index "+Math.round(6+Math.random()*3)],hygro:["Hygrometer",()=>Math.round(70+Math.random()*8)+"% humidity"],oxi:["Pulse oximeter",()=>Math.round(96+Math.random()*3)+"% SpO2"],radar:["Radar",()=>(2+Math.random()*30).toFixed(1)+" m to the nearest cat"]};
+const TOYX={yoyo:["Up, down, up, down. Hypnotic.","The yo-yo went around the world.","Walk the dog: success."],duck:["Squeak! The duck debugs your problems.","The duck judges your code in silence."],spinner:["It spins. That is the whole feature.","Spinning at 3,000 rpm of pure calm."]};
+Object.assign(TINT,{graphene:"#818cf8",solarbat:"#fbbf24",banana:"#fcd34d",fusion:"#fb7185",hologram:"#22d3ee",hz240:"#f43f5e",vfd:"#5eead4",watch:"#fb7185",proximity:"#06b6d4",uv:"#a855f7",hygro:"#3b82f6",oxi:"#ef4444",radar:"#22c55e",zigbee:"#eab308",ham:"#a16207",pigeon:"#94a3b8",tincan:"#a8a29e",wifi4:"#60a5fa",uwb:"#8b5cf6",esim:"#f59e0b",yoyo:"#ef4444",duck:"#facc15",spinner:"#a855f7",mb_potato:"#a16207",mb_flip:"#ec4899",mb_photo:"#d946ef",mb_dj:"#f43f5e",mb_sci:"#14b8a6",mb_gamer:"#22c55e",mb_aero:"#38bdf8",mb_server:"#64748b",mb_toy:"#fb7185"});
+Object.assign(FEAT,{mb_potato:"Potato motherboard: three potato batteries, one of everything else, zero dignity.",mb_flip:"Flip-phone board: two screens, two speakers and a lot of nostalgia.",mb_photo:"Photographer board: twelve lens slots for the lens collector.",mb_dj:"DJ board: fourteen sound slots. The neighbours will hear.",mb_sci:"Scientist board: fourteen sensors, because measurements are fun.",mb_gamer:"Gaming board: plenty of everything and glowing opinions.",mb_aero:"Aerospace board: fourteen flight slots. Seatbelts recommended.",mb_server:"Server rack board: ten CPUs, ten RAM sticks, a small fan farm.",mb_toy:"Toy chest board: room for twelve toys and eight gadgets.",graphene:"Graphene battery: 12,000 mAh in a slim pack.",solarbat:"Solar cell pack: sunny-day power.",banana:"Banana battery: a potassium-powered snack.",fusion:"Fusion core: 200,000 mAh and a very warm pocket.",hologram:"Hologram screen: floats in front of the phone.",hz240:"240 Hz gaming screen: every frame, every time.",vfd:"Retro VFD screen: glowing teal digits.",watch:"Smartwatch screen: tiny, tidy and very bright.",proximity:"Proximity sensor: knows when your ear is close.",uv:"UV sensor: reminds you about sunscreen.",hygro:"Hygrometer: tells you how damp it is.",oxi:"Pulse oximeter: counts oxygen in your finger.",radar:"Radar module: spots cats through walls.",zigbee:"Zigbee radio: talks to light bulbs.",ham:"Ham radio set: CQ, CQ, anyone out there?",pigeon:"Carrier pigeon port: delivery takes a few hours.",tincan:"Tin-can telephone: a string away from signal.",wifi4:"Wi-Fi 4 chip: it connects, eventually.",uwb:"UWB chip: finds your keys within centimetres.",esim:"eSIM chip: a SIM tray with no tray.",yoyo:"Yo-yo: walk the dog, walk the phone.",duck:"Rubber duck: the best debugger.",spinner:"Fidget spinner: it spins, it is calming."});
+applyTheme();drawBin();sync();msg("Start with a motherboard from the Boards tab, then add a screen, a battery and a chip.");
 </script></body></html>

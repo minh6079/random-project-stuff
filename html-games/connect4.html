@@ -22,16 +22,21 @@ button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
 .c{aspect-ratio:1;border-radius:50%;background:var(--hole);position:relative}
 .c.hl{box-shadow:0 0 0 3px rgba(255,255,255,.35)}
 .c.p1{background:var(--p1)}.c.p2{background:var(--p2)}
-.c.ghost{background:var(--p1);opacity:.45}
+.c.ghost{background:var(--p1);opacity:.45}.c.ghost2{background:var(--p2);opacity:.45}
 .c.last::after{content:"";position:absolute;inset:34%;border-radius:50%;background:rgba(0,0,0,.35)}
 .c.win{box-shadow:0 0 0 4px var(--tx)}
 .hint{color:var(--mut);font-size:.85rem}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:16px}.modal.on{display:flex}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;max-width:600px;width:100%}
+.box textarea{width:100%;font:12px/1.3 ui-monospace,Menlo,monospace;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px;margin:8px 0}
+.cell.last{box-shadow:inset 0 0 0 3px var(--acc)}
 </style></head>
 <body><main>
 <h1>Connect 4</h1>
 <div class="hint" id="goal"></div>
 <div class="bar">
- <label>Robot level <select id="lvl"><option value="easy">Easy</option><option value="mid">Medium</option><option value="hard">Hard</option></select></label>
+ <label>Play against <select id="opp"><option value="r">Robot</option><option value="p">Two players</option></select></label>
+ <label>Robot level <select id="lvl"><option value="easy">Easy</option><option value="mid">Medium</option><option value="hard">Hard</option><option value="imp">Impossible</option></select></label>
  <label>Columns <select id="cc"></select></label>
  <label>Rows <select id="rr"></select></label>
  <label>Connect <select id="kk"></select></label>
@@ -39,10 +44,21 @@ button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
  <button id="new" class="pri">New round</button>
  <button id="theme">Theme: Auto</button>
 </div>
+<div class="bar" id="recbar">
+ <button id="rsave" class="pri" style="display:none">Save game (.json)</button>
+ <button id="rload">Load game (.json)</button><input type="file" id="rfile" accept=".json,application/json" hidden>
+ <button id="rpaste">Paste JSON</button>
+ <button id="rrep" style="display:none">Replay loaded game</button>
+ <button id="rinst" style="display:none">Instant replay</button>
+ <button id="rstop" style="display:none">Stop replay</button>
+ <label>Replay speed <select id="rspd"><option value="1">1x (real time)</option><option value="2">2x</option><option value="5">5x</option><option value="20">20x</option><option value="0">No delay</option></select></label>
+</div>
+<div id="rinfo" class="hint"></div>
 <div id="status"></div>
-<div id="score"><div><b id="sw">0</b>You</div><div><b id="sd">0</b>Draws</div><div><b id="sl">0</b>Robot</div></div>
+<div id="score"><div><b id="sw">0</b><span id="l1">You</span></div><div><b id="sd">0</b>Draws</div><div><b id="sl">0</b><span id="l3">Robot</span></div></div>
 <div id="bd"></div>
-<p class="hint">Desktop: hover a column to preview, click to drop. Mobile: drag over a column, let go to drop, or drag off the board to cancel.<br>Easy: random column. Medium: wins or blocks when it can and avoids setting you up. Hard: minimax with alpha-beta pruning, looking several moves ahead (fewer on wider boards so it stays quick).</p>
+<p class="hint">Desktop: hover a column to preview, click to drop. Mobile: drag over a column, let go to drop, or drag off the board to cancel.<br>Easy: random column. Medium: wins or blocks when it can and avoids setting you up. Hard: minimax with alpha-beta pruning, looking several moves ahead (fewer on wider boards so it stays quick). Impossible: the robot searches every move it can, up to 10 seconds per move, and stops early when it has proven the best move. It gets no extra pieces. The first player has the advantage in Connect 4, so set Goes first to Robot for the toughest game. When a game ends you can save it as JSON, load a saved game and replay it, or use Instant replay for the latest match. Two players: take turns on one screen.</p>
+<div id="rmodal" class="modal"><div class="box"><b id="rmt"></b><textarea id="rta" rows="12" spellcheck="false"></textarea><div class="bar"><button id="rok" class="pri"></button><button id="rcopy">Copy</button><button id="rclose">Close</button></div><div id="rmsg" class="hint"></div></div></div>
 </main>
 <script>
 let R=6,C=7,K=4;
@@ -93,54 +109,181 @@ function ab(b,d,al,be,max,li,lp){
     if(max){best=Math.max(best,s);al=Math.max(al,s)}else{best=Math.min(best,s);be=Math.min(be,s)}
     if(al>=be)break}
   return best}
-function aiHard(){
+function aiHard(boost=0){
   let m=immediate(2);if(m>=0)return m;m=immediate(1);if(m>=0)return m;
-  const D=C<=7?6:C<=9?5:4;
+  const D=(C<=7?6:C<=9?5:4)+boost;
   let best=-Infinity,mv=[];
   for(const c of ORDER.filter(c=>!b[c])){
     const i=rowOf(b,c)*C+c;b[i]=2;
     const s=ab(b,D-1,-Infinity,Infinity,false,i,2);b[i]=0;
     if(s>best){best=s;mv=[c]}else if(s===best)mv.push(c)}
   return rnd(mv)}
-const AI={easy:aiEasy,mid:aiMid,hard:aiHard};
+/* strong fair solver: iterative deepening + transposition table + move ordering */
+let Z1=[],Z2=[],TT=new Map(),deadline=0,timeUp=false,nodes=0,IMPMS=9500;
+const r32=()=>Math.floor(Math.random()*4294967296)>>>0;
+function zinit(){TT.clear();Z1=[null,[],[]];Z2=[null,[],[]];for(let i=0;i<R*C;i++){Z1[1][i]=r32()&0x1fffff;Z1[2][i]=r32()&0x1fffff;Z2[1][i]=r32();Z2[2][i]=r32()}}
+function abt(b,d,al,be,max,li,lp,h1,h2){
+  if(li>=0&&lineAt(b,li,lp))return lp===2?100000+d:-100000-d;
+  if(deadline&&(++nodes&1023)===0&&Date.now()>deadline)timeUp=true;
+  if(timeUp)return 0;
+  const v=ORDER.filter(c=>!b[c]);
+  if(!v.length)return 0;if(d===0)return evalB(b);
+  const key=h1*4294967296+(h2>>>0),e=TT.get(key),a0=al,b0=be;let first=-1;
+  if(e){first=e.m;if(e.d>=d){if(e.f===0)return e.v;if(e.f===1)al=Math.max(al,e.v);else be=Math.min(be,e.v);if(al>=be)return e.v}}
+  const order=first>=0&&v.includes(first)?[first,...v.filter(c=>c!==first)]:v;
+  let best=max?-Infinity:Infinity,bm=-1;
+  for(const c of order){
+    const i=rowOf(b,c)*C+c,p=max?2:1;b[i]=p;
+    const s=abt(b,d-1,al,be,!max,i,p,h1^Z1[p][i],h2^Z2[p][i]);b[i]=0;
+    if(timeUp)return 0;
+    if(max){if(s>best){best=s;bm=c}al=Math.max(al,best)}else{if(s<best){best=s;bm=c}be=Math.min(be,best)}
+    if(al>=be)break}
+  TT.set(key,{d,v:best,f:best<=a0?2:best>=b0?1:0,m:bm});return best}
+function aiImp(){
+  let m=immediate(2);if(m>=0)return m;m=immediate(1);if(m>=0)return m;
+  const v=cols(b);if(v.length===1)return v[0];
+  if(Z1.length===0||Z1[1].length!==R*C)zinit();
+  let h1=0,h2=0;for(let i=0;i<R*C;i++)if(b[i]){h1^=Z1[b[i]][i];h2^=Z2[b[i]][i]}
+  deadline=Date.now()+IMPMS;timeUp=false;nodes=0;
+  let best=ORDER.find(c=>!b[c]);
+  for(let D=2;D<=R*C;D++){
+    let bv=-Infinity,bm=-1;
+    const ord=[best,...ORDER.filter(c=>!b[c]&&c!==best)];
+    for(const c of ord){
+      const i=rowOf(b,c)*C+c;b[i]=2;
+      const s=abt(b,D-1,-Infinity,Infinity,false,i,2,h1^Z1[2][i],h2^Z2[2][i]);b[i]=0;
+      if(timeUp)break;
+      if(s>bv){bv=s;bm=c}}
+    if(timeUp)break;best=bm;if(bv>=90000||bv<=-90000)break}
+  deadline=0;return best}
+const AI={easy:aiEasy,mid:aiMid,hard:()=>aiHard(0),imp:aiImp};
+const two=()=>$("opp").value==="p";
 
+/* ===== match record, save, load and replay (board games) ===== */
+const GAME="connect4";
+const REC={cur:null,last:null,loaded:null,replaying:false,tok:0,timers:[],t0:0,tl:0},RP={};
+const rinfo=t=>{$("rinfo").textContent=t};
+function updBtns(){
+  const rp=REC.replaying;
+  $("rsave").style.display=REC.cur&&REC.cur.result&&!rp?"":"none";
+  $("rrep").style.display=REC.loaded&&!rp?"":"none";
+  $("rinst").style.display=REC.last&&!rp?"":"none";
+  $("rstop").style.display=rp?"":"none"}
+function recStart(settings,players,extra){REC.cur=Object.assign({game:GAME,version:1,startedAt:new Date().toISOString(),settings,players,moves:[],result:null,totalMs:0},extra||{});REC.t0=REC.tl=performance.now();updBtns()}
+function recMove(m){const c=REC.cur;if(!c||c.result)return;const now=performance.now();c.moves.push(Object.assign({n:c.moves.length+1},m,{timeMs:Math.round(now-REC.t0),thinkMs:Math.round(now-REC.tl)}));REC.tl=now}
+function recFinish(result){const c=REC.cur;if(!c||c.result)return;c.result=result;c.totalMs=Math.round(performance.now()-REC.t0);REC.last=JSON.parse(JSON.stringify(c));updBtns()}
+function openModal(title,text,okLabel,onOk,readonly){$("rmt").textContent=title;const ta=$("rta");ta.value=text;ta.readOnly=!!readonly;$("rok").textContent=okLabel;$("rok").onclick=()=>onOk(ta.value);$("rmsg").textContent="";$("rmodal").classList.add("on")}
+const closeModal=()=>$("rmodal").classList.remove("on");
+async function saveRec(){
+  const c=REC.cur;if(!c||!c.result)return;
+  const text=JSON.stringify(c,null,2),name=`${GAME}-${c.startedAt.replace(/[:.]/g,"-")}.json`;
+  let d=null;try{if(window.claude&&claude.use)d=await claude.use("downloads")}catch(e){}
+  if(d){try{await d.save({filename:name,data:text});rinfo("Saved "+name+".");return}catch(e){if(e&&e.code==="declined"){rinfo("Save cancelled.");return}}}
+  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"application/json"}));a.download=name;document.body.appendChild(a);a.click();a.remove()}catch(e){}
+  openModal("Your game as JSON (copy it if the download did not start)",text,"Close",closeModal,true)}
+function loadText(text){
+  let d;try{d=JSON.parse(text)}catch(e){rinfo("That is not valid JSON.");return false}
+  if(!d||d.game!==GAME||!Array.isArray(d.moves)||!d.moves.length||!d.settings){rinfo(d&&d.game&&d.game!==GAME?`That file is for another game (${d.game}).`:"That file is not a saved game for this page.");return false}
+  REC.loaded=d;updBtns();rinfo(`Loaded a ${d.moves.length}-move game${d.result?" ("+(d.result.text||d.result.winner)+")":""}. Press Replay loaded game.`);return true}
+function stopReplay(silent){REC.tok++;REC.timers.forEach(clearTimeout);REC.timers=[];const was=REC.replaying;REC.replaying=false;if(was&&!silent&&RP.stopped)RP.stopped();updBtns()}
+function playRecord(r){
+  if(!r||!r.moves||!r.moves.length)return;
+  stopReplay(true);REC.replaying=true;const tok=REC.tok;
+  if(RP.reset)RP.reset(r);updBtns();
+  const sp=+$("rspd").value;let i=0;
+  const next=()=>{
+    if(tok!==REC.tok)return;
+    if(i>=r.moves.length){REC.replaying=false;if(RP.finish)RP.finish(r);updBtns();return}
+    const m=r.moves[i],wait=sp===0?150:Math.max(300,Math.min(8000,m.thinkMs||600))/sp;
+    REC.timers.push(setTimeout(()=>{if(tok!==REC.tok)return;RP.apply(m,i,r);i++;if(RP.status)RP.status(`Replay: move ${i} of ${r.moves.length}`);next()},wait))};
+  if(RP.status)RP.status(`Replay: ${r.moves.length} moves`);
+  next()}
+$("rload").onclick=()=>$("rfile").click();
+$("rfile").onchange=e=>{const f=e.target.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>loadText(String(fr.result));fr.onerror=()=>rinfo("Could not read that file. Try Paste JSON instead.");fr.readAsText(f);e.target.value=""};
+$("rpaste").onclick=()=>openModal("Paste a saved game (JSON)","","Load",t=>{if(loadText(t))closeModal();else $("rmsg").textContent=$("rinfo").textContent},false);
+$("rclose").onclick=closeModal;
+$("rcopy").onclick=()=>{const ta=$("rta");ta.select();try{document.execCommand("copy");$("rmsg").textContent="Copied."}catch(e){$("rmsg").textContent="Select the text and copy it."}};
+$("rsave").onclick=saveRec;
+$("rrep").onclick=()=>playRecord(REC.loaded);
+$("rinst").onclick=()=>playRecord(REC.last);
+$("rstop").onclick=()=>stopReplay(false);
+/* ---------- Impossible mode: searches every move it can, up to 10 seconds ---------- */
+let thinkId=0;
+function impAsync(cb){
+  let m=immediate(2);if(m>=0)return cb(m);m=immediate(1);if(m>=0)return cb(m);
+  const v=cols(b);if(v.length===1)return cb(v[0]);
+  if(Z1.length===0||Z1[1].length!==R*C)zinit();
+  let h1=0,h2=0;for(let i=0;i<R*C;i++)if(b[i]){h1^=Z1[b[i]][i];h2^=Z2[b[i]][i]}
+  const my=thinkId,t0=Date.now(),end=t0+IMPMS,empt=R*C-b.filter(x=>x).length;
+  let D=1,best=ORDER.find(c=>!b[c]);
+  const iter=()=>{
+    if(my!==thinkId)return;
+    D++;deadline=end;timeUp=false;nodes=0;
+    let bv=-Infinity,bm=-1;const ord=[best,...ORDER.filter(c=>!b[c]&&c!==best)];
+    for(const c of ord){const i=rowOf(b,c)*C+c;b[i]=2;const s=abt(b,D-1,-Infinity,Infinity,false,i,2,h1^Z1[2][i],h2^Z2[2][i]);b[i]=0;if(timeUp)break;if(s>bv){bv=s;bm=c}}
+    deadline=0;
+    if(timeUp)return cb(best);
+    best=bm;
+    if(bv>=90000||bv<=-90000||D>=empt||Date.now()>=end)return cb(best);
+    msg(`Robot is searching every move… depth ${D} (${((Date.now()-t0)/1000).toFixed(1)}s)`);
+    setTimeout(iter,0)};
+  iter()}
 /* ---------- Game ---------- */
 const msg=t=>$("status").textContent=t;
 function render(){
   const bd=$("bd"),key=R+"x"+C;
   if(bd.dataset.k!==key){bd.dataset.k=key;bd.style.setProperty("--c",C);bd.innerHTML=Array.from({length:R*C},(_,i)=>`<div class="c" data-c="${i%C}"></div>`).join("")}
-  const live=!over&&turn===1,gr=live&&hov>=0?rowOf(b,hov):-1;
+  const live=!over&&(two()||turn===1),gr=live&&hov>=0?rowOf(b,hov):-1;
   [...bd.children].forEach((d,i)=>{
     let cl="c";const c=i%C;
     if(b[i])cl+=" p"+b[i];
-    else if(live&&hov===c)cl+=" hl"+(i===gr*C+c?" ghost":"");
+    else if(live&&hov===c)cl+=" hl"+(i===gr*C+c?(turn===2?" ghost2":" ghost"):"");
     if(i===last)cl+=" last";
     if(line.includes(i))cl+=" win";
     d.className=cl});
   bd.classList.toggle("live",live);
   $("sw").textContent=sc.w;$("sd").textContent=sc.d;$("sl").textContent=sc.l;
-  $("goal").textContent=`You are red. The robot is yellow. Connect ${K} on a ${C}×${R} board.`}
+  $("l1").textContent=two()?"Red wins":"You";$("l3").textContent=two()?"Yellow wins":"Robot";
+  $("goal").textContent=(two()?"Two players: red and yellow take turns.":"You are red. The robot is yellow.")+` Connect ${K} on a ${C}×${R} board.`}
 function drop(c,p){
   const r=rowOf(b,c);if(r<0)return false;
   const i=r*C+c;b[i]=p;last=i;
+  recMove({player:p,col:c,row:r});
   const w=lineAt(b,i,p);
-  if(w){over=true;line=w;if(p===1){sc.w++;msg("🎉 You win!")}else{sc.l++;msg("The robot wins.")}}
-  else if(!cols(b).length){over=true;sc.d++;msg("It’s a draw.")}
+  if(w){over=true;line=w;let t;
+    if(two()){if(p===1)sc.w++;else sc.l++;t=(p===1?"Red":"Yellow")+" wins!";msg("🎉 "+t)}
+    else if(p===1){sc.w++;t="You win!";msg("🎉 You win!")}else{sc.l++;t="The robot wins.";msg(t)}
+    recFinish({winner:p,line:w,text:t})}
+  else if(!cols(b).length){over=true;sc.d++;msg("It’s a draw.");recFinish({winner:"draw",line:[],text:"Draw"})}
   return true}
 function robot(){
-  if(over)return;
-  drop(AI[$("lvl").value](),2);
-  if(!over){turn=1;msg("Your turn (red).")}
-  render()}
+  if(over||REC.replaying)return;
+  const lvl=$("lvl").value;
+  if(lvl==="imp"){const my=++thinkId;msg("Robot is searching every move…");impAsync(c=>{if(my===thinkId&&!over&&!REC.replaying)afterRobot(c)});return}
+  afterRobot(AI[lvl]())}
+function afterRobot(c){drop(c,2);if(!over){turn=1;msg("Your turn (red).")}render()}
 function play(c){
-  if(over||turn!==1||c<0)return;
+  if(over||c<0||REC.replaying||(!two()&&turn!==1))return;
+  if(two()){
+    const p=turn;
+    if(!drop(c,p)){msg("That column is full. Pick another one.");return}
+    hov=-1;
+    if(!over){turn=p===1?2:1;msg((turn===1?"Red":"Yellow")+"’s turn.")}
+    render();return}
   if(!drop(c,1)){msg("That column is full. Pick another one.");return}
   hov=-1;
   if(!over){turn=2;msg("Robot is thinking…");render();setTimeout(robot,500)}else render()}
+function applyMode(){
+  const t=two();$("lvl").disabled=t;
+  $("first").options[0].text=t?"Red":"You";$("first").options[1].text=t?"Yellow":"Robot"}
 function start(){
+  applyMode();TT.clear();stopReplay(true);thinkId++;
   b=Array(R*C).fill(0);over=false;line=[];last=-1;hov=-1;
-  if($("first").value==="r"){turn=2;msg("Robot is thinking…");render();setTimeout(robot,500)}
-  else{turn=1;msg("Your turn (red).");render()}}
+  turn=$("first").value==="r"?2:1;
+  recStart({mode:two()?"two":"robot",level:two()?null:$("lvl").value,R,C,K,first:turn},{1:two()?"Red":"You (red)",2:two()?"Yellow":"Robot ("+$("lvl").value+", yellow)"});
+  if(two()){msg((turn===1?"Red":"Yellow")+" goes first.");render();return}
+  if(turn===2){msg("Robot is thinking…");render();setTimeout(robot,500)}
+  else{msg("Your turn (red).");render()}}
 
 /* ---------- Input: hover/click on desktop, drag/release on mobile ---------- */
 const bd=$("bd"),colAt=(x,y)=>{const t=document.elementFromPoint(x,y);return t&&t.dataset.c!==undefined&&bd.contains(t)?+t.dataset.c:-1};
@@ -148,7 +291,7 @@ bd.addEventListener("mouseover",e=>{if(Date.now()-lastTouch<700)return;const c=e
 bd.addEventListener("mouseleave",()=>{if(Date.now()-lastTouch<700)return;hov=-1;render()});
 bd.addEventListener("click",e=>{if(e.pointerType==="touch"||Date.now()-lastTouch<700)return;const c=e.target.dataset.c;if(c!==undefined)play(+c)});
 function touchMove(e){
-  if(e.pointerType!=="touch"||over||turn!==1)return;lastTouch=Date.now();
+  if(e.pointerType!=="touch"||over||(!two()&&turn!==1))return;lastTouch=Date.now();
   const c=colAt(e.clientX,e.clientY);
   if(c<0&&!cancelled){cancelled=true;hov=-1;msg("Cancelled. Drag back onto the board to choose a column.")}
   else if(c>=0){cancelled=false;hov=c;msg("Release to drop in column "+(c+1)+".")}
@@ -158,7 +301,7 @@ bd.addEventListener("pointermove",touchMove);
 bd.addEventListener("pointerup",e=>{
   if(e.pointerType!=="touch")return;lastTouch=Date.now();
   const c=colAt(e.clientX,e.clientY),h=hov;hov=-1;
-  if(c<0||cancelled||h<0){if(!over&&turn===1)msg("Cancelled. Your turn (red).");render();return}
+  if(c<0||cancelled||h<0){if(!over&&(two()||turn===1))msg("Cancelled. Choose a column again.");render();return}
   play(c)});
 bd.addEventListener("pointercancel",e=>{if(e.pointerType==="touch"){hov=-1;render()}});
 
@@ -171,7 +314,21 @@ function applySize(){
   sc={w:0,d:0,l:0};mkOrder();start()}
 $("cc").onchange=$("rr").onchange=applySize;
 $("kk").onchange=()=>{K=+$("kk").value;sc={w:0,d:0,l:0};start()};
+
+/* replay hooks */
+RP.reset=r=>{
+  thinkId++;C=r.settings.C;R=r.settings.R;K=r.settings.K;mkOrder();
+  $("cc").value=C;$("rr").value=R;fillSel("kk",3,maxK(),K,v=>v);
+  b=Array(R*C).fill(0);over=true;line=[];last=-1;hov=-1;turn=1;render();
+  $("l1").textContent=r.players[1];$("l3").textContent=r.players[2]};
+RP.apply=m=>{const row=rowOf(b,m.col),i=row*C+m.col;b[i]=m.player;last=i;render()};
+const scoreLabels=()=>{$("l1").textContent=two()?"Red wins":"You";$("l3").textContent=two()?"Yellow wins":"Robot"};
+RP.finish=r=>{line=(r.result&&r.result.line)||[];render();msg("Replay finished: "+(r.result?r.result.text:"no result recorded"));scoreLabels()};
+RP.status=t=>msg(t);
+RP.stopped=()=>{msg("Replay stopped. Press New round to play.");scoreLabels()};
 $("new").onclick=start;
+$("opp").onchange=()=>{sc={w:0,d:0,l:0};start()};
+$("lvl").onchange=()=>{start()};
 const MODES=["auto","light","dark"],ICON={auto:"🖥️ Auto",light:"☀️ Light",dark:"🌙 Dark"};
 let mode="auto";
 try{const m=localStorage.getItem("c4-theme");if(MODES.includes(m))mode=m}catch(e){}
